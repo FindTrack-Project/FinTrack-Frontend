@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react"; // Import useEffect
 import { Link, useNavigate } from "react-router-dom";
 import Api from "../../config/apiConfig";
 
@@ -19,6 +19,18 @@ export const Login = () => {
   const navigate = useNavigate();
 
   const toggleEye = () => setIsClosed(!isClosed);
+
+  useEffect(() => {
+    let timer;
+    if (showSuccessModal) {
+      // Set a timer to close the modal and redirect after 3 seconds (3000 milliseconds)
+      timer = setTimeout(() => {
+        setShowSuccessModal(false);
+        navigate("/dashboard");
+      }, 1000);
+    }
+    return () => clearTimeout(timer); // Clear the timer if the component unmounts or modal closes
+  }, [showSuccessModal, navigate]); // Re-run effect when showSuccessModal or navigate changes
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -46,11 +58,6 @@ export const Login = () => {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleSuccessModalClose = () => {
-    setShowSuccessModal(false);
-    navigate("/dashboard");
   };
 
   return (
@@ -174,7 +181,7 @@ export const Login = () => {
       </div>
 
       {showSuccessModal && (
-        <div className="fixed inset-0  bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+        <div className="fixed inset-0 bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4 text-center">
             <div className="mb-4">
               <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
@@ -196,15 +203,10 @@ export const Login = () => {
                 Masuk Berhasil! 🎉
               </h3>
               <p className="text-gray-600 mb-6">
-                Selamat datang kembali! Anda akan diarahkan ke dashboard.
+                Selamat datang kembali! Anda akan diarahkan ke dashboard dalam
+                beberapa detik.
               </p>
             </div>
-            <button
-              onClick={handleSuccessModalClose}
-              className="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-semibold py-2.5 px-4 rounded-lg transition duration-200"
-            >
-              Lanjut ke Dashboard
-            </button>
           </div>
         </div>
       )}
