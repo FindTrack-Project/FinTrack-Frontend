@@ -1,2 +1,11 @@
 @import "tailwindcss";
+@plugin "daisyui";
 
+:root {
+    --color-primary: #001327; /* Blue Main */
+    --color-secondary: #002A57; /* Blue Select */
+    --color-accent: #62C1A3; /* Green Accent */
+    --color-up: #449E7B; /* Green Up */
+    --color-black: #1B1B1B; /* Black */
+    --color-hover: #021F40; /* Blue Hover */
+}

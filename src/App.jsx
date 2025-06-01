@@ -9,11 +9,11 @@ import {
 import Login from "./pages/Auth/login";
 import Register from "./pages/Auth/register";
 
-import Home from "./pages/Dasboard/Home";
-import Income from "./pages/Dasboard/Income";
-import Expense from "./pages/Dasboard/Expense";
+import Home from "./pages/components/Dashboard/Home";
+import Income from "./pages/components/Dashboard/Income";
+import Expense from "./pages/components/Dashboard/Expense";
 
-import Sidebar from "./pages/components/Sidebar";
+import Sidebar from "./pages/components/Sidebar/Sidebar";
 
 const MainLayout = ({ children }) => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
