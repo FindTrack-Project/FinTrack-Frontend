@@ -35,18 +35,14 @@ export const Register = () => {
     }
 
     try {
-      const response = await Api.post("/auth/register", {
+      await Api.post("/auth/register", {
         name,
         email,
         password,
+        initialBalance: 0,
       });
-      console.log("Register success:", response.data);
       setShowSuccessModal(true);
     } catch (err) {
-      console.error(
-        "Register failed:",
-        err.response?.data?.message || err.message
-      );
       setError(err.response?.data?.message || "Registrasi gagal. Coba lagi.");
     } finally {
       setIsLoading(false);
@@ -59,24 +55,24 @@ export const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4 font-inter">
-      <div className="flex bg-white rounded-lg shadow-xl overflow-hidden max-w-4xl w-full">
+    <div className="min-h-screen flex items-center justify-center bg-primary p-4 font-inter">
+      <div className="flex bg-secondary rounded-lg shadow-xl overflow-hidden max-w-4xl w-full">
         <div className="flex-1 flex items-center justify-center p-8 sm:p-12 md:p-16">
           <form onSubmit={handleSubmit} className="w-full max-w-md">
             <div className="flex justify-start mb-8">
-              <img src={iconLogo} alt="Logo" className="h-15 w-auto" />
+              <img src={iconLogo} alt="Logo" className="h-14 w-auto" />
             </div>
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">
-              Buat <span className="text-cyan-600">akun</span> Anda 📝
+            <h1 className="text-3xl font-bold text-white mb-2">
+              Buat <span className="text-accent">akun</span> Anda 📝
             </h1>
-            <p className="text-gray-600 mb-8 text-base">
+            <p className="text-gray-200 mb-8 text-base">
               Masukkan detail Anda untuk membuat akun.
             </p>
 
             <div className="mb-5">
               <label
                 htmlFor="name"
-                className="block text-gray-700 text-sm font-semibold mb-2"
+                className="block text-white text-sm font-semibold mb-2"
               >
                 Nama Lengkap *
               </label>
@@ -85,7 +81,7 @@ export const Register = () => {
                 type="text"
                 required
                 placeholder="Contoh: John Doe"
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition duration-200 text-sm"
+                className="w-full px-4 py-2.5 border border-gray-400 bg-primary text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition duration-200 text-sm placeholder-gray-400"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
               />
@@ -94,7 +90,7 @@ export const Register = () => {
             <div className="mb-5">
               <label
                 htmlFor="email"
-                className="block text-gray-700 text-sm font-semibold mb-2"
+                className="block text-white text-sm font-semibold mb-2"
               >
                 Email *
               </label>
@@ -103,7 +99,7 @@ export const Register = () => {
                 type="email"
                 required
                 placeholder="Contoh: johndoe@gmail.com"
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition duration-200 text-sm"
+                className="w-full px-4 py-2.5 border border-gray-400 bg-primary text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition duration-200 text-sm placeholder-gray-400"
                 autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -113,7 +109,7 @@ export const Register = () => {
             <div className="mb-5">
               <label
                 htmlFor="password"
-                className="block text-gray-700 text-sm font-semibold mb-2"
+                className="block text-white text-sm font-semibold mb-2"
               >
                 Kata Sandi *
               </label>
@@ -123,7 +119,7 @@ export const Register = () => {
                   type={isClosed ? "password" : "text"}
                   required
                   placeholder="Masukkan Kata Sandi"
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition duration-200 text-sm pr-10"
+                  className="w-full px-4 py-2.5 border border-gray-400 bg-primary text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition duration-200 text-sm pr-10 placeholder-gray-400"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
@@ -143,7 +139,7 @@ export const Register = () => {
             <div className="mb-6">
               <label
                 htmlFor="confirm-password"
-                className="block text-gray-700 text-sm font-semibold mb-2"
+                className="block text-white text-sm font-semibold mb-2"
               >
                 Konfirmasi Kata Sandi *
               </label>
@@ -153,7 +149,7 @@ export const Register = () => {
                   type={isConfirmClosed ? "password" : "text"}
                   required
                   placeholder="Ulangi Kata Sandi"
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition duration-200 text-sm pr-10"
+                  className="w-full px-4 py-2.5 border border-gray-400 bg-primary text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition duration-200 text-sm pr-10 placeholder-gray-400"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                 />
@@ -171,26 +167,26 @@ export const Register = () => {
             </div>
 
             {error && (
-              <p className="text-red-600 text-sm text-center mb-4">{error}</p>
+              <p className="text-red-400 text-sm text-center mb-4">{error}</p>
             )}
 
             <button
               type="submit"
               disabled={isLoading}
-              className={`w-full py-2.5 rounded-md font-semibold text-white transition duration-200 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 ${
+              className={`w-full py-2.5 rounded-md cursor-pointer font-semibold text-white transition duration-200 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 ${
                 isLoading
-                  ? "bg-cyan-400 cursor-not-allowed"
-                  : "bg-cyan-600 hover:bg-cyan-700"
+                  ? "bg-accent/60 cursor-not-allowed"
+                  : "bg-accent hover:bg-accent/80"
               }`}
             >
               {isLoading ? "Mendaftar..." : "Daftar"}
             </button>
 
-            <p className="text-center text-sm text-gray-600 mt-6">
+            <p className="text-center text-sm text-gray-200 mt-6">
               Sudah punya akun?{" "}
               <Link
                 to="/login"
-                className="text-cyan-600 font-semibold hover:underline"
+                className="text-accent font-semibold hover:underline"
               >
                 Masuk sekarang
               </Link>
@@ -236,7 +232,7 @@ export const Register = () => {
             </div>
             <button
               onClick={handleSuccessModalClose}
-              className="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-semibold py-2.5 px-4 rounded-lg transition duration-200"
+              className="w-full bg-accent cursor-pointer hover:bg-accent/80 text-white font-semibold py-2.5 px-4 rounded-lg transition duration-200"
             >
               Lanjut ke Halaman Login
             </button>

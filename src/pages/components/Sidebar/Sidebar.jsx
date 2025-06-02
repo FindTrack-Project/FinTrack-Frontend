@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import {
   Wallet,
   LayoutDashboard,
   HandCoins,
   Settings,
   ArrowRightLeft,
+  LogOut,
   CircleHelp,
   ChevronLast,
   CreditCard,
@@ -18,15 +19,15 @@ import {
 import Logo from "../../../assets/logo.svg"; // Pastikan path ini benar
 
 const Sidebar = ({ onToggleCollapse }) => {
-  // Menerima prop onToggleCollapse
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isServiceOpen, setIsServiceOpen] = useState(true);
+  const navigate = useNavigate();
 
   const toggleCollapse = () => {
     setIsCollapsed((prev) => {
       const newState = !prev;
       if (onToggleCollapse) {
-        onToggleCollapse(newState); // Panggil fungsi dari parent (App.jsx)
+        onToggleCollapse(newState);
       }
       return newState;
     });
@@ -36,18 +37,23 @@ const Sidebar = ({ onToggleCollapse }) => {
     setIsServiceOpen(!isServiceOpen);
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("userToken");
+    navigate("/login");
+  };
+
   return (
     <div
       className={`
         flex flex-col h-screen bg-primary shadow-lg
         transition-all duration-300 ease-in-out
-        ${isCollapsed ? "w-20" : "w-64"}
+        ${isCollapsed ? "w-17" : "w-64"}
         fixed top-0 left-0 z-40
       `}
     >
       {/* Icon Logo < */}
-      <div className="flex items-center justify-between p-4 border-b border-secondary">
-        <div className="flex items-center space-x-2 overflow-hidden">
+      <div className="flex items-center min-h-[48px] justify-between p-4 border-b border-secondary relative">
+        <div className="flex items-center min-h-[48px] space-x-2 overflow-hidden">
           <img
             src={Logo}
             alt="Fintrack Logo"
@@ -64,23 +70,29 @@ const Sidebar = ({ onToggleCollapse }) => {
         <button
           onClick={toggleCollapse}
           className={`
-            p-1 rounded-full text-white hover:bg-secondary transition-colors duration-200
+            p-1 rounded-full bg-white text-primary 
+            absolute -right-3 top-1/2 -translate-y-1/2
+            border border-secondary cursor-pointer
+            transition-all duration-200 hover:bg-gray-100
             ${isCollapsed ? "rotate-180" : ""}
-            flex-shrink-0
           `}
           aria-label={isCollapsed ? "Perluas Sidebar" : "Ciutkan Sidebar"}
         >
-          <ChevronLast size={20} />
+          <ChevronLast size={18} />
         </button>
       </div>
       {/* Icon Logo > */}
 
-      
       <nav className="flex-1 p-4 space-y-2 overflow-hidden">
-        {/* Home < */}
-        <Link
-          to="/"
-          className="flex items-center p-2 rounded-lg text-white hover:bg-secondary hover:text-white transition-colors duration-200 group"
+        {/* Dashboard */}
+        <NavLink
+          to="/dashboard"
+          end
+          className={({ isActive }) =>
+            `flex items-center min-h-[48px] p-2 rounded-lg text-white transition-colors duration-200 group ${
+              isActive ? "bg-secondary" : "hover:bg-[var(--color-hov)]"
+            }`
+          }
         >
           <LayoutDashboard size={20} className="mr-3 flex-shrink-0" />
           <span
@@ -90,13 +102,16 @@ const Sidebar = ({ onToggleCollapse }) => {
           >
             Dashboard
           </span>
-        </Link>
-        {/* Home > */}
+        </NavLink>
 
-        
-        <Link
-          to="/"
-          className="flex items-center p-2 rounded-lg text-white hover:bg-secondary hover:text-white transition-colors duration-200 group"
+        {/* Transactions */}
+        <NavLink
+          to="/#"
+          className={({ isActive }) =>
+            `flex items-center min-h-[48px] p-2 rounded-lg text-white transition-colors duration-200 group ${
+              isActive ? "bg-secondary" : "hover:bg-[var(--color-hov)]"
+            }`
+          }
         >
           <ArrowRightLeft size={20} className="mr-3 flex-shrink-0" />
           <span
@@ -106,23 +121,23 @@ const Sidebar = ({ onToggleCollapse }) => {
           >
             Transactions
           </span>
-        </Link>
-        
-{/*  
+        </NavLink>
+
+        {/* Service (Dropdown Example) 
         <div className="relative">
           <button
             onClick={toggleService}
-            className="flex items-center w-full p-2 rounded-lg text-white hover:bg-secondary hover:text-white transition-colors duration-200 group"
+            className="flex items-center min-h-[48px] w-full p-2 rounded-lg text-white transition-colors duration-200 group cursor-pointer"
             aria-expanded={isServiceOpen}
             aria-controls="service-submenu"
           >
-            <ArrowRightLeft size={20} className="mr-3 flex-shrink-0" />
+            <CreditCard size={20} className="mr-3 flex-shrink-0" />
             <span
               className={`font-medium whitespace-nowrap overflow-hidden ${
                 isCollapsed ? "hidden" : ""
               }`}
             >
-              Transactions
+              Service
             </span>
             <span className={`ml-auto ${isCollapsed ? "hidden" : ""}`}>
               {isServiceOpen ? (
@@ -137,19 +152,27 @@ const Sidebar = ({ onToggleCollapse }) => {
               id="service-submenu"
               className="pl-8 pt-1 pb-1 space-y-1 overflow-hidden"
             >
-              <Link
+              <NavLink
                 to="/service/credit"
-                className="flex items-center p-2 rounded-lg text-white hover:bg-secondary hover:text-white transition-colors duration-200 text-sm"
+                className={({ isActive }) =>
+                  `flex items-center min-h-[48px] p-2 rounded-lg text-white transition-colors duration-200 text-sm ${
+                    isActive ? "bg-secondary" : "hover:bg-[var(--color-hov)]"
+                  }`
+                }
               >
                 <BanknoteArrowUp size={16} className="mr-2 flex-shrink-0" />
                 <span className="whitespace-nowrap overflow-hidden">
                   Income
                 </span>
-              </Link>
-              
-              <Link
+              </NavLink>
+
+              <NavLink
                 to="/service/bills"
-                className="flex items-center p-2 rounded-lg text-white hover:bg-secondary hover:text-white transition-colors duration-200 text-sm relative"
+                className={({ isActive }) =>
+                  `flex items-center min-h-[48px] p-2 rounded-lg text-white transition-colors duration-200 text-sm relative ${
+                    isActive ? "bg-secondary" : "hover:bg-[var(--color-hov)]"
+                  }`
+                }
               >
                 <BanknoteArrowDown size={16} className="mr-2 flex-shrink-0" />
                 <span className="whitespace-nowrap overflow-hidden">
@@ -158,14 +181,20 @@ const Sidebar = ({ onToggleCollapse }) => {
                 <span className="ml-auto bg-blue-500 text-white text-xs font-semibold px-1.5 py-0.5 rounded-full whitespace-nowrap overflow-hidden">
                   2
                 </span>
-              </Link>
+              </NavLink>
             </div>
           )}
         </div>
         */}
-        <Link
-          to="/history"
-          className="flex items-center p-2 rounded-lg text-white hover:bg-secondary hover:text-white transition-colors duration-200 group relative"
+
+        {/* Pocket */}
+        <NavLink
+          to="/pocket"
+          className={({ isActive }) =>
+            `flex items-center min-h-[48px] p-2 rounded-lg text-white transition-colors duration-200 group relative ${
+              isActive ? "bg-secondary" : "hover:bg-[var(--color-hov)]"
+            }`
+          }
         >
           <Wallet size={20} className="mr-3 flex-shrink-0" />
           <span
@@ -182,11 +211,16 @@ const Sidebar = ({ onToggleCollapse }) => {
           >
             New 6
           </span>
-        </Link>
+        </NavLink>
 
-        <Link
-          to="/saved"
-          className="flex items-center p-2 rounded-lg text-white hover:bg-secondary hover:text-white transition-colors duration-200 group"
+        {/* Savings */}
+        <NavLink
+          to="/savings"
+          className={({ isActive }) =>
+            `flex items-center min-h-[48px] p-2 rounded-lg text-white transition-colors duration-200 group ${
+              isActive ? "bg-secondary" : "hover:bg-[var(--color-hov)]"
+            }`
+          }
         >
           <HandCoins size={20} className="mr-3 flex-shrink-0" />
           <span
@@ -196,13 +230,18 @@ const Sidebar = ({ onToggleCollapse }) => {
           >
             Savings
           </span>
-        </Link>
-
+        </NavLink>
       </nav>
+
       <div className="p-4">
-        <Link
+        {/* Settings */}
+        <NavLink
           to="/settings"
-          className="flex items-center p-2 rounded-lg text-white hover:bg-secondary hover:text-white transition-colors duration-200 group"
+          className={({ isActive }) =>
+            `flex items-center min-h-[48px] p-2 rounded-lg text-white transition-colors duration-200 group ${
+              isActive ? "bg-secondary" : "hover:bg-[var(--color-hov)]"
+            }`
+          }
         >
           <Settings size={20} className="mr-3 flex-shrink-0" />
           <span
@@ -212,20 +251,21 @@ const Sidebar = ({ onToggleCollapse }) => {
           >
             Settings
           </span>
-        </Link>
-        <Link
-          to="/settings"
-          className="flex items-center p-2 rounded-lg text-white hover:bg-secondary hover:text-white transition-colors duration-200 group"
+        </NavLink>
+        
+        <button
+          onClick={handleLogout}
+          className="flex items-center min-h-[48px] p-2 rounded-lg text-white transition-colors duration-200 group cursor-pointer hover:bg-[var(--color-hov)] w-full"
         >
-          <CircleHelp size={20} className="mr-3 flex-shrink-0" />
+          <LogOut size={20} className="mr-3 flex-shrink-0" />
           <span
             className={`font-medium whitespace-nowrap overflow-hidden ${
               isCollapsed ? "hidden" : ""
             }`}
           >
-            Help & Support
+            Logout
           </span>
-        </Link>
+        </button>
       </div>
     </div>
   );

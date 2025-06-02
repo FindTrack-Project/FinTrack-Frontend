@@ -12,6 +12,7 @@ import Register from "./pages/Auth/register";
 import Home from "./pages/components/Dashboard/Home";
 import Income from "./pages/components/Dashboard/Income";
 import Expense from "./pages/components/Dashboard/Expense";
+import Balance from "./pages/components/Dashboard/Balance";
 
 import Sidebar from "./pages/components/Sidebar/Sidebar";
 
@@ -55,7 +56,6 @@ export const App = () => {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-
         <Route path="/" element={<Root />} />
 
         <Route
@@ -64,16 +64,6 @@ export const App = () => {
             <PrivateRoute>
               <MainLayout>
                 <Home />
-              </MainLayout>
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/income"
-          element={
-            <PrivateRoute>
-              <MainLayout>
-                <Income />
               </MainLayout>
             </PrivateRoute>
           }
@@ -89,78 +79,21 @@ export const App = () => {
           }
         />
         <Route
-          path="/pocket"
+          path="/income"
           element={
             <PrivateRoute>
               <MainLayout>
-                {/* Ganti dengan komponen Pocket Anda */}
-                <div>Halaman Pocket</div>
+                <Income />
               </MainLayout>
             </PrivateRoute>
           }
         />
         <Route
-          path="/history"
+          path="/balance"
           element={
             <PrivateRoute>
               <MainLayout>
-                {/* Ganti dengan komponen History Anda */}
-                <div>Halaman History</div>
-              </MainLayout>
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/service/credit"
-          element={
-            <PrivateRoute>
-              <MainLayout>
-                {/* Ganti dengan komponen Credit Anda */}
-                <div>Halaman Credit</div>
-              </MainLayout>
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/service/transfer"
-          element={
-            <PrivateRoute>
-              <MainLayout>
-                {/* Ganti dengan komponen Transfer Anda */}
-                <div>Halaman Transfer</div>
-              </MainLayout>
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/service/cash"
-          element={
-            <PrivateRoute>
-              <MainLayout>
-                {/* Ganti dengan komponen Cash Anda */}
-                <div>Halaman Cash</div>
-              </MainLayout>
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/service/bills"
-          element={
-            <PrivateRoute>
-              <MainLayout>
-                {/* Ganti dengan komponen MyBills Anda */}
-                <div>Halaman My Bills</div>
-              </MainLayout>
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/saved"
-          element={
-            <PrivateRoute>
-              <MainLayout>
-                {/* Ganti dengan komponen Saved Anda */}
-                <div>Halaman Saved</div>
+                <Balance />
               </MainLayout>
             </PrivateRoute>
           }
