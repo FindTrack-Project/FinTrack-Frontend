@@ -16,11 +16,13 @@ import {
   BanknoteArrowUp,
   BanknoteArrowDown,
 } from "lucide-react";
-import Logo from "../../../assets/logo.svg"; // Pastikan path ini benar
+// Memperbaiki jalur impor untuk logo.svg
+// Asumsi: Sidebar.jsx berada di 'src/pages/components/Sidebar/'
+// dan logo.svg berada di 'src/assets/'
+import Logo from "../../../assets/logo.svg";
 
 const Sidebar = ({ onToggleCollapse }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [isServiceOpen, setIsServiceOpen] = useState(true);
   const navigate = useNavigate();
 
   const toggleCollapse = () => {
@@ -31,10 +33,6 @@ const Sidebar = ({ onToggleCollapse }) => {
       }
       return newState;
     });
-  };
-
-  const toggleService = () => {
-    setIsServiceOpen(!isServiceOpen);
   };
 
   const handleLogout = () => {
@@ -70,7 +68,7 @@ const Sidebar = ({ onToggleCollapse }) => {
         <button
           onClick={toggleCollapse}
           className={`
-            p-1 rounded-full bg-white text-primary 
+            p-1 rounded-full bg-white text-primary
             absolute -right-3 top-1/2 -translate-y-1/2
             border border-secondary cursor-pointer
             transition-all duration-200 hover:bg-gray-100
@@ -104,9 +102,9 @@ const Sidebar = ({ onToggleCollapse }) => {
           </span>
         </NavLink>
 
-        {/* Transactions */}
+        {/* Transactions - Disesuaikan ke "/transactions" */}
         <NavLink
-          to="/#"
+          to="/transactions" // Perubahan di sini: dari "/transaction" menjadi "/transactions"
           className={({ isActive }) =>
             `flex items-center min-h-[48px] p-2 rounded-lg text-white transition-colors duration-200 group ${
               isActive ? "bg-secondary" : "hover:bg-[var(--color-hov)]"
@@ -119,11 +117,11 @@ const Sidebar = ({ onToggleCollapse }) => {
               isCollapsed ? "hidden" : ""
             }`}
           >
-            Transactions
+            Transaction
           </span>
         </NavLink>
 
-        {/* Service (Dropdown Example) 
+        {/* Service (Dropdown Example)
         <div className="relative">
           <button
             onClick={toggleService}
@@ -252,7 +250,7 @@ const Sidebar = ({ onToggleCollapse }) => {
             Settings
           </span>
         </NavLink>
-        
+
         <button
           onClick={handleLogout}
           className="flex items-center min-h-[48px] p-2 rounded-lg text-white transition-colors duration-200 group cursor-pointer hover:bg-[var(--color-hov)] w-full"

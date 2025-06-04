@@ -6,16 +6,19 @@ import {
   Navigate,
 } from "react-router-dom";
 
-import Login from "./pages/Auth/login";
-import Register from "./pages/Auth/register";
+// Pastikan jalur impor ini benar relatif terhadap App.jsx
+import Login from "./pages/Auth/login.jsx";
+import Register from "./pages/Auth/register.jsx";
 
-import Home from "./pages/components/Dashboard/Home";
-import Income from "./pages/components/Dashboard/Income";
-import Expense from "./pages/components/Dashboard/Expense";
-import Balance from "./pages/components/Dashboard/Balance";
+import Home from "./pages/components/Dashboard/Home.jsx";
+import Income from "./pages/components/Dashboard/Income.jsx";
+import Expense from "./pages/components/Dashboard/Expense.jsx";
+import Balance from "./pages/components/Dashboard/Balance.jsx";
 
-import Sidebar from "./pages/components/Sidebar/Sidebar";
+import Sidebar from "./pages/components/Sidebar/Sidebar.jsx";
+import Transaction from "./pages/components/transaction/transaction.jsx"; // Mengimpor komponen Transaction
 
+// MainLayout tidak perlu diekspor jika hanya digunakan di App.jsx
 const MainLayout = ({ children }) => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
@@ -36,11 +39,13 @@ const MainLayout = ({ children }) => {
   );
 };
 
+// PrivateRoute tidak perlu diekspor jika hanya digunakan di App.jsx
 const PrivateRoute = ({ children }) => {
   const isAuthenticated = !!localStorage.getItem("userToken");
   return isAuthenticated ? children : <Navigate to="/login" />;
 };
 
+// Root tidak perlu diekspor jika hanya digunakan di App.jsx
 const Root = () => {
   const isAuthenticated = !!localStorage.getItem("userToken");
   return isAuthenticated ? (
@@ -50,7 +55,9 @@ const Root = () => {
   );
 };
 
-export const App = () => {
+// Pastikan hanya satu jenis ekspor untuk komponen App
+const App = () => {
+  // Hapus 'export' di sini
   return (
     <Router>
       <Routes>
@@ -98,9 +105,34 @@ export const App = () => {
             </PrivateRoute>
           }
         />
+        {/* Rute baru untuk Transaksi */}
+        <Route
+          path="/transactions"
+          element={
+            <PrivateRoute>
+              <MainLayout>
+                <Transaction />
+              </MainLayout>
+            </PrivateRoute>
+          }
+        />
+        {/* Opsional: Rute untuk menambahkan transaksi baru, jika Anda membuat formulir terpisah */}
+        <Route
+          path="/add-transaction"
+          element={
+            <PrivateRoute>
+              <MainLayout>
+                {/* Anda akan menempatkan komponen AddTransactionForm Anda di sini */}
+                <div className="text-gray-700 text-center py-10">
+                  Formulir Tambah Transaksi Baru (Placeholder)
+                </div>
+              </MainLayout>
+            </PrivateRoute>
+          }
+        />
       </Routes>
     </Router>
   );
 };
 
-export default App;
+export default App; // Pastikan ini adalah satu-satunya ekspor default untuk App
