@@ -137,7 +137,7 @@ const Sidebar = ({ onToggleCollapse }) => {
 
         {/* Pocket */}
         <NavLink
-          to="/pocket"
+          to="/pockets"
           className={({ isActive }) =>
             `flex items-center min-h-[48px] p-2 rounded-lg text-white transition-colors duration-200 group relative ${
               isActive ? "bg-secondary" : "hover:bg-[var(--color-hov)]"
