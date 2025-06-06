@@ -10,8 +10,8 @@ const BalanceOverview = ({
   months,
   balanceOverTime,
   formatCurrency,
-  onTimeRangeChange, // Prop baru untuk meneruskan perubahan ke parent
-  selectedTimeRange, // Prop baru untuk mengontrol nilai dropdown
+  onTimeRangeChange,
+  selectedTimeRange,
 }) => {
   const lineChartData = {
     labels: months,
