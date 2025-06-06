@@ -1,6 +1,6 @@
 // config/apiConfig.js
 
-const BASE_URL = "http://localhost:3000/api";
+const BASE_URL = "https://fintrack-o1bw.vercel.app/api";
 
 const getToken = () => {
   if (typeof window !== "undefined") {
