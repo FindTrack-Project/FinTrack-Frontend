@@ -199,6 +199,7 @@ const TransactionPage = () => {
     );
   }
 
+<<<<<<< HEAD
   // Skeleton Loaders
   const SkeletonCard = () => (
     <div className="bg-white rounded-2xl shadow-sm p-6 col-span-1 animate-pulse">
@@ -208,24 +209,135 @@ const TransactionPage = () => {
         <div className="h-10 bg-gray-200 rounded"></div>
         <div className="h-10 bg-gray-200 rounded"></div>
         <div className="h-10 bg-gray-200 rounded"></div>
+=======
+  // Skeleton Loader Component (simple placeholders)
+  const CashFlowChartSkeleton = () => (
+  <section className="bg-white rounded-2xl shadow-sm p-6 col-span-1 animate-pulse">
+    {/* Header */}
+    <div className="flex justify-between items-center mb-6">
+      <div className="h-6 bg-gray-200 rounded w-32"></div>
+      <div className="h-8 bg-gray-200 rounded w-32"></div>
+    </div>
+    {/* Filter Buttons */}
+    <div className="flex items-center mb-6 space-x-2">
+      <div className="h-8 w-16 bg-gray-200 rounded-lg"></div>
+      <div className="h-8 w-20 bg-gray-200 rounded-lg"></div>
+      <div className="h-8 w-24 bg-gray-200 rounded-lg"></div>
+    </div>
+    {/* Legend */}
+    <div className="flex space-x-6 mb-6 text-sm">
+      <div className="flex items-center">
+        <span className="inline-block w-3 h-3 rounded-full bg-gray-300 mr-2"></span>
+        <span className="h-4 w-14 bg-gray-200 rounded"></span>
+      </div>
+      <div className="flex items-center">
+        <span className="inline-block w-3 h-3 rounded-full bg-gray-300 mr-2"></span>
+        <span className="h-4 w-16 bg-gray-200 rounded"></span>
+>>>>>>> c6dd8bf6cf4ce2c2af1781a428522de6a81b3d30
       </div>
     </div>
+    {/* Chart Area */}
+    <div className="h-56 bg-gray-200 rounded"></div>
+  </section>
   );
 
-  const SkeletonChartCard = () => (
-    <div className="bg-white rounded-2xl shadow-sm p-6 col-span-1 animate-pulse">
+  const IncomeBreakdownCardSkeleton = () => (
+    <section className="h-full bg-white rounded-2xl shadow-sm p-6 col-span-1 animate-pulse">
+      {/* Header */}
       <div className="flex justify-between items-center mb-6">
-        <div className="h-6 bg-gray-200 rounded w-1/3"></div>
-        <div className="h-8 bg-gray-200 rounded w-1/4"></div>
+        <div className="h-6 bg-gray-200 rounded w-24"></div>
+        <div className="h-8 bg-gray-200 rounded w-32"></div>
       </div>
-      <div className="h-48 bg-gray-200 rounded mb-6"></div> {/* Chart area */}
-      <div className="grid grid-cols-2 gap-3 text-sm">
-        <div className="h-4 bg-gray-200 rounded w-full"></div>
-        <div className="h-4 bg-gray-200 rounded w-full"></div>
-        <div className="h-4 bg-gray-200 rounded w-full"></div>
-        <div className="h-4 bg-gray-200 rounded w-full"></div>
+      {/* Total Income */}
+      <div className="text-center text-2xl font-bold text-gray-800 mb-6">
+        <div className="h-8 w-32 mx-auto bg-gray-200 rounded"></div>
       </div>
-    </div>
+      {/* Pie Chart Skeleton */}
+      <div className="flex justify-center mb-6">
+        <div className="h-48 w-48 bg-gray-200 rounded-full"></div>
+      </div>
+      {/* Legend Skeleton */}
+      <div className="grid grid-cols-2 gap-3 text-sm text-gray-700">
+        {[...Array(4)].map((_, i) => (
+          <div key={i} className="flex items-center">
+            <span className="w-3 h-3 rounded-full mr-2 flex-shrink-0 bg-gray-300"></span>
+            <span className="h-4 w-16 bg-gray-200 rounded"></span>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+
+  const TransactionListSkeleton = () => (
+    <section className="bg-white rounded-2xl shadow-sm p-6 col-span-1 animate-pulse">
+      {/* Header & Filters */}
+      <div className="flex justify-between items-start mb-6 flex-wrap gap-3">
+        <div className="h-6 bg-gray-200 rounded w-32"></div>
+        <div className="flex flex-wrap gap-2">
+          <div className="h-8 w-28 bg-gray-200 rounded-lg"></div>
+          <div className="h-8 w-20 bg-gray-200 rounded-lg"></div>
+          <div className="h-8 w-24 bg-gray-200 rounded-lg"></div>
+        </div>
+      </div>
+      {/* List Skeleton */}
+      <div className="space-y-4 max-h-96 overflow-y-auto">
+        {[...Array(2)].map((_, dateIdx) => (
+          <div key={dateIdx}>
+            <div className="flex justify-between items-center text-sm font-medium text-gray-600 mb-3 px-2">
+              <div className="h-4 w-32 bg-gray-200 rounded"></div>
+              <div className="h-4 w-16 bg-gray-200 rounded"></div>
+            </div>
+            <div className="space-y-3">
+              {[...Array(3)].map((_, trxIdx) => (
+                <div
+                  key={trxIdx}
+                  className="flex items-center p-3 rounded-lg"
+                >
+                  <div className="w-10 h-10 rounded-full bg-gray-200 mr-4 flex-shrink-0"></div>
+                  <div className="flex-grow flex justify-between items-center">
+                    <div>
+                      <div className="h-4 w-32 bg-gray-200 rounded mb-2"></div>
+                      <div className="h-3 w-20 bg-gray-200 rounded"></div>
+                    </div>
+                    <div className="text-right">
+                      <div className="h-4 w-16 bg-gray-200 rounded mb-2"></div>
+                      <div className="h-3 w-20 bg-gray-200 rounded"></div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+
+  const ExpenseBreakdownCardSkeleton = () => (
+    <section className="h-full bg-white rounded-2xl shadow-sm p-6 col-span-1 animate-pulse">
+      {/* Header */}
+      <div className="flex justify-between items-center mb-6">
+        <div className="h-6 bg-gray-200 rounded w-24"></div>
+        <div className="h-8 bg-gray-200 rounded w-32"></div>
+      </div>
+      {/* Total Expenses */}
+      <div className="text-center text-2xl font-bold text-gray-800 mb-6">
+        <div className="h-8 w-32 mx-auto bg-gray-200 rounded"></div>
+      </div>
+      {/* Pie Chart Skeleton */}
+      <div className="flex justify-center mb-6">
+        <div className="h-48 w-48 bg-gray-200 rounded-full"></div>
+      </div>
+      {/* Legend Skeleton */}
+      <div className="grid grid-cols-2 gap-3 text-sm text-gray-700">
+        {[...Array(4)].map((_, i) => (
+          <div key={i} className="flex items-center">
+            <span className="w-3 h-3 rounded-full mr-2 flex-shrink-0 bg-gray-300"></span>
+            <span className="h-4 w-16 bg-gray-200 rounded"></span>
+          </div>
+        ))}
+      </div>
+    </section>
   );
 
   const SkeletonHeader = () => (
@@ -244,7 +356,9 @@ const TransactionPage = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 p-6 text-gray-800">
+        {/* Skeleton Header */}
         <SkeletonHeader />
+<<<<<<< HEAD
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           <SkeletonChartCard />
           <SkeletonChartCard />
@@ -253,28 +367,57 @@ const TransactionPage = () => {
           <SkeletonCard />
           <SkeletonCard />
           <SkeletonCard />
+=======
+        {/* Main Grid Layout for 3x2 */}
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-8">
+          {/* Top-Left: Cash Flow Section */}
+          <div className="lg:col-span-3 min-w-0">
+            <CashFlowChartSkeleton />
+          </div>
+          {/* Top-Right: Income Section */}
+          <div className="lg:col-span-2 min-w-0">
+            <IncomeBreakdownCardSkeleton />
+          </div>
         </div>
+        {/* Main Grid Layout for 3x2 */}
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-8">
+          {/* Bottom-Left: Transactions List Section */}
+          <div className="lg:col-span-3 min-w-0">
+            <TransactionListSkeleton />
+          </div>
+          {/* Bottom-Right: Expenses Section */}
+          <div className="lg:col-span-2 min-w-0">
+            <ExpenseBreakdownCardSkeleton />
+          </div>
+>>>>>>> c6dd8bf6cf4ce2c2af1781a428522de6a81b3d30
+        </div>
+        {/* End of Main Grid */}
       </div>
     );
   }
-
   return (
     <div className="min-h-screen bg-gray-50 p-6 text-gray-800">
       {/* Header */}
       <TransactionHeader userName={userName} userEmail={userEmail} />
-      {/* Main Grid Layout for 2x2 */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Main Grid Layout for 3x2 */}
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-8">
         {/* Top-Left: Cash Flow Section */}
-        <CashFlowChart
-          cashFlowData={filteredCashFlowData}
-          cashFlowFilter={cashFlowFilter}
-          setCashFlowFilter={setCashFlowFilter}
-        />
-
+        <div className="lg:col-span-3 min-w-0">
+          <CashFlowChart
+            cashFlowData={filteredCashFlowData}
+            cashFlowFilter={cashFlowFilter}
+            setCashFlowFilter={setCashFlowFilter}
+          />
+        </div>
         {/* Top-Right: Income Section */}
-        <IncomeBreakdownCard incomePieData={incomePieData} />
-
+        <div className="lg:col-span-2 min-w-0">
+          <IncomeBreakdownCard incomePieData={incomePieData}  />
+        </div>
+      </div>
+      {/* Main Grid Layout for 3x2 */}
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-8">
         {/* Bottom-Left: Transactions List Section */}
+<<<<<<< HEAD
         <TransactionList
           allTransactions={allTransactions}
           accounts={accounts}
@@ -282,9 +425,20 @@ const TransactionPage = () => {
           onTransactionAdded={refetchAllTransactionData} // Pass the refetch function here
         />
 
+=======
+        <div className="lg:col-span-3 min-w-0">
+          <TransactionList
+            allTransactions={allTransactions}
+            accounts={accounts}
+            getAccountName={getAccountName} // Pass getAccountName to TransactionList
+          />
+        </div>
+>>>>>>> c6dd8bf6cf4ce2c2af1781a428522de6a81b3d30
         {/* Bottom-Right: Expenses Section */}
-        <ExpenseBreakdownCard expensesPieData={expensesPieData} />
-      </div>{" "}
+        <div className="lg:col-span-2 min-w-0">
+          <ExpenseBreakdownCard expensesPieData={expensesPieData}   />
+        </div>
+      </div>
       {/* End of Main Grid */}
     </div>
   );
