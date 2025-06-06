@@ -19,21 +19,9 @@ import {
 
 import Logo from "../../../assets/logo.svg";
 
-const Sidebar = ({ onToggleCollapse }) => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  // State baru untuk mengontrol modal logout
+const Sidebar = ({ isCollapsed, onToggleCollapse }) => {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const navigate = useNavigate();
-
-  const toggleCollapse = () => {
-    setIsCollapsed((prev) => {
-      const newState = !prev;
-      if (onToggleCollapse) {
-        onToggleCollapse(newState);
-      }
-      return newState;
-    });
-  };
 
   // Fungsi untuk menampilkan modal
   const handleShowLogoutModal = () => {
@@ -80,7 +68,7 @@ const Sidebar = ({ onToggleCollapse }) => {
           </span>
         </div>
         <button
-          onClick={toggleCollapse}
+          onClick={onToggleCollapse}
           className={`
             p-1 rounded-full bg-white text-primary
             absolute -right-3 top-1/2 -translate-y-1/2

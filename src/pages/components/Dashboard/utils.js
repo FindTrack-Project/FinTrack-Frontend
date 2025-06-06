@@ -4,24 +4,25 @@ export const formatCurrency = (amount) => {
 };
 
 export const getTransactionIcon = (description, type) => {
+  const lowerDesc = description ? description.toLowerCase() : "";
   if (type === "income") {
-    if (description.toLowerCase().includes("gaji")) return "💰";
-    if (description.toLowerCase().includes("project")) return "💼";
-    if (description.toLowerCase().includes("transfer")) return "💸";
-    if (description.toLowerCase().includes("hadiah")) return "🎁";
+    if (lowerDesc.includes("gaji")) return "💰";
+    if (lowerDesc.includes("project")) return "💼";
+    if (lowerDesc.includes("transfer")) return "💸";
+    if (lowerDesc.includes("hadiah")) return "🎁";
     return "💸";
   }
   if (type === "expense") {
-    if (description.toLowerCase().includes("makan")) return "🍽️";
-    if (description.toLowerCase().includes("transportasi")) return "🚗";
-    if (description.toLowerCase().includes("groceries")) return "🛒";
-    if (description.toLowerCase().includes("tagihan")) return "🧾";
-    if (description.toLowerCase().includes("bioskop")) return "🎬";
-    if (description.toLowerCase().includes("obat")) return "💊";
-    if (description.toLowerCase().includes("sosial")) return "🤝";
-    if (description.toLowerCase().includes("buku")) return "📚";
-    if (description.toLowerCase().includes("cicilan")) return "🏦";
-    if (description.toLowerCase().includes("transfer")) return "💸";
+    if (lowerDesc.includes("makan")) return "🍽️";
+    if (lowerDesc.includes("transportasi")) return "🚗";
+    if (lowerDesc.includes("groceries")) return "🛒";
+    if (lowerDesc.includes("tagihan")) return "🧾";
+    if (lowerDesc.includes("bioskop")) return "🎬";
+    if (lowerDesc.includes("obat")) return "💊";
+    if (lowerDesc.includes("sosial")) return "🤝";
+    if (lowerDesc.includes("buku")) return "📚";
+    if (lowerDesc.includes("cicilan")) return "🏦";
+    if (lowerDesc.includes("transfer")) return "💸";
     return "💳";
   }
   return "💡";

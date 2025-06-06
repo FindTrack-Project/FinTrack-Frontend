@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Api from "../../../config/apiConfig"; // Adjust path if necessary
+import Api from "../../../config/apiConfig";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import {
   DollarSign,
@@ -11,12 +11,10 @@ import {
   PlusCircle,
   Pen,
   Trash2,
-} from "lucide-react"; // Icons for pockets, edit/delete
+} from "lucide-react";
+import PocketModal from "./PocketModal";
 
-// Import utilities
-import { formatCurrency, calculatePieData } from "../transaction/utils"; // Reusing utils
-
-// Define colors for the Pie Chart - adjust to your design system
+// Define colors for the Pie Chart
 const PIE_COLORS = [
   "#3B82F6", // Blue
   "#10B981", // Green
@@ -36,14 +34,29 @@ const getAccountIconComponent = (account) => {
   )
     return Wallet;
   if (account.type === "Cash") return DollarSign;
-  // Fallback for specific names if type is generic or missing
   if (account.name.toLowerCase().includes("bca")) return CreditCard;
   if (account.name.toLowerCase().includes("bri")) return CreditCard;
   if (account.name.toLowerCase().includes("jago")) return CreditCard;
   if (account.name.toLowerCase().includes("shopeepay")) return Wallet;
-  if (account.name.toLowerCase().includes("main account")) return Wallet; // Example for default account
-  return Wallet; // Default generic icon
+  if (account.name.toLowerCase().includes("main account")) return Wallet;
+  return Wallet;
 };
+
+// Utility: Format currency
+const formatCurrency = (value) =>
+  "Rp" +
+  (value || 0)
+    .toLocaleString("id-ID", {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    });
+
+// Utility: Pie chart data for pockets
+const calculatePocketPieData = (accounts) =>
+  accounts.map((account) => ({
+    name: account.name,
+    value: account.currentBalance || 0,
+  }));
 
 const PocketsPage = () => {
   const [totalBalance, setTotalBalance] = useState(0);
@@ -52,6 +65,7 @@ const PocketsPage = () => {
   const [error, setError] = useState(null);
   const [userName, setUserName] = useState("Pengguna");
   const [userEmail, setUserEmail] = useState("email@example.com");
+  const [isPocketModalOpen, setIsPocketModalOpen] = useState(false);
 
   const navigate = useNavigate();
 
@@ -176,14 +190,13 @@ const PocketsPage = () => {
   };
 
   useEffect(() => {
-    refetchAllPocketData(); // Initial data fetch on component mount
-  }, [navigate]); // navigate is a dependency
+    refetchAllPocketData();
+  }, [navigate]);
 
   // Prepare data for the Ringkasan (Pie Chart)
-  // Use calculatePieData utility, mapping account.name to the chart legend
-  const pieChartData = calculatePieData(accounts, "currentBalance", "name");
+  const pieChartData = calculatePocketPieData(accounts);
 
-  // --- Skeleton Loaders (similar to TransactionPage) ---
+  // --- Skeleton Loaders ---
   const SkeletonHeader = () => (
     <header className="flex justify-between items-center mb-8 animate-pulse">
       <div>
@@ -198,41 +211,73 @@ const PocketsPage = () => {
   );
 
   const SkeletonBalanceCard = () => (
-    <div className="bg-white rounded-2xl shadow-sm p-6 col-span-1 animate-pulse">
-      <div className="h-6 bg-gray-200 rounded w-1/3 mb-4"></div>
+    <div className="bg-white rounded-2xl shadow-sm p-6 mb-6 animate-pulse">
+      <div className="flex justify-between items-center mb-4">
+        <div className="h-6 bg-gray-200 rounded w-1/3"></div>
+        <div className="h-8 bg-gray-200 rounded w-32"></div>
+      </div>
       <div className="h-10 bg-gray-200 rounded w-1/2 mb-6"></div>
       <div className="space-y-4">
-        <div className="h-10 bg-gray-200 rounded"></div>
-        <div className="h-10 bg-gray-200 rounded"></div>
-        <div className="h-10 bg-gray-200 rounded"></div>
+        {[...Array(3)].map((_, i) => (
+          <div key={i} className="flex items-center justify-between p-4 bg-gray-100 rounded-lg border border-gray-200">
+            <div className="flex items-center">
+              <div className="w-8 h-8 bg-gray-200 rounded-lg mr-3"></div>
+              <div className="h-4 w-24 bg-gray-200 rounded"></div>
+            </div>
+            <div className="flex items-center space-x-3">
+              <div className="h-4 w-16 bg-gray-200 rounded"></div>
+              <div className="h-6 w-6 bg-gray-200 rounded-full"></div>
+              <div className="h-6 w-6 bg-gray-200 rounded-full"></div>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
 
   const SkeletonChartCard = () => (
-    <div className="bg-white rounded-2xl shadow-sm p-6 col-span-1 animate-pulse">
-      <div className="flex justify-between items-center mb-6">
-        <div className="h-6 bg-gray-200 rounded w-1/3"></div>
-        <div className="h-8 bg-gray-200 rounded w-1/4"></div>
-      </div>
-      <div className="h-48 bg-gray-200 rounded mb-6"></div> {/* Chart area */}
-      <div className="grid grid-cols-2 gap-3 text-sm">
-        <div className="h-4 bg-gray-200 rounded w-full"></div>
-        <div className="h-4 bg-gray-200 rounded w-full"></div>
-        <div className="h-4 bg-gray-200 rounded w-full"></div>
-        <div className="h-4 bg-gray-200 rounded w-full"></div>
+    <div className="bg-white rounded-2xl shadow-sm p-6 animate-pulse">
+      <div className="h-6 bg-gray-200 rounded w-1/3 mb-6"></div>
+      <div className="flex flex-col items-center">
+        <div className="h-60 w-60 relative mb-6">
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <div className="w-40 h-40 bg-gray-200 rounded-full mb-2"></div>
+            <div className="h-4 w-16 bg-gray-200 rounded mb-1"></div>
+            <div className="h-6 w-24 bg-gray-200 rounded"></div>
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-x-6 gap-y-3 w-full max-w-xs">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="flex items-center">
+              <span className="inline-block w-3 h-3 rounded-full mr-2 bg-gray-200"></span>
+              <span className="h-4 w-16 bg-gray-200 rounded"></span>
+              <span className="h-3 w-8 bg-gray-200 rounded ml-auto"></span>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
+
+  // --- Handle new pocket modal ---
+  const handlePocketSaved = async (data) => {
+    // Kirim data ke API, lalu refresh data pocket
+    await Api.post("/accounts", data); // atau Api.put untuk edit
+    await refetchAllPocketData();
+  };
 
   // --- Render based on loading and error state ---
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 p-6 font-sans text-gray-800">
         <SkeletonHeader />
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <SkeletonBalanceCard />
-          <SkeletonChartCard />
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+          <div className="lg:col-span-3 min-w-0">
+            <SkeletonBalanceCard />
+          </div>
+          <div className="lg:col-span-2 min-w-0">
+            <SkeletonChartCard />
+          </div>
         </div>
       </div>
     );
@@ -262,12 +307,12 @@ const PocketsPage = () => {
         <div>
           <h1 className="text-3xl font-semibold">Pockets</h1>
           <p className="text-gray-500 text-sm mt-1">
-            Lorem ipsum dolor sit amet
+            View, manage, and track all your transactions here.
           </p>
         </div>
         <div className="flex items-center space-x-4">
           <div className="p-2 bg-white rounded-full shadow-sm text-gray-600 cursor-pointer">
-            {/* Bell Icon - Placeholder SVG or Lucide */}
+            {/* Bell Icon */}
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-6 w-6"
@@ -285,29 +330,32 @@ const PocketsPage = () => {
           </div>
           <div className="flex items-center space-x-3 bg-white p-2 rounded-full shadow-sm pr-4 cursor-pointer">
             <img
-              src="https://via.placeholder.com/40"
+              src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face"
               alt="Profile"
               className="w-10 h-10 rounded-full object-cover border-2 border-gray-200"
             />
-            <div>
-              <span className="font-semibold text-sm">{userName}</span>
-              <p className="text-xs text-gray-500">{userEmail}</p>
+            <div className="text-right">
+              <p className="font-semibold text-sm">{userName}</p>
+              <p className="text-gray-500 text-xs">{userEmail}</p>
             </div>
           </div>
         </div>
       </header>
 
       {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
         {/* Left Column: Total Balance & Pocket List */}
-        <div className="col-span-1">
+        <div className="lg:col-span-3 min-w-0">
           {/* Total Balance Card */}
           <div className="bg-white rounded-2xl shadow-sm p-6 mb-6">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-lg font-semibold text-gray-800">
                 Total Balance
               </h2>
-              <button className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors flex items-center gap-1">
+              <button
+                onClick={() => setIsPocketModalOpen(true)}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors flex items-center gap-1"
+              >
                 <PlusCircle size={16} /> Tambah pocket baru
               </button>
             </div>
@@ -322,7 +370,7 @@ const PocketsPage = () => {
                   Tidak ada pocket ditemukan.
                   <button
                     onClick={() => {
-                      /* Open add pocket modal */
+                      setIsPocketModalOpen(true);
                     }}
                     className="text-blue-500 ml-1"
                   >
@@ -331,8 +379,8 @@ const PocketsPage = () => {
                 </div>
               ) : (
                 accounts.map((account, index) => {
-                  const IconComponent = getAccountIconComponent(account); // Get dynamic icon
-                  const color = PIE_COLORS[index % PIE_COLORS.length]; // Assign color from PIE_COLORS
+                  const IconComponent = getAccountIconComponent(account);
+                  const color = PIE_COLORS[index % PIE_COLORS.length];
 
                   return (
                     <div
@@ -363,14 +411,14 @@ const PocketsPage = () => {
                       </div>
                     </div>
                   );
-                })
-              )}
+                }))
+              }
             </div>
           </div>
         </div>
 
         {/* Right Column: Ringkasan (Summary Pie Chart) */}
-        <div className="col-span-1">
+        <div className="lg:col-span-2 min-w-0">
           <div className="bg-white rounded-2xl shadow-sm p-6">
             <h2 className="text-lg font-semibold text-gray-800 mb-6">
               Ringkasan
@@ -381,48 +429,74 @@ const PocketsPage = () => {
               </div>
             ) : (
               <div className="flex flex-col items-center">
-                <ResponsiveContainer width="100%" height={250}>
-                  <PieChart>
-                    <Pie
-                      data={pieChartData}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={80}
-                      outerRadius={100}
-                      fill="#8884d8"
-                      paddingAngle={2}
-                      dataKey="value"
-                      cornerRadius={5}
-                    >
-                      {pieChartData.map((entry, index) => (
-                        <Cell
-                          key={`cell-${index}`}
-                          fill={PIE_COLORS[index % PIE_COLORS.length]}
-                        />
-                      ))}
-                    </Pie>
-                    <Tooltip formatter={(value) => formatCurrency(value)} />
-                  </PieChart>
-                </ResponsiveContainer>
-                <div className="grid grid-cols-2 gap-3 text-sm text-gray-700 mt-4">
-                  {pieChartData.map((entry, index) => (
-                    <div key={index} className="flex items-center">
-                      <span
-                        className="w-3 h-3 rounded-full mr-2"
-                        style={{
-                          backgroundColor:
-                            PIE_COLORS[index % PIE_COLORS.length],
-                        }}
-                      ></span>
-                      <span>{entry.name}</span>
-                    </div>
-                  ))}
+                <div className="h-60 w-60 relative mb-6">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={pieChartData}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={80}
+                        outerRadius={100}
+                        fill="#8884d8"
+                        paddingAngle={2}
+                        dataKey="value"
+                        cornerRadius={5}
+                        isAnimationActive={true}
+                      >
+                        {pieChartData.map((entry, index) => (
+                          <Cell
+                            key={`cell-${index}`}
+                            fill={PIE_COLORS[index % PIE_COLORS.length]}
+                          />
+                        ))}
+                      </Pie>
+                      <Tooltip
+                        formatter={(value, name) => [formatCurrency(value), "Saldo"]}
+                        contentStyle={{ borderRadius: 8, fontSize: 14 }}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                  {/* Tambahkan saldo total di tengah */}
+                  <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                    <span className="text-lg font-semibold text-gray-700">Total</span>
+                    <span className="text-xl font-bold text-gray-900">{formatCurrency(totalBalance)}</span>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-x-6 gap-y-3 w-full max-w-xs">
+                  {pieChartData
+                    .sort((a, b) => b.value - a.value)
+                    .map((entry, idx) => (
+                      <div key={entry.name} className="flex items-center">
+                        <span
+                          className="inline-block w-3 h-3 rounded-full mr-2"
+                          style={{
+                            backgroundColor: PIE_COLORS[idx % PIE_COLORS.length],
+                          }}
+                        ></span>
+                        <span className="text-sm font-medium text-gray-700 truncate">
+                          {entry.name}
+                        </span>
+                        <span className="text-xs text-gray-500 ml-auto">
+                          {totalBalance > 0
+                            ? ((entry.value / totalBalance) * 100).toFixed(1) + "%"
+                            : "0%"}
+                        </span>
+                      </div>
+                    ))}
                 </div>
               </div>
             )}
           </div>
         </div>
       </div>
+
+      {/* Pocket Modal */}
+      <PocketModal
+        isOpen={isPocketModalOpen}
+        onClose={() => setIsPocketModalOpen(false)}
+        onPocketSaved={handlePocketSaved}
+      />
     </div>
   );
 };

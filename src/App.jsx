@@ -31,7 +31,7 @@ function DashboardLayout() {
       {/* Sidebar - melewatkan state dan setter ke Sidebar */}
       <Sidebar
         onToggleCollapse={toggleSidebar}
-        isCollapsed={!isSidebarOpen}
+        isCollapsed={isSidebarOpen}
       />
 
       {/* Konten utama halaman */}
@@ -42,7 +42,6 @@ function DashboardLayout() {
           min-h-screen overflow-auto
         `}
       >
-        {/* Outlet untuk merender rute anak */}
         <Outlet context={{ isSidebarOpen, toggleSidebar }} />
       </div>
     </div>
