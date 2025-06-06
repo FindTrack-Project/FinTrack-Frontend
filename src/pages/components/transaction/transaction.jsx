@@ -680,9 +680,9 @@ const Transaction = () => {
           </button>
           <div className="flex items-center space-x-3 bg-gray-50 p-2 rounded-lg shadow-inner border border-gray-200">
             <img
-              src="https://api.dicebear.com/7.x/initials/svg?seed=AN&backgroundColor=a855f7,8b5cf6,ec4899&backgroundType=circle&fontFamily=system-ui"
-              alt="User  Avatar"
-              className="w-10 h-10 rounded-full ring-2 ring-blue-300"
+              src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face"
+              alt="Profile"
+              className="w-10 h-10 rounded-full object-cover"
             />
             <div>
               <div className="text-base font-semibold text-gray-900">

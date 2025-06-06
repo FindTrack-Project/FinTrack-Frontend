@@ -16,9 +16,7 @@ import {
   BanknoteArrowUp,
   BanknoteArrowDown,
 } from "lucide-react";
-// Memperbaiki jalur impor untuk logo.svg
-// Asumsi: Sidebar.jsx berada di 'src/pages/components/Sidebar/'
-// dan logo.svg berada di 'src/assets/'
+
 import Logo from "../../../assets/logo.svg";
 
 const Sidebar = ({ onToggleCollapse }) => {
@@ -43,11 +41,11 @@ const Sidebar = ({ onToggleCollapse }) => {
   return (
     <div
       className={`
-        flex flex-col h-screen bg-primary shadow-lg
-        transition-all duration-300 ease-in-out
-        ${isCollapsed ? "w-17" : "w-64"}
-        fixed top-0 left-0 z-40
-      `}
+          flex flex-col h-screen bg-primary shadow-lg
+          transition-all duration-300 ease-in-out
+          ${isCollapsed ? "w-17" : "w-64"}
+          fixed top-0 left-0 z-40
+        `}
     >
       {/* Icon Logo < */}
       <div className="flex items-center min-h-[48px] justify-between p-4 border-b border-secondary relative">
@@ -68,12 +66,12 @@ const Sidebar = ({ onToggleCollapse }) => {
         <button
           onClick={toggleCollapse}
           className={`
-            p-1 rounded-full bg-white text-primary
-            absolute -right-3 top-1/2 -translate-y-1/2
-            border border-secondary cursor-pointer
-            transition-all duration-200 hover:bg-gray-100
-            ${isCollapsed ? "rotate-180" : ""}
-          `}
+              p-1 rounded-full bg-white text-primary
+              absolute -right-3 top-1/2 -translate-y-1/2
+              border border-secondary cursor-pointer
+              transition-all duration-200 hover:bg-gray-100
+              ${isCollapsed ? "rotate-180" : ""}
+            `}
           aria-label={isCollapsed ? "Perluas Sidebar" : "Ciutkan Sidebar"}
         >
           <ChevronLast size={18} />
@@ -120,70 +118,6 @@ const Sidebar = ({ onToggleCollapse }) => {
             Transaction
           </span>
         </NavLink>
-
-        {/* Service (Dropdown Example)
-        <div className="relative">
-          <button
-            onClick={toggleService}
-            className="flex items-center min-h-[48px] w-full p-2 rounded-lg text-white transition-colors duration-200 group cursor-pointer"
-            aria-expanded={isServiceOpen}
-            aria-controls="service-submenu"
-          >
-            <CreditCard size={20} className="mr-3 flex-shrink-0" />
-            <span
-              className={`font-medium whitespace-nowrap overflow-hidden ${
-                isCollapsed ? "hidden" : ""
-              }`}
-            >
-              Service
-            </span>
-            <span className={`ml-auto ${isCollapsed ? "hidden" : ""}`}>
-              {isServiceOpen ? (
-                <ChevronDown size={16} />
-              ) : (
-                <ChevronRight size={16} />
-              )}
-            </span>
-          </button>
-          {!isCollapsed && isServiceOpen && (
-            <div
-              id="service-submenu"
-              className="pl-8 pt-1 pb-1 space-y-1 overflow-hidden"
-            >
-              <NavLink
-                to="/service/credit"
-                className={({ isActive }) =>
-                  `flex items-center min-h-[48px] p-2 rounded-lg text-white transition-colors duration-200 text-sm ${
-                    isActive ? "bg-secondary" : "hover:bg-[var(--color-hov)]"
-                  }`
-                }
-              >
-                <BanknoteArrowUp size={16} className="mr-2 flex-shrink-0" />
-                <span className="whitespace-nowrap overflow-hidden">
-                  Income
-                </span>
-              </NavLink>
-
-              <NavLink
-                to="/service/bills"
-                className={({ isActive }) =>
-                  `flex items-center min-h-[48px] p-2 rounded-lg text-white transition-colors duration-200 text-sm relative ${
-                    isActive ? "bg-secondary" : "hover:bg-[var(--color-hov)]"
-                  }`
-                }
-              >
-                <BanknoteArrowDown size={16} className="mr-2 flex-shrink-0" />
-                <span className="whitespace-nowrap overflow-hidden">
-                  Expense
-                </span>
-                <span className="ml-auto bg-blue-500 text-white text-xs font-semibold px-1.5 py-0.5 rounded-full whitespace-nowrap overflow-hidden">
-                  2
-                </span>
-              </NavLink>
-            </div>
-          )}
-        </div>
-        */}
 
         {/* Pocket */}
         <NavLink

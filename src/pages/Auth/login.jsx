@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Api from "../../config/apiConfig";
+import Api from "../../config/apiConfig"; // Assuming this path is correct
 
 import mataTutup from "../../assets/mataTutup.svg";
 import mataBuka from "../../assets/mataBuka.svg";
@@ -14,22 +14,10 @@ export const Login = () => {
   const [isClosed, setIsClosed] = useState(true);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const navigate = useNavigate();
 
   const toggleEye = () => setIsClosed(!isClosed);
-
-  useEffect(() => {
-    let timer;
-    if (showSuccessModal) {
-      timer = setTimeout(() => {
-        setShowSuccessModal(false);
-        navigate("/dashboard");
-      }, 1000);
-    }
-    return () => clearTimeout(timer);
-  }, [showSuccessModal, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -41,13 +29,61 @@ export const Login = () => {
         email,
         password,
       });
-      localStorage.setItem("userToken", response.data.token);
-      setShowSuccessModal(true);
+
+      console.log("Login API Response:", response);
+
+      // Pastikan response memiliki token
+      if (response && response.token) {
+        // Simpan token dan data user
+        localStorage.setItem("jwt_token", response.token);
+
+        if (response.userId) {
+          localStorage.setItem("user_id", response.userId);
+          console.log("UserID stored:", response.userId);
+        } else {
+          console.warn("UserID not found in login response!");
+        }
+
+        if (response.name) {
+          localStorage.setItem("user_name", response.name);
+        }
+
+        // Langsung navigate tanpa modal untuk debugging
+        console.log("Navigating to dashboard...");
+        navigate("/dashboard", { replace: true });
+      } else {
+        setError("Token tidak ditemukan dalam respons. Silakan coba lagi.");
+      }
     } catch (err) {
-      setError(
-        err.response?.data?.message ||
-          "Masuk gagal. Periksa email dan kata sandi Anda."
-      );
+      console.error("Login error:", err);
+
+      let errorMessage = "Terjadi kesalahan saat masuk. Silakan coba lagi.";
+      if (err.message) {
+        errorMessage = err.message;
+      }
+
+      // Sesuaikan pesan error untuk user
+      if (errorMessage.toLowerCase().includes("invalid credentials")) {
+        errorMessage = "Email atau kata sandi salah. Silakan coba lagi.";
+      } else if (
+        errorMessage.toLowerCase().includes("server error") ||
+        errorMessage.toLowerCase().includes("api error")
+      ) {
+        errorMessage =
+          "Terjadi masalah server. Silakan coba beberapa saat lagi.";
+      } else if (
+        errorMessage.toLowerCase().includes("koneksi atau kebijakan keamanan")
+      ) {
+        errorMessage =
+          "Tidak dapat terhubung ke server. Periksa koneksi internet Anda atau masalah CORS.";
+      } else if (
+        errorMessage.toLowerCase().includes("failed to parse response")
+      ) {
+        errorMessage =
+          "Gagal memproses respons dari server. Mungkin masalah CORS/jaringan.";
+      }
+
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -172,37 +208,6 @@ export const Login = () => {
           />
         </div>
       </div>
-
-      {showSuccessModal && (
-        <div className="fixed inset-0 bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4 text-center">
-            <div className="mb-4">
-              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
-                <svg
-                  className="h-6 w-6 text-green-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                Masuk Berhasil! 🎉
-              </h3>
-              <p className="text-gray-600 mb-6">
-                Selamat datang kembali! Anda akan diarahkan ke dashboard dalam
-                beberapa detik.
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
