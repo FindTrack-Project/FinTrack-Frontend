@@ -26,13 +26,13 @@ const PocketsSection = ({ accounts, formatCurrency }) => {
       iconBgColor = "#10B981"; // Hijau
     } else if (
       nameLower.includes("bni") ||
-      nameLower.includes("bri") ||
+      nameLower.includes("BRI") ||
       nameLower.includes("mandiri") ||
       typeLower.includes("bank")
     ) {
       IconComponent = Landmark; // Ikon bank
       iconBgColor = "#3B82F6"; // Biru
-    } else if (nameLower.includes("jago")) {
+    } else if (nameLower.includes("jago") || nameLower.includes("seabank")) {
       IconComponent = PiggyBank; // Ikon umum untuk Jago jika tidak ada yang lebih spesifik
       iconBgColor = "#F59E0B"; // Oranye/kuning
     } else if (

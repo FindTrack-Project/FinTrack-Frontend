@@ -1,6 +1,5 @@
-import React from "react";
 import { Line } from "react-chartjs-2";
-import { lineChartOptions } from "./constants"; // Import options
+import { lineChartOptions } from "./constants";
 
 const BalanceOverview = ({
   totalBalance,
@@ -11,6 +10,8 @@ const BalanceOverview = ({
   months,
   balanceOverTime,
   formatCurrency,
+  onTimeRangeChange, // Prop baru untuk meneruskan perubahan ke parent
+  selectedTimeRange, // Prop baru untuk mengontrol nilai dropdown
 }) => {
   const lineChartData = {
     labels: months,
@@ -33,14 +34,18 @@ const BalanceOverview = ({
   };
 
   return (
-    <div className="bg-white border border-gray-200 p-6 rounded-xl  shadow-sm">
+    <div className="bg-white border border-gray-200 p-6 rounded-xl shadow-sm">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-lg font-semibold text-gray-800">Balance</h2>
         <div className="relative">
-          <select className="appearance-none bg-white border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
-            <option>Last 6 month</option>
-            <option>Last 3 month</option>
-            <option>Last 12 month</option>
+          <select
+            className="appearance-none bg-white border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+            value={selectedTimeRange} // Kontrol nilai dropdown dari prop
+            onChange={(e) => onTimeRangeChange(e.target.value)} // Panggil prop saat nilai berubah
+          >
+            <option value="6_months">Last 6 month</option>
+            <option value="3_months">Last 3 month</option>
+            <option value="12_months">Last 12 month</option>
           </select>
           <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
             <svg
