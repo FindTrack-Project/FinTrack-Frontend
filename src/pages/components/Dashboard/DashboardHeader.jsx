@@ -22,9 +22,12 @@ const DashboardHeader = ({
             <Menu size={20} className="text-gray-600" /> // Ikon Menu saat sidebar tertutup
           )}
         </button>
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">
-          Dashboard
-        </h1>
+        <div>
+          <h1 className="text-3xl text-gray-900 font-bold">Dashboard</h1>
+          <p className="text-gray-500 text-sm mt-1">
+            Welcome back, {userName}!
+          </p>
+        </div>
       </div>
 
       <div className="flex items-center gap-4">

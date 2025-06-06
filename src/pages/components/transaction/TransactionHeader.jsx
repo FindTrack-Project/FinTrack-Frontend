@@ -11,7 +11,7 @@ const TransactionHeader = ({
   return (
     <header className="flex justify-between items-center mb-8">
       <div>
-        <h1 className="text-3xl font-semibold">Transactions</h1>
+        <h1 className="text-3xl font-bold">Transactions</h1>
         <p className="text-gray-500 text-sm mt-1">Welcome back, {userName}!</p>
       </div>
       <div className="flex items-center space-x-4">

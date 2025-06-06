@@ -1,9 +1,13 @@
-// src/pages/components/transaction/utils.js
-
-// Helper to format currency
 export const formatCurrency = (amount) => {
-  if (typeof amount !== "number") return `Rp0`;
-  return `Rp${amount.toLocaleString("id-ID")}`;
+  if (typeof amount !== "number" || isNaN(amount)) {
+    return "Rp0"; // Atau string kosong, tergantung kebutuhan
+  }
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    minimumFractionDigits: 0, // Tidak menampilkan desimal jika bulat
+    maximumFractionDigits: 2, // Maksimal 2 desimal jika ada
+  }).format(amount);
 };
 
 // Helper to get transaction icon based on description or type
@@ -62,6 +66,15 @@ export const getAccountName = (accountId, accounts) => {
   return account ? account.name : "Akun Tidak Ditemukan";
 };
 
+// --- Fungsi Helper BARU untuk Dropdown ---
+export const getUniqueCategories = (expenses) => {
+  return [...new Set(expenses.map((exp) => exp.category).filter(Boolean))];
+};
+
+export const getUniqueSources = (incomes) => {
+  return [...new Set(incomes.map((inc) => inc.source).filter(Boolean))];
+};
+
 // Function to calculate cash flow data for line chart
 export const calculateCashFlowData = (incomes, expenses) => {
   const monthlyDataMap = new Map();
@@ -89,9 +102,9 @@ export const calculateCashFlowData = (incomes, expenses) => {
 
   expenses.forEach((item) => {
     const date = new Date(item.date);
-    const monthYearKey = `${date.getFullYear()}-${date.getMonth()}`; // Using full year and month for consistent keys
-    if (monthlyDataMap.has(monthYearKey)) {
-      monthlyDataMap.get(monthYearKey).expenses += item.amount;
+    const monthKey = `${date.getFullYear()}-${date.getMonth()}`; // Using full year and month for consistent keys
+    if (monthlyDataMap.has(monthKey)) {
+      monthlyDataMap.get(monthKey).expenses += item.amount;
     }
   });
 

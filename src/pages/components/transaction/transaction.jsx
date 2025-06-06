@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from "react";
+// src/pages/components/transaction/transaction.jsx
+
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Api from "../../../config/apiConfig"; // Adjust path if necessary
 
@@ -7,7 +9,7 @@ import TransactionHeader from "./TransactionHeader";
 import CashFlowChart from "./CashFlowChart";
 import IncomeBreakdownCard from "./IncomeBreakdownCard";
 import ExpenseBreakdownCard from "./ExpenseBreakdownCard";
-import TransactionList from "./TransactionList";
+import TransactionList from "./TransactionList"; // Assuming TransactionList is the component for the list section
 
 // Import utilities and data
 import {
@@ -31,29 +33,111 @@ const TransactionPage = () => {
 
   const getAccountName = (accountId) => getAccountNameUtil(accountId, accounts);
 
-  useEffect(() => {
-    const fetchTransactionData = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        let token = null;
-        let userId = null;
+  // Define the function to refetch all data (this will be passed as onTransactionAdded)
+  const refetchAllTransactionData = async () => {
+    setLoading(true); // Show loading state again
+    setError(null); // Clear any previous errors
+    try {
+      let token = null;
+      let userId = null;
 
+      if (typeof window !== "undefined") {
+        token = localStorage.getItem("jwt_token");
+        userId = localStorage.getItem("user_id");
+      }
+
+      if (!token || !userId) {
+        setError(
+          "Sesi Anda tidak valid atau kedaluwarsa. Silakan login kembali."
+        );
         if (typeof window !== "undefined") {
-          token = localStorage.getItem("jwt_token");
-          userId = localStorage.getItem("user_id");
-          const cachedUserName = localStorage.getItem("user_name");
-          const cachedUserEmail = localStorage.getItem("user_email");
-          if (cachedUserName && cachedUserEmail) {
-            setUserName(cachedUserName);
-            setUserEmail(cachedUserEmail);
-          }
+          localStorage.removeItem("jwt_token");
+          localStorage.removeItem("user_id");
+          localStorage.removeItem("user_name");
+          localStorage.removeItem("user_email");
         }
+        setTimeout(() => navigate("/login"), 1500);
+        return;
+      }
 
-        if (!token || !userId) {
-          setError(
-            "Sesi Anda tidak valid atau kedaluwarsa. Silakan login kembali."
+      const [expensesResult, incomesResult, accountsResult, userResult] =
+        await Promise.allSettled([
+          Api.get(`/expenses`),
+          Api.get(`/incomes`),
+          Api.get(`/accounts`),
+          Api.get(`/users/${userId}`),
+        ]);
+
+      if (expensesResult.status === "fulfilled") {
+        setExpenses(expensesResult.value.expenses || []);
+      } else {
+        console.error("Error fetching expenses:", expensesResult.reason);
+      }
+
+      if (incomesResult.status === "fulfilled") {
+        setIncomes(incomesResult.value.incomes || []);
+      } else {
+        console.error("Error fetching incomes:", incomesResult.reason);
+      }
+
+      if (accountsResult.status === "fulfilled") {
+        setAccounts(accountsResult.value.accounts || []);
+      } else {
+        console.error("Error fetching accounts:", accountsResult.reason);
+      }
+
+      if (
+        userResult.status === "fulfilled" &&
+        userResult.value &&
+        userResult.value.user
+      ) {
+        setUserName(userResult.value.user.name || "Pengguna");
+        setUserEmail(userResult.value.user.email || "email@example.com");
+        if (typeof window !== "undefined") {
+          localStorage.setItem(
+            "user_name",
+            userResult.value.user.name || "Pengguna"
           );
+          localStorage.setItem(
+            "user_email",
+            userResult.value.user.email || "email@example.com"
+          );
+        }
+      } else {
+        const reason = userResult.reason
+          ? userResult.reason instanceof Error
+            ? userResult.reason.message
+            : String(userResult.reason)
+          : userResult.status === "fulfilled" && !userResult.value?.user
+          ? "Fulfilled but missing 'user' object in value"
+          : "Unknown reason (likely rejected)";
+
+        console.error(
+          "Error fetching user profile (Rejected or Missing Data):",
+          reason
+        );
+        if (typeof window !== "undefined") {
+          setUserName(localStorage.getItem("user_name") || "Pengguna");
+          setUserEmail(
+            localStorage.getItem("user_email") || "email@example.com"
+          );
+        }
+      }
+    } catch (err) {
+      console.error(
+        "Failed to fetch data in TransactionPage (main catch):",
+        err
+      );
+      let errorMessage = "Gagal memuat data transaksi.";
+      if (err.message) {
+        errorMessage = err.message;
+        if (
+          errorMessage.includes("401") ||
+          errorMessage.toLowerCase().includes("unauthorized") ||
+          errorMessage.toLowerCase().includes("expired token")
+        ) {
+          errorMessage =
+            "Sesi Anda tidak valid atau kedaluwarsa. Silakan login kembali.";
           if (typeof window !== "undefined") {
             localStorage.removeItem("jwt_token");
             localStorage.removeItem("user_id");
@@ -61,117 +145,31 @@ const TransactionPage = () => {
             localStorage.removeItem("user_email");
           }
           setTimeout(() => navigate("/login"), 1500);
-          return;
-        }
-
-        const [expensesResult, incomesResult, accountsResult, userResult] =
-          await Promise.allSettled([
-            Api.get(`/expenses`),
-            Api.get(`/incomes`),
-            Api.get(`/accounts`),
-            Api.get(`/users/${userId}`),
-          ]);
-
-        if (expensesResult.status === "fulfilled") {
-          setExpenses(expensesResult.value.expenses || []);
-        } else {
-          console.error("Error fetching expenses:", expensesResult.reason);
-        }
-
-        if (incomesResult.status === "fulfilled") {
-          setIncomes(incomesResult.value.incomes || []);
-        } else {
-          console.error("Error fetching incomes:", incomesResult.reason);
-        }
-
-        if (accountsResult.status === "fulfilled") {
-          setAccounts(accountsResult.value.accounts || []);
-        } else {
-          console.error("Error fetching accounts:", accountsResult.reason);
-        }
-
-        if (
-          userResult.status === "fulfilled" &&
-          userResult.value &&
-          userResult.value.user
+        } else if (
+          errorMessage.toLowerCase().includes("server error") ||
+          errorMessage.toLowerCase().includes("api error") ||
+          errorMessage.toLowerCase().includes("failed to fetch")
         ) {
-          const fetchedUserName = userResult.value.user.name || "Pengguna";
-          const fetchedUserEmail =
-            userResult.value.user.email || "email@example.com";
-
-          setUserName(fetchedUserName);
-          setUserEmail(fetchedUserEmail);
-
-          if (typeof window !== "undefined") {
-            localStorage.setItem("user_name", fetchedUserName);
-            localStorage.setItem("user_email", fetchedUserEmail);
-          }
-        } else {
-          const reason = userResult.reason
-            ? userResult.reason instanceof Error
-              ? userResult.reason.message
-              : String(userResult.reason)
-            : userResult.status === "fulfilled" && !userResult.value?.user
-            ? "Fulfilled but missing 'user' object in value"
-            : "Unknown reason (likely rejected)";
-
-          console.error(
-            "Error fetching user profile (Rejected or Missing Data):",
-            reason
-          );
-          if (typeof window !== "undefined") {
-            setUserName(localStorage.getItem("user_name") || "Pengguna");
-            setUserEmail(
-              localStorage.getItem("user_email") || "email@example.com"
-            );
-          }
+          errorMessage =
+            "Terjadi masalah server atau koneksi. Silakan coba lagi nanti.";
+        } else if (
+          errorMessage
+            .toLowerCase()
+            .includes("cannot read properties of undefined")
+        ) {
+          errorMessage =
+            "Terjadi kesalahan data. Beberapa informasi mungkin tidak tersedia.";
         }
-      } catch (err) {
-        console.error(
-          "Failed to fetch data in TransactionPage (main catch):",
-          err
-        );
-        let errorMessage = "Gagal memuat data transaksi.";
-        if (err.message) {
-          errorMessage = err.message;
-          if (
-            errorMessage.includes("401") ||
-            errorMessage.toLowerCase().includes("unauthorized") ||
-            errorMessage.toLowerCase().includes("expired token")
-          ) {
-            errorMessage =
-              "Sesi Anda tidak valid atau kedaluwarsa. Silakan login kembali.";
-            if (typeof window !== "undefined") {
-              localStorage.removeItem("jwt_token");
-              localStorage.removeItem("user_id");
-              localStorage.removeItem("user_name");
-              localStorage.removeItem("user_email");
-            }
-            setTimeout(() => navigate("/login"), 1500);
-          } else if (
-            errorMessage.toLowerCase().includes("server error") ||
-            errorMessage.toLowerCase().includes("api error") ||
-            errorMessage.toLowerCase().includes("failed to fetch")
-          ) {
-            errorMessage =
-              "Terjadi masalah server atau koneksi. Silakan coba lagi nanti.";
-          } else if (
-            errorMessage
-              .toLowerCase()
-              .includes("cannot read properties of undefined")
-          ) {
-            errorMessage =
-              "Terjadi kesalahan data. Beberapa informasi mungkin tidak tersedia.";
-          }
-        }
-        setError(errorMessage);
-      } finally {
-        setLoading(false);
       }
-    };
+      setError(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchTransactionData();
-  }, [navigate]);
+  useEffect(() => {
+    refetchAllTransactionData(); // Initial data fetch on component mount
+  }, [navigate]); // navigate is a dependency, ensure it's stable (from useNavigate)
 
   // Data processing for charts and list
   const filteredCashFlowData = calculateCashFlowData(incomes, expenses);
@@ -179,14 +177,12 @@ const TransactionPage = () => {
   const incomePieData = calculatePieData(incomes, "amount", "source");
   const expensesPieData = calculatePieData(expenses, "amount", "category");
 
-  // Combine and sort all transactions for the list
   const allTransactions = [
     ...incomes.map((i) => ({ ...i, type: "Pemasukan" })),
     ...expenses.map((e) => ({ ...e, type: "Pengeluaran" })),
   ];
 
   if (error) {
-    // Show error state before loading
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-red-50 text-red-700 p-4 rounded-lg m-4 shadow-md">
         <p className="text-lg font-semibold mb-2">Terjadi Kesalahan!</p>
@@ -203,7 +199,7 @@ const TransactionPage = () => {
     );
   }
 
-  // Skeleton Loader Component (simple placeholders)
+  // Skeleton Loaders
   const SkeletonCard = () => (
     <div className="bg-white rounded-2xl shadow-sm p-6 col-span-1 animate-pulse">
       <div className="h-6 bg-gray-200 rounded w-3/4 mb-4"></div>
@@ -250,13 +246,13 @@ const TransactionPage = () => {
       <div className="min-h-screen bg-gray-50 p-6 text-gray-800">
         <SkeletonHeader />
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <SkeletonChartCard /> {/* For Balance */}
-          <SkeletonChartCard /> {/* For Expenses Pie Chart */}
+          <SkeletonChartCard />
+          <SkeletonChartCard />
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          <SkeletonCard /> {/* For Pockets */}
-          <SkeletonCard /> {/* For Saving Goals */}
-          <SkeletonCard /> {/* For Transactions List */}
+          <SkeletonCard />
+          <SkeletonCard />
+          <SkeletonCard />
         </div>
       </div>
     );
@@ -282,7 +278,8 @@ const TransactionPage = () => {
         <TransactionList
           allTransactions={allTransactions}
           accounts={accounts}
-          getAccountName={getAccountName} // Pass getAccountName to TransactionList
+          getAccountName={getAccountName}
+          onTransactionAdded={refetchAllTransactionData} // Pass the refetch function here
         />
 
         {/* Bottom-Right: Expenses Section */}
