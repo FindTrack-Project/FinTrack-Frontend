@@ -7,12 +7,34 @@ import {
   HomeIcon,
   ArrowRightLeft,
   TrendingUp,
+  Book,
+  GraduationCap,
+  Car,
 } from "lucide-react";
 import { PIE_COLORS } from "./constants";
 
 const SavingGoalsSection = ({ savingGoals, formatCurrency }) => {
+  // Fungsi helper untuk memilih ikon yang lebih spesifik
+  const getGoalIcon = (goalName) => {
+    const nameLower = goalName.toLowerCase();
+    if (nameLower.includes("laptop") || nameLower.includes("komputer"))
+      return Laptop;
+    if (nameLower.includes("liburan") || nameLower.includes("travel"))
+      return Plane;
+    if (nameLower.includes("haji") || nameLower.includes("umroh")) return Plane; // Atau ikon yang lebih spesifik jika ada
+    if (nameLower.includes("sekolah") || nameLower.includes("pendidikan"))
+      return GraduationCap;
+    if (nameLower.includes("rumah") || nameLower.includes("properti"))
+      return HomeIcon;
+    if (nameLower.includes("mobil") || nameLower.includes("kendaraan"))
+      return Car;
+    if (nameLower.includes("investasi")) return TrendingUp;
+    if (nameLower.includes("buku")) return Book;
+    return DollarSign; // Default
+  };
+
   return (
-    <div className="bg-white border border-gray-200 p-6 rounded-xl shadow-sm">
+    <div className="bg-white border h-full border-gray-200 p-6 rounded-xl shadow-sm">
       <h2 className="text-lg font-semibold text-gray-800 mb-6">Saving Goals</h2>
       <div className="space-y-4">
         {savingGoals.length === 0 ? (
@@ -23,73 +45,54 @@ const SavingGoalsSection = ({ savingGoals, formatCurrency }) => {
             </Link>
           </div>
         ) : (
-          savingGoals.map((goal) => {
+          savingGoals.map((goal, index) => {
             const progress =
-              (goal.currentSavedAmount / goal.targetAmount) * 100;
-            let IconComponent = DollarSign;
-            if (goal.name.toLowerCase().includes("laptop")) {
-              IconComponent = Laptop;
-            } else if (
-              goal.name.toLowerCase().includes("haji") ||
-              goal.name.toLowerCase().includes("umroh")
-            ) {
-              IconComponent = Plane;
-            } else if (
-              goal.name.toLowerCase().includes("sekolah") ||
-              goal.name.toLowerCase().includes("rumah")
-            ) {
-              IconComponent = HomeIcon;
-            } else if (
-              goal.name.toLowerCase().includes("liburan") ||
-              goal.name.toLowerCase().includes("travel")
-            ) {
-              IconComponent = Plane;
-            } else if (
-              goal.name.toLowerCase().includes("mobil") ||
-              goal.name.toLowerCase().includes("motor")
-            ) {
-              IconComponent = ArrowRightLeft;
-            } else if (goal.name.toLowerCase().includes("investasi")) {
-              IconComponent = TrendingUp;
-            }
-
-            const color =
-              PIE_COLORS[savingGoals.indexOf(goal) % PIE_COLORS.length];
+              goal.targetAmount > 0
+                ? (goal.currentSavedAmount / goal.targetAmount) * 100
+                : 0;
+            const IconComponent = getGoalIcon(goal.name);
+            const color = PIE_COLORS[index % PIE_COLORS.length]; // Warna untuk ikon dan progres
 
             return (
               <div
                 key={goal.id}
-                className="p-4 bg-gray-50 rounded-lg relative overflow-hidden"
+                className="p-3 bg-gray-50 rounded-lg relative overflow-hidden group hover:bg-gray-100 transition-colors" // Add group for hover effect
               >
+                {/* Progres bar di bagian bawah card, lebih subtle */}
                 <div
-                  className="absolute inset-y-0 left-0 bg-blue-100 rounded-l-lg"
+                  className="absolute bottom-0 left-0 h-1.5 rounded-br-lg" // Lebih tipis dan di bagian bawah
                   style={{
                     width: `${progress}%`,
-                    backgroundColor: `${color}40`,
+                    backgroundColor: color, // Warna progres bar
+                    opacity: 0.7, // Sedikit transparan
                   }}
                 ></div>
-                <div className="relative z-10 flex items-center justify-between mb-2">
+
+                <div className="relative z-10 flex items-center justify-between mb-1">
                   <div className="flex items-center">
                     <div
-                      className="p-2 rounded-lg mr-3"
-                      style={{ backgroundColor: `${color}1A` }}
+                      className="w-8 h-8 rounded-full flex items-center justify-center mr-3 flex-shrink-0"
+                      style={{ backgroundColor: `${color}40`, color: color }}
                     >
-                      <IconComponent size={20} style={{ color: color }} />
+                      <IconComponent size={16} />
                     </div>
-                    <span className="font-medium text-gray-800">
+                    <span className="font-medium text-gray-800 text-sm truncate">
                       {goal.name}
                     </span>
                   </div>
-                  <span className="text-sm font-semibold text-gray-800">
+                  {/* Persentase di kanan judul */}
+                  <span className="text-xs font-semibold text-gray-700 ml-auto whitespace-nowrap">
                     {progress.toFixed(0)}%
                   </span>
                 </div>
-                <p className="relative z-10 text-xs text-gray-600">
+                <p className="relative z-10 text-xs text-gray-600 ml-11">
+                  {" "}
+                  {/* Sesuaikan margin-left untuk menyelaraskan */}
                   {formatCurrency(goal.currentSavedAmount)} /{" "}
                   {formatCurrency(goal.targetAmount)}
                 </p>
                 {goal.isCompleted && (
-                  <span className="relative z-10 text-xs font-semibold text-green-600 ml-2">
+                  <span className="relative z-10 text-xs font-semibold text-green-600 ml-11 mt-1 block">
                     (Completed!)
                   </span>
                 )}

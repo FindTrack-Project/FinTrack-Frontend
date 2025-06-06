@@ -33,7 +33,7 @@ const BalanceOverview = ({
   };
 
   return (
-    <div className="bg-white border border-gray-200 p-6 rounded-xl shadow-sm">
+    <div className="bg-white border border-gray-200 p-6 rounded-xl  shadow-sm">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-lg font-semibold text-gray-800">Balance</h2>
         <div className="relative">

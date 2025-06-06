@@ -1,77 +1,248 @@
-import React from "react";
-import { getTransactionIcon } from "./utils"; // Import the helper function
+import React, { useState, useEffect } from "react"; // Impor useState dan useEffect
+import { getTransactionIcon } from "./utils";
+import Api from "../../../config/apiConfig"; // Asumsi path ini benar
 
 const RecentTransactions = ({ incomes, expenses, formatCurrency }) => {
+  // State untuk filter
+  const [selectedTimeRange, setSelectedTimeRange] = useState("7_days"); // Default 7 hari terakhir
+  const [selectedPocket, setSelectedPocket] = useState("all"); // Default semua pocket
+  const [selectedCategory, setSelectedCategory] = useState("all"); // Default semua kategori
+
+  // State untuk data dropdown (diisi dari API)
+  const [pocketsList, setPocketsList] = useState([]);
+  const [categoriesList, setCategoriesList] = useState([]);
+
+  useEffect(() => {
+    const fetchFilterOptions = async () => {
+      try {
+        // Asumsi API untuk pockets
+        const pocketsResponse = await Api.get("/accounts");
+        setPocketsList(pocketsResponse.accounts || []);
+
+        // Asumsi API untuk kategori transaksi
+        // Anda mungkin perlu menyesuaikan endpoint ini sesuai dengan backend Anda
+        const categoriesResponse = await Api.get("/categories"); // Contoh endpoint
+        setCategoriesList(categoriesResponse.categories || []);
+      } catch (error) {
+        console.error("Error fetching filter options:", error);
+        // Handle error, misalnya dengan mengatur state error atau menampilkan pesan
+      }
+    };
+    fetchFilterOptions();
+  }, []); // Hanya dijalankan sekali saat komponen pertama kali di-mount
+
   const combinedTransactions = incomes
     .concat(expenses)
-    .sort((a, b) => new Date(a.date) - new Date(b.date))
-    .slice(0, 5);
+    .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+  // Logika filter
+  const filteredTransactions = combinedTransactions.filter((trx) => {
+    const transactionDate = new Date(trx.date);
+    const now = new Date();
+    let isDateMatch = true;
+    let isPocketMatch = true;
+    let isCategoryMatch = true;
+
+    // Filter berdasarkan rentang waktu
+    if (selectedTimeRange === "7_days") {
+      // Mengatasi masalah `now.setDate` yang memodifikasi objek `now` secara langsung.
+      // Buat instance Date baru untuk setiap perbandingan.
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(now.getDate() - 7);
+      isDateMatch = transactionDate >= sevenDaysAgo;
+    } else if (selectedTimeRange === "30_days") {
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(now.getDate() - 30);
+      isDateMatch = transactionDate >= thirtyDaysAgo;
+    } // "all" tidak memerlukan filter tanggal
+
+    // Filter berdasarkan pocket
+    if (selectedPocket !== "all") {
+      isPocketMatch =
+        trx.accountId === selectedPocket || trx.accountName === selectedPocket;
+    }
+
+    // Filter berdasarkan kategori
+    if (selectedCategory !== "all") {
+      isCategoryMatch =
+        trx.category &&
+        trx.category.toLowerCase() === selectedCategory.toLowerCase();
+    }
+
+    return isDateMatch && isPocketMatch && isCategoryMatch;
+  });
+
+  // Kelompokkan transaksi yang sudah difilter berdasarkan tanggal
+  const groupedTransactions = filteredTransactions.reduce((acc, trx) => {
+    const date = new Date(trx.date);
+    const dateString = date.toLocaleDateString("id-ID", {
+      weekday: "short",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+
+    if (!acc[dateString]) {
+      acc[dateString] = [];
+    }
+    acc[dateString].push(trx);
+    return acc;
+  }, {});
 
   return (
     <div className="bg-white border border-gray-200 p-6 rounded-xl shadow-sm">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-wrap items-center justify-between mb-6 gap-2">
         <h2 className="text-lg font-semibold text-gray-800">Transactions</h2>
-        <div className="relative">
-          <select className="appearance-none bg-white border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
-            <option>7 hari terakhir</option>
-            <option>30 hari terakhir</option>
-            <option>All Time</option>
-          </select>
-          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-            <svg
-              className="fill-current h-4 w-4"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
+        {/* PERBAIKAN: Gunakan `flex-row` dan `sm:flex-col` untuk responsivitas,
+                       serta `w-full sm:w-auto` untuk ukuran yang lebih kecil. */}
+        <div className="flex flex-row flex-wrap gap-2">
+          <div className="relative flex-1 min-w-[120px] sm:min-w-0">
+            {" "}
+            {/* flex-1 untuk mengisi ruang, min-w untuk menghindari terlalu kecil */}
+            <select
+              className="appearance-none bg-white border border-gray-300 text-gray-700 py-2 px-3 pr-7 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm w-full" /* perkecil padding px-3, pr-7, dan tambahkan w-full */
+              value={selectedTimeRange}
+              onChange={(e) => setSelectedTimeRange(e.target.value)}
             >
-              <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
-            </svg>
+              <option value="7_days">7 hari terakhir</option>
+              <option value="30_days">30 hari terakhir</option>
+              <option value="all"> Waktu</option>
+            </select>
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+              <svg
+                className="fill-current h-4 w-4"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+              >
+                <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+              </svg>
+            </div>
+          </div>
+          <div className="relative flex-1 min-w-[120px] sm:min-w-0">
+            <select
+              className="appearance-none bg-white border border-gray-300 text-gray-700 py-2 px-3 pr-7 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm w-full"
+              value={selectedPocket}
+              onChange={(e) => setSelectedPocket(e.target.value)}
+            >
+              <option value="all"> Pocket</option>
+              {pocketsList.map((pocket) => (
+                <option key={pocket.id} value={pocket.id}>
+                  {pocket.name}
+                </option>
+              ))}
+            </select>
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+              <svg
+                className="fill-current h-4 w-4"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+              >
+                <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+              </svg>
+            </div>
+          </div>
+          <div className="relative flex-1 min-w-[120px] sm:min-w-0">
+            <select
+              className="appearance-none bg-white border border-gray-300 text-gray-700 py-2 px-3 pr-7 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm w-full"
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+            >
+              <option value="all"> Kategori</option>
+              {categoriesList.map((category) => (
+                <option
+                  key={category.id || category}
+                  value={category.name || category}
+                >
+                  {category.name || category}
+                </option>
+              ))}
+            </select>
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+              <svg
+                className="fill-current h-4 w-4"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+              >
+                <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+              </svg>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="space-y-4">
-        {combinedTransactions.length === 0 ? (
+      <div className="space-y-4 max-h-96 overflow-y-auto pr-2 custom-scrollbar">
+        {Object.keys(groupedTransactions).length === 0 ? (
           <div className="text-center py-4 text-gray-500 text-sm">
-            No recent transactions.
+            Tidak ada transaksi untuk filter yang dipilih.
           </div>
         ) : (
-          combinedTransactions.map((trx) => (
-            <div
-              key={trx.id}
-              className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
-            >
-              <div className="flex items-center">
-                <div className="w-8 h-8 flex items-center justify-center bg-gray-200 rounded-full mr-3 text-lg">
-                  {getTransactionIcon(
-                    trx.description,
-                    trx.source ? "income" : "expense"
-                  )}{" "}
+          Object.entries(groupedTransactions).map(([date, transactions]) => (
+            <div key={date}>
+              <h3 className="text-sm font-semibold text-gray-800 mb-2 mt-4 first:mt-0">
+                {date}
+              </h3>
+              {transactions.map((trx) => (
+                <div
+                  key={trx.id}
+                  className="flex items-center p-3 bg-white rounded-lg border border-gray-100 hover:bg-gray-50 transition-colors mb-2"
+                >
+                  <div className="flex items-center">
+                    <div className="w-10 h-10 flex items-center justify-center bg-gray-100 rounded-full mr-3 flex-shrink-0">
+                      {getTransactionIcon(
+                        trx.description,
+                        trx.source ? "income" : "expense"
+                      )}{" "}
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-800 text-sm">
+                        {trx.description}
+                      </p>
+                      {trx.category && (
+                        <p className="text-xs text-gray-500">{trx.category}</p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="ml-auto text-right">
+                    <p
+                      className={`font-semibold text-sm ${
+                        trx.source ? "text-green-600" : "text-red-600"
+                      }`}
+                    >
+                      {trx.source ? "+" : "-"}
+                      {formatCurrency(trx.amount)}
+                    </p>
+                    {trx.accountName && (
+                      <p className="text-xs text-gray-500">{trx.accountName}</p>
+                    )}
+                    {trx.source && !trx.accountName && (
+                      <p className="text-xs text-gray-500">{trx.source}</p>
+                    )}
+                    {trx.destination && !trx.accountName && (
+                      <p className="text-xs text-gray-500">{trx.destination}</p>
+                    )}
+                  </div>
                 </div>
-                <div>
-                  <p className="font-medium text-gray-800 text-sm">
-                    {trx.description}
-                  </p>
-                  <p className="text-xs text-gray-500">
-                    {new Date(trx.date).toLocaleDateString("id-ID", {
-                      day: "numeric",
-                      month: "short",
-                      year: "numeric",
-                    })}
-                  </p>
-                </div>
-              </div>
-              <p
-                className={`font-semibold text-sm ${
-                  trx.source ? "text-green-600" : "text-red-600"
-                }`}
-              >
-                {trx.source ? "+" : "-"}
-                {formatCurrency(trx.amount)}
-              </p>
+              ))}
             </div>
           ))
         )}
       </div>
+      <style>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: #f1f1f1;
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: #888;
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: #555;
+        }
+      `}</style>
     </div>
   );
 };
