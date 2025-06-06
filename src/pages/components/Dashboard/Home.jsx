@@ -47,7 +47,9 @@ const Home = () => {
   const [userEmail, setUserEmail] = useState("email@example.com");
 
   const navigate = useNavigate();
-  const { isSidebarOpen, toggleSidebar } = useOutletContext();
+  const outletContext = useOutletContext() || {};
+  const isSidebarOpen = outletContext.isSidebarOpen ?? false;
+  const toggleSidebar = outletContext.toggleSidebar ?? (() => {});
 
   useEffect(() => {
     const fetchAllData = async () => {

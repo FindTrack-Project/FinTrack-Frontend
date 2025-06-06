@@ -23,33 +23,27 @@ import Sidebar from "./pages/components/Sidebar/Sidebar";
 
 // MainLayout untuk menampung Sidebar dan konten utama
 function DashboardLayout() {
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false); // Default tidak terlipat
-
-  const handleSidebarToggle = () => {
-    setIsSidebarCollapsed((prev) => !prev); // Toggle state
-  };
-
-  // Sesuaikan kelas margin berdasarkan state sidebar
-  const contentMarginClass = isSidebarCollapsed ? "ml-20" : "ml-64";
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const toggleSidebar = () => setIsSidebarOpen((v) => !v);
 
   return (
     <div className="flex min-h-screen bg-gray-50 font-inter">
       {/* Sidebar - melewatkan state dan setter ke Sidebar */}
       <Sidebar
-        onToggleCollapse={handleSidebarToggle}
-        isCollapsed={isSidebarCollapsed}
+        onToggleCollapse={toggleSidebar}
+        isCollapsed={!isSidebarOpen}
       />
 
       {/* Konten utama halaman */}
       <div
         className={`
           flex-1 p-8 transition-all duration-300 ease-in-out
-          ${contentMarginClass}
+          ${isSidebarOpen ? "ml-20" : "ml-64"}
           min-h-screen overflow-auto
         `}
       >
         {/* Outlet untuk merender rute anak */}
-        <Outlet />
+        <Outlet context={{ isSidebarOpen, toggleSidebar }} />
       </div>
     </div>
   );

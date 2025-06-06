@@ -1,11 +1,9 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Api from "../../config/apiConfig";
-
-import mataTutup from "../../assets/mataTutup.svg";
-import mataBuka from "../../assets/mataBuka.svg";
 import bgLogin from "../../assets/bg-login.jpg";
 import iconLogo from "../../assets/icon-logo.png";
+import { Eye, EyeOff } from "lucide-react"; // Ganti icon
 
 export const Register = () => {
   const [name, setName] = useState("");
@@ -119,7 +117,7 @@ export const Register = () => {
                   type={isClosed ? "password" : "text"}
                   required
                   placeholder="Masukkan Kata Sandi"
-                  className="w-full px-4 py-2.5 border border-gray-400 bg-primary text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition duration-200 text-sm pr-10 placeholder-gray-400"
+                  className="w-full px-4 py-2.5 border border-gray-400 bg-primary text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition duration-200 text-sm pr-10 placeholder-gray-400 [&::-ms-reveal]:hidden [&::-ms-clear]:hidden [&::-webkit-credentials-auto-fill-button]:hidden"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
@@ -127,11 +125,11 @@ export const Register = () => {
                   className="absolute right-2.5 top-1/2 -translate-y-1/2 cursor-pointer flex items-center justify-center w-8 h-8"
                   onClick={togglePassword}
                 >
-                  <img
-                    src={isClosed ? mataTutup : mataBuka}
-                    alt="toggle"
-                    className="w-5 h-5 object-contain"
-                  />
+                  {isClosed ? (
+                    <EyeOff className="w-5 h-5 text-gray-300" />
+                  ) : (
+                    <Eye className="w-5 h-5 text-gray-300" />
+                  )}
                 </div>
               </div>
             </div>
@@ -149,7 +147,7 @@ export const Register = () => {
                   type={isConfirmClosed ? "password" : "text"}
                   required
                   placeholder="Ulangi Kata Sandi"
-                  className="w-full px-4 py-2.5 border border-gray-400 bg-primary text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition duration-200 text-sm pr-10 placeholder-gray-400"
+                  className="w-full px-4 py-2.5 border border-gray-400 bg-primary text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition duration-200 text-sm pr-10 placeholder-gray-400 [&::-ms-reveal]:hidden [&::-ms-clear]:hidden [&::-webkit-credentials-auto-fill-button]:hidden"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                 />
@@ -157,11 +155,11 @@ export const Register = () => {
                   className="absolute right-2.5 top-1/2 -translate-y-1/2 cursor-pointer flex items-center justify-center w-8 h-8"
                   onClick={toggleConfirmPassword}
                 >
-                  <img
-                    src={isConfirmClosed ? mataTutup : mataBuka}
-                    alt="toggle"
-                    className="w-5 h-5 object-contain"
-                  />
+                  {isConfirmClosed ? (
+                    <EyeOff className="w-5 h-5 text-gray-300" />
+                  ) : (
+                    <Eye className="w-5 h-5 text-gray-300" />
+                  )}
                 </div>
               </div>
             </div>
