@@ -4,8 +4,8 @@ import { getTransactionIcon } from "./utils"; // Import the helper function
 const RecentTransactions = ({ incomes, expenses, formatCurrency }) => {
   const combinedTransactions = incomes
     .concat(expenses)
-    .sort((a, b) => new Date(b.date) - new Date(a.date))
-    .slice(0, 5); // Show only 5 latest transactions
+    .sort((a, b) => new Date(a.date) - new Date(b.date))
+    .slice(0, 5);
 
   return (
     <div className="bg-white border border-gray-200 p-6 rounded-xl shadow-sm">

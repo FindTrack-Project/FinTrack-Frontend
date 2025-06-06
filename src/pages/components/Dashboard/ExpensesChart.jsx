@@ -24,7 +24,7 @@ const ExpensesChart = ({
   };
 
   return (
-    <div className="bg-white border border-gray-200 p-6 rounded-xl shadow-sm">
+    <div className="bg-white h-full border border-gray-200 p-6 rounded-xl shadow-sm">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-lg font-semibold text-gray-800">Expenses</h2>
         <div className="relative">
@@ -54,7 +54,7 @@ const ExpensesChart = ({
         </div>
       ) : (
         <div className="flex flex-col items-center">
-          <div className="h-48 w-48 relative mb-6">
+          <div className="h-60 w-60 relative mb-6">
             <Pie data={pieData} options={pieOptions(formatCurrency)} />
           </div>
           <div className="grid grid-cols-2 gap-x-6 gap-y-3 w-full max-w-xs">
