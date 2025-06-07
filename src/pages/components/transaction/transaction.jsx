@@ -86,42 +86,21 @@ const TransactionPage = () => {
         console.error("Error fetching accounts:", accountsResult.reason);
       }
 
-      if (
-        userResult.status === "fulfilled" &&
-        userResult.value &&
-        userResult.value.user
-      ) {
-        setUserName(userResult.value.user.name || "Pengguna");
-        setUserEmail(userResult.value.user.email || "email@example.com");
-        if (typeof window !== "undefined") {
-          localStorage.setItem(
-            "user_name",
-            userResult.value.user.name || "Pengguna"
-          );
-          localStorage.setItem(
-            "user_email",
-            userResult.value.user.email || "email@example.com"
-          );
-        }
-      } else {
-        const reason = userResult.reason
-          ? userResult.reason instanceof Error
-            ? userResult.reason.message
-            : String(userResult.reason)
-          : userResult.status === "fulfilled" && !userResult.value?.user
-          ? "Fulfilled but missing 'user' object in value"
-          : "Unknown reason (likely rejected)";
-
-        console.error(
-          "Error fetching user profile (Rejected or Missing Data):",
-          reason
-        );
-        if (typeof window !== "undefined") {
-          setUserName(localStorage.getItem("user_name") || "Pengguna");
-          setUserEmail(
-            localStorage.getItem("user_email") || "email@example.com"
-          );
-        }
+      // Setelah Promise.allSettled atau Promise.all
+      let userData = null;
+      if (userResult.status === "fulfilled") {
+        // Cek struktur respons
+        userData = userResult.value?.user || userResult.value;
+      }
+      setUserName(userData?.name || "Pengguna");
+      setUserEmail(userData?.email || "email@example.com");
+      if (typeof window !== "undefined") {
+        localStorage.setItem("user_name", userData?.name || "Pengguna");
+        localStorage.setItem("user_email", userData?.email || "email@example.com");
+      }
+      if (!userData) {
+        setUserName(localStorage.getItem("user_name") || "Pengguna");
+        setUserEmail(localStorage.getItem("user_email") || "email@example.com");
       }
     } catch (err) {
       console.error(

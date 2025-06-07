@@ -174,7 +174,7 @@ const TransactionList = ({
         {/* Tombol Tambah Transaksi */}
         <button
           onClick={() => setIsModalOpen(true)}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+          className="mt-4 sm:mt-0 px-4 py-2 bg-gray-800 text-white rounded-lg text-sm font-semibold hover:bg-gray-700 transition-colors flex items-center gap-2 cursor-pointer"
         >
           Tambah Transaksi
         </button>

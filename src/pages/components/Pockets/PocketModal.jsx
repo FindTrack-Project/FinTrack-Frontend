@@ -1,45 +1,40 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-const PocketModal = ({
-  isOpen,
-  onClose,
-  onPocketSaved,
-  initialData = {},
-  isEdit = false,
-}) => {
-  const [formData, setFormData] = useState({
-    name: initialData.name || "",
-    type: initialData.type || "Bank",
-    currentBalance: initialData.currentBalance || "",
-    description: initialData.description || "",
-  });
+const PocketModal = ({ isOpen, onClose, onPocketSaved }) => {
+  const [name, setName] = useState("");
+  const [type, setType] = useState("Bank");
+  const [initialBalance, setInitialBalance] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
+  // Efek untuk mereset form setiap kali modal ditutup
+  useEffect(() => {
+    if (!isOpen) {
+      setName("");
+      setType("Bank");
+      setInitialBalance("");
+      setError("");
+      setIsLoading(false);
+    }
+  }, [isOpen]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
     setIsLoading(true);
+    setError("");
     try {
-      // Validasi sederhana
-      if (!formData.name || !formData.type) {
-        setError("Nama dan tipe pocket wajib diisi.");
-        setIsLoading(false);
-        return;
+      if (!name || !type) {
+        throw new Error("Nama dan tipe pocket wajib diisi.");
       }
-      // Kirim ke parent
-      await onPocketSaved(formData);
-      onClose();
+      const dataToSave = {
+        name,
+        type,
+        initialBalance: Number(initialBalance) || 0,
+      };
+      await onPocketSaved(dataToSave);
+      onClose(); // Tutup modal setelah berhasil
     } catch (err) {
-      setError("Gagal menyimpan pocket.");
+      setError(err.message || "Gagal menyimpan pocket.");
     } finally {
       setIsLoading(false);
     }
@@ -52,45 +47,30 @@ const PocketModal = ({
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
         <div className="p-6 pb-4 flex justify-between items-center">
           <h2 className="text-lg font-semibold text-gray-900">
-            {isEdit ? "Edit Pocket" : "Tambah Pocket Baru"}
+            Tambah Pocket Baru
           </h2>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 text-xl leading-none p-1"
-          >
-            ×
-          </button>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-xl p-1">&times;</button>
         </div>
-        <form onSubmit={handleSubmit} className="p-6 pt-6 space-y-6">
-          {error && (
-            <p className="text-red-600 text-center text-sm bg-red-50 p-3 rounded-lg">
-              {error}
-            </p>
-          )}
+        <form onSubmit={handleSubmit} className="p-6 pt-0 space-y-4">
+          {error && <p className="text-red-600 text-center text-sm bg-red-50 p-3 rounded-lg">{error}</p>}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Nama Pocket
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Nama Pocket</label>
             <input
               type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               required
-              placeholder="Contoh: BCA, Dana, Cash"
-              className="w-full px-3 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+              placeholder="Contoh: BCA, Dana, Uang Tunai"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Tipe Pocket
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Tipe Pocket</label>
             <select
-              name="type"
-              value={formData.type}
-              onChange={handleChange}
+              value={type}
+              onChange={(e) => setType(e.target.value)}
               required
-              className="w-full px-3 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm bg-white"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
             >
               <option value="Bank">Bank</option>
               <option value="E-Wallet">E-Wallet</option>
@@ -99,47 +79,23 @@ const PocketModal = ({
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Saldo Awal
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Saldo Awal</label>
             <input
               type="number"
-              name="currentBalance"
-              value={formData.currentBalance}
-              onChange={handleChange}
+              value={initialBalance}
+              onChange={(e) => setInitialBalance(e.target.value)}
               required
               min={0}
               placeholder="Rp0"
-              className="w-full px-3 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Deskripsi (opsional)
-            </label>
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              rows={2}
-              placeholder="Contoh: Rekening utama, dompet harian, dll"
-              className="w-full px-3 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm resize-none"
-            />
-          </div>
-          <div className="flex space-x-3 pt-4">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 py-3 px-4 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition-colors text-sm"
-            >
+          <div className="flex space-x-3 pt-2">
+            <button type="button" onClick={onClose} className="flex-1 py-2.5 px-4 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50">
               Batal
             </button>
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="flex-1 py-3 px-4 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
-            >
-              {isLoading ? "Menyimpan..." : isEdit ? "Simpan Perubahan" : "Simpan"}
+            <button type="submit" disabled={isLoading} className="flex-1 py-2.5 px-4 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50">
+              {isLoading ? "Menyimpan..." : "Simpan"}
             </button>
           </div>
         </form>

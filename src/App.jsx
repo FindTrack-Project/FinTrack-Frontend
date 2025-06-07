@@ -16,7 +16,8 @@ import Register from "./pages/Auth/register";
 import Home from "./pages/components/Dashboard/Home";
 // Komponen dalam folder Transaction
 import Transaction from "./pages/components/transaction/transaction"; // Halaman Transactions
-import PocketsPage from "./pages/components/Pockets/PocketsPage"; // Halaman Pockets yang baru
+import PocketsPage from "./pages/components/Pockets/PocketsPage"; // Halaman Pockets 
+import SavingsPage from "./pages/components/Savings/SavingsPage"; // Halaman Savings 
 
 // Komponen Layout
 import Sidebar from "./pages/components/Sidebar/Sidebar";
@@ -147,7 +148,8 @@ function App() {
         >
           <Route path="/dashboard" element={<Home />} />
           <Route path="/transactions" element={<Transaction />} />
-          <Route path="/pockets" element={<PocketsPage />} />{" "}
+          <Route path="/pockets" element={<PocketsPage />} />
+          <Route path="/savings" element={<SavingsPage />} />{" "}
           {/* Rute baru untuk Pockets */}
           {/* Tambahkan rute lain yang memerlukan DashboardLayout dan autentikasi di sini */}
         </Route>
