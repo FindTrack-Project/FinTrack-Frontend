@@ -34,12 +34,12 @@ const BalanceOverview = ({
   };
 
   return (
-    <div className="bg-white border border-gray-200 p-6 rounded-xl shadow-sm">
+    <div className="bg-white h-full border border-gray-200 p-6 rounded-xl shadow-sm">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-lg font-semibold text-gray-800">Balance</h2>
         <div className="relative">
           <select
-            className="appearance-none bg-white border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+            className="appearance-none bg-white border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm cursor-pointer"
             value={selectedTimeRange} // Kontrol nilai dropdown dari prop
             onChange={(e) => onTimeRangeChange(e.target.value)} // Panggil prop saat nilai berubah
           >

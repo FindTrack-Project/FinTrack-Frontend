@@ -184,7 +184,7 @@ const SavingsPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 p-6 font-sans text-gray-800">
+      <div className="min-h-screen bg-gray-50 p-6 text-gray-800">
         <SkeletonHeader />
         <div className="max-w mx-auto">
           <SkeletonSavingsCard />
@@ -200,7 +200,7 @@ const SavingsPage = () => {
           <p className="text-gray-700 mb-4">{error}</p>
           <button
             onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+            className="px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-secondary transition-colors"
           >
             Go to Login
           </button>
@@ -210,7 +210,7 @@ const SavingsPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6 font-sans text-gray-800">
+    <div className="min-h-screen bg-gray-50 p-6 text-gray-800">
       {/* --- HEADER HALAMAN DIKEMBALIKAN --- */}
       <header className="flex justify-between items-center mb-8">
       <div>
@@ -260,7 +260,7 @@ const SavingsPage = () => {
           </div>
           <button
             onClick={() => setIsGoalModalOpen(true)}
-            className="mt-4 sm:mt-0 px-4 py-2 bg-gray-800 text-white rounded-lg text-sm font-semibold hover:bg-gray-700 transition-colors flex items-center gap-2 cursor-pointer"
+            className="mt-4 sm:mt-0 px-4 py-2 bg-primary text-white rounded-lg text-sm font-semibold hover:bg-secondary transition-colors flex items-center gap-2 cursor-pointer"
           >
             <PlusCircle size={16} /> Tambah savings baru
           </button>
@@ -308,7 +308,7 @@ const SavingsPage = () => {
                   <button 
                     onClick={() => handleDeleteGoal(goal.id)}
                     className="px-4 py-2 text-sm font-medium border border-red-200 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 hover:border-red-300 transition-colors cursor-pointer"
-                  >
+                  > 
                     <Trash2 size={16} />
                   </button>
                 </div>

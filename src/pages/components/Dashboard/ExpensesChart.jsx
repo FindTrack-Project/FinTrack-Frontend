@@ -28,7 +28,7 @@ const ExpensesChart = ({
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-lg font-semibold text-gray-800">Expenses</h2>
         <div className="relative">
-          <select className="appearance-none bg-white border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
+          <select className="appearance-none bg-white border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm cursor-pointer">
             <option>Last 6 month</option>
             <option>Last 3 month</option>
             <option>Last 12 month</option>

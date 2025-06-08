@@ -52,7 +52,7 @@ const PocketsSection = ({ accounts, formatCurrency }) => {
   };
 
   return (
-    <div className="bg-white border h-full border-gray-200 p-6 rounded-xl shadow-sm">
+    <div className="bg-white border h-100 border-gray-200 p-6 rounded-xl shadow-sm">
       <h2 className="text-lg font-semibold text-gray-800 mb-6">Pockets</h2>
       <div className="space-y-4">
         {accounts.length === 0 ? (

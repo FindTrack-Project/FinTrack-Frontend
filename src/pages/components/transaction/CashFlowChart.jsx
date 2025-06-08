@@ -17,7 +17,7 @@ const CashFlowChart = ({ cashFlowData, cashFlowFilter, setCashFlowFilter }) => {
     <section className="bg-white rounded-2xl shadow-sm p-6 col-span-1">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-lg font-semibold text-gray-800">Cash Flow</h2>
-        <select className="px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-transparent">
+        <select className="px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-transparent cursor-pointer">
           <option>Last 6 month</option>
           <option>Last year</option>
           <option>All time</option>
@@ -27,7 +27,7 @@ const CashFlowChart = ({ cashFlowData, cashFlowFilter, setCashFlowFilter }) => {
       {/* Filter Buttons */}
       <div className="flex items-center mb-6 space-x-2">
         <button
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
             cashFlowFilter === "All"
               ? "bg-blue-100 text-blue-700 border border-blue-200"
               : "bg-gray-100 text-gray-600 hover:bg-gray-200"
@@ -37,7 +37,7 @@ const CashFlowChart = ({ cashFlowData, cashFlowFilter, setCashFlowFilter }) => {
           All
         </button>
         <button
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
             cashFlowFilter === "Incomes"
               ? "bg-blue-100 text-blue-700 border border-blue-200"
               : "bg-gray-100 text-gray-600 hover:bg-gray-200"
@@ -47,7 +47,7 @@ const CashFlowChart = ({ cashFlowData, cashFlowFilter, setCashFlowFilter }) => {
           Incomes
         </button>
         <button
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
             cashFlowFilter === "Expenses"
               ? "bg-blue-100 text-blue-700 border border-blue-200"
               : "bg-gray-100 text-gray-600 hover:bg-gray-200"

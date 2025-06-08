@@ -162,10 +162,8 @@ const TransactionModal = ({
 
       await Api.post(endpoint, payload);
       toast.success(`${activeTab} berhasil ditambahkan/ditransfer!`);
-      onTransactionAdded();
       setTimeout(() => onClose(), 1500);
     } catch (err) {
-      console.error("Error adding transaction:", err);
       const errorMessage =
         err.response?.data?.message ||
         err.message ||

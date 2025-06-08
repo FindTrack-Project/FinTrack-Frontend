@@ -392,27 +392,36 @@ const Home = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          <div className="min-w-0">
+        {/* Kolom Bawah*/}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
+
+          {/* Kolom 1: Pockets */}
+          <div className="lg:col-span-1 min-w-0">
             <PocketsSection
               accounts={accounts}
               formatCurrency={formatCurrency}
             />
           </div>
-          <div className="min-w-0">
+
+          {/* Kolom 2: Saving Goals */}
+          <div className="lg:col-span-1 min-w-0">
             <SavingGoalsSection
               savingGoals={savingGoals}
               formatCurrency={formatCurrency}
             />
           </div>
-          <div className="min-w-0">
+
+          {/* Kolom 3 & 4: Transactions (lebih lebar) */}
+          <div className="lg:col-span-2 min-w-0">
             <RecentTransactions
               incomes={incomes}
               expenses={expenses}
+              accounts={accounts} 
               formatCurrency={formatCurrency}
               getTransactionIcon={getTransactionIcon}
             />
           </div>
+
         </div>
       </div>
     </div>

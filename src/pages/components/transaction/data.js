@@ -19,3 +19,7 @@ export const COLORS_EXPENSES_PIE = [
   "#e83e8c", // Pink (Education)
   "#20c997", // Teal (Cicilan/Lain-lain)
 ];
+
+// Palet warna untuk chart
+export const COLORS_INCOME = ["#2563EB", "#D97706", "#F59E0B", "#10B981", "#6D28D9"];
+export const COLORS_EXPENSES = ["#2563EB", "#DC2626", "#F59E0B", "#10B981", "#EA580C", "#0891B2", "#65A30D", "#BE185D", "#4F46E5"];

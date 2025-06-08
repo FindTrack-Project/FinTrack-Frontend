@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { formatCurrency } from "./utils"; // atau sesuaikan path utilitas Anda
+import { formatCurrency } from "../Dashboard/utils"; // atau sesuaikan path utilitas Anda
 
 const AllocateFundModal = ({ isOpen, onClose, onAllocate, goal, accounts = [] }) => {
   const [amount, setAmount] = useState('');
@@ -36,6 +36,7 @@ const AllocateFundModal = ({ isOpen, onClose, onAllocate, goal, accounts = [] })
       setIsLoading(false);
     }
   };
+  
 
   if (!isOpen) return null;
 
@@ -82,10 +83,10 @@ const AllocateFundModal = ({ isOpen, onClose, onAllocate, goal, accounts = [] })
             </select>
           </div>
           <div className="flex space-x-3 pt-2">
-            <button type="button" onClick={onClose} className="flex-1 py-2.5 px-4 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50">
+            <button type="button" onClick={onClose} className="flex-1 py-2.5 px-4 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 cursor-pointer">
               Batal
             </button>
-            <button type="submit" disabled={isLoading || accounts.length === 0} className="flex-1 py-2.5 px-4 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50">
+            <button type="submit" disabled={isLoading || accounts.length === 0} className="flex-1 py-2.5 px-4 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50 cursor-pointer">
               {isLoading ? "Mengalokasikan..." : "Alokasikan"}
             </button>
           </div>

@@ -31,7 +31,7 @@ const DashboardHeader = ({
       </div>
 
       <div className="flex items-center gap-4">
-        <button className="relative bg-white border border-gray-200 rounded-full p-2.5 shadow-sm hover:shadow-md transition-all duration-200">
+        <button className="relative bg-white border border-gray-200 rounded-full p-2.5 shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer">
           <Bell size={20} className="text-gray-600" />
           <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full border border-white"></span>
         </button>

@@ -77,7 +77,7 @@ const pieOptions = (formatter) => ({
     },
   },
   // PERUBAHAN DI SINI: Nilai lebih kecil = chart lebih tebal
-  cutout: "60%",
+  cutout: "45%",
 });
 
 
@@ -288,7 +288,7 @@ const PocketsPage = () => {
   
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 p-6 font-sans text-gray-800">
+      <div className="min-h-screen bg-gray-50 p-6 text-gray-800">
         <SkeletonHeader />
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
           <div className="lg:col-span-3 min-w-0">
@@ -320,7 +320,7 @@ const PocketsPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6 font-sans text-gray-800">
+    <div className="min-h-screen bg-gray-50 p-6 text-gray-800">
       <header className="flex justify-between items-center mb-8">
       <div>
         <h1 className="text-3xl font-bold">Pockets</h1>
@@ -368,7 +368,7 @@ const PocketsPage = () => {
               </h2>
               <button
                 onClick={() => setIsPocketModalOpen(true)}
-                className="px-4 py-2 bg-gray-800 text-white rounded-lg text-sm font-medium hover:bg-gray-700 transition-colors flex items-center gap-1 cursor-pointer"
+                className="px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-secondary transition-colors flex items-center gap-1 cursor-pointer"
               >
                 <PlusCircle size={16} /> Tambah Pocket
               </button>
