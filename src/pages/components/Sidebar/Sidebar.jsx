@@ -8,251 +8,168 @@ import {
   ArrowRightLeft,
   LogOut,
   BrainCircuit,
-  CircleHelp,
   ChevronLast,
-  CreditCard,
-  ReceiptText,
-  ChevronDown,
-  ChevronRight,
-  BanknoteArrowUp,
-  BanknoteArrowDown,
+  X,
 } from "lucide-react";
-
 import Logo from "../../../assets/logo.svg";
 
-const Sidebar = ({ isCollapsed, onToggleCollapse }) => {
+// Data menu untuk dirender secara dinamis
+const navItems = [
+  { to: "/dashboard", icon: <LayoutDashboard size={20} />, text: "Dashboard" },
+  { to: "/transactions", icon: <ArrowRightLeft size={20} />, text: "Transaction" },
+  { to: "/pockets", icon: <Wallet size={20} />, text: "Pocket" },
+  { to: "/savings", icon: <HandCoins size={20} />, text: "Savings" },
+  { to: "/recomendation", icon: <BrainCircuit size={20} />, text: "Recomendation" },
+];
+
+const Sidebar = ({ isCollapsed, onToggleCollapse, isMobileOpen, toggleMobileSidebar }) => {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const navigate = useNavigate();
 
-  // Fungsi untuk menampilkan modal
-  const handleShowLogoutModal = () => {
-    setShowLogoutModal(true);
-  };
-
-  // Fungsi untuk menyembunyikan modal
-  const handleCloseLogoutModal = () => {
-    setShowLogoutModal(false);
-  };
-
   const confirmLogout = () => {
-    localStorage.removeItem("jwt_token"); // Ganti "userToken" dengan "jwt_token"
-    localStorage.removeItem("user_id"); // Jika kamu ingin menghapus user_id juga
-    localStorage.removeItem("user_name"); // Jika kamu ingin menghapus user_name juga
-
-    navigate("/login"); // Redirect ke halaman login
-    setShowLogoutModal(false); // Tutup modal setelah logout
+    localStorage.removeItem("jwt_token");
+    localStorage.removeItem("user_id");
+    localStorage.removeItem("user_name");
+    navigate("/login");
   };
 
   return (
-    <div
-      className={`
-        flex flex-col h-screen bg-primary shadow-lg
-        transition-all duration-300 ease-in-out
-        ${isCollapsed ? "w-17" : "w-64"}
-        fixed top-0 left-0 z-40
-      `}
-    >
-      {/* Icon Logo < */}
-      <div className="flex items-center min-h-[48px] justify-between p-4 border-b border-secondary relative">
-        <div className="flex items-center min-h-[48px] space-x-2 overflow-hidden">
-          <img
-            src={Logo}
-            alt="Fintrack Logo"
-            className="w-16 h-16 object-contain"
-          />
-          <span
-            className={`text-lg font-bold text-white whitespace-nowrap ${
-              isCollapsed ? "hidden" : ""
-            }`}
+    <>
+      {/* Overlay untuk tampilan mobile */}
+      <div
+        className={`fixed inset-0 z-40 bg-black/50 transition-opacity duration-300 md:hidden ${
+          isMobileOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
+        onClick={toggleMobileSidebar}
+        aria-hidden="true"
+      />
+
+      {/* --- KONTENER SIDEBAR UTAMA --- */}
+      <aside
+        className={`
+          fixed md:fixed md:top-0 md:left-0
+          flex flex-col bg-primary shadow-lg z-50
+          transition-all duration-300 ease-in-out
+          h-screen
+          ${isMobileOpen ? "translate-x-0 w-64" : "-translate-x-full w-64"}
+          md:translate-x-0
+          ${isCollapsed ? "md:w-20" : "md:w-64"}
+        `}
+        style={{ willChange: "transform, width" }}
+      >
+        {/* Header Sidebar (Logo dan Tombol Toggle) */}
+        <div className="flex items-center justify-between p-4 border-b border-secondary min-h-[64px] relative">
+          <div className={`flex items-center overflow-hidden ${isCollapsed ? 'md:justify-center md:w-full' : ''}`}>
+            <img src={Logo} alt="Fintrack Logo" className="w-10 h-10 object-contain flex-shrink-0" />
+            <span
+              className={`
+                text-lg font-bold text-white whitespace-nowrap
+                transition-all duration-300
+                ml-3
+                ${isCollapsed ? "md:max-w-0 md:opacity-0 md:ml-0" : "md:max-w-xs md:opacity-100"}
+                overflow-hidden
+              `}
+              style={{ transitionProperty: "max-width, opacity, margin" }}
+            >
+              Fin<span className="text-accent">track</span>
+            </span>
+          </div>
+
+          <button
+            onClick={onToggleCollapse}
+            className="p-1.5 rounded-full bg-white text-primary hidden md:block absolute top-1/2 -translate-y-1/2 -right-3 border border-secondary shadow-md"
           >
-            Fin<span className="text-lg font-bold text-accent">track</span>
-          </span>
+            <ChevronLast size={18} className={`transition-transform duration-300 ${isCollapsed ? "rotate-180" : ""}`} />
+          </button>
+          
+          <button onClick={toggleMobileSidebar} className="md:hidden text-white">
+            <X size={24} />
+          </button>
         </div>
-        <button
-          onClick={onToggleCollapse}
-          className={`
-            p-1 rounded-full bg-white text-primary
-            absolute -right-3 top-1/2 -translate-y-1/2
-            border border-secondary cursor-pointer
-            transition-all duration-200 hover:bg-gray-100
-            ${isCollapsed ? "rotate-180" : ""}
-          `}
-          aria-label={isCollapsed ? "Perluas Sidebar" : "Ciutkan Sidebar"}
-        >
-          <ChevronLast size={18} />
-        </button>
-      </div>
-      {/* Icon Logo > */}
 
-      <nav className="flex-1 p-4 space-y-2 overflow-hidden">
-        {/* Dashboard */}
-        <NavLink
-          to="/dashboard"
-          end
-          className={({ isActive }) =>
-            `flex items-center min-h-[48px] p-2 rounded-lg text-white transition-colors duration-200 group ${
-              isActive ? "bg-secondary" : "hover:bg-[var(--color-hov)]"
-            }`
-          }
-        >
-          <LayoutDashboard size={20} className="mr-3 flex-shrink-0" />
-          <span
-            className={`font-medium whitespace-nowrap overflow-hidden ${
-              isCollapsed ? "hidden" : ""
-            }`}
-          >
-            Dashboard
-          </span>
-        </NavLink>
+        {/* Navigasi Utama */}
+        <nav className="flex-1 p-2 space-y-1">
+          {navItems.map((item) => (
+            <SidebarLink
+              key={item.text}
+              isCollapsed={isCollapsed}
+              onClick={isMobileOpen ? toggleMobileSidebar : undefined}
+              {...item}
+            />
+          ))}
+        </nav>
 
-        {/* Transactions - Disesuaikan ke "/transactions" */}
-        <NavLink
-          to="/transactions" // Perubahan di sini: dari "/transaction" menjadi "/transactions"
-          className={({ isActive }) =>
-            `flex items-center min-h-[48px] p-2 rounded-lg text-white transition-colors duration-200 group ${
-              isActive ? "bg-secondary" : "hover:bg-[var(--color-hov)]"
-            }`
-          }
-        >
-          <ArrowRightLeft size={20} className="mr-3 flex-shrink-0" />
-          <span
-            className={`font-medium whitespace-nowrap overflow-hidden ${
-              isCollapsed ? "hidden" : ""
-            }`}
+        {/* Footer Sidebar (Settings & Logout) */}
+        <div className="p-2 border-t border-secondary">
+          <SidebarLink
+            to="/settings"
+            icon={<Settings size={20} />}
+            text="Settings"
+            isCollapsed={isCollapsed}
+            onClick={isMobileOpen ? toggleMobileSidebar : undefined}
+          />
+          <button
+            onClick={() => setShowLogoutModal(true)}
+            className={`flex items-center w-full p-3 mt-1 rounded-lg text-white transition-colors duration-300 group hover:bg-secondary/60 ${isCollapsed ? 'md:justify-center' : ''}`}
           >
-            Transaction
-          </span>
-        </NavLink>
+            <LogOut size={20} className="flex-shrink-0" />
+            <span
+              className={`
+                ml-3 font-medium whitespace-nowrap
+                transition-all duration-300
+                ${isCollapsed ? "md:max-w-0 md:opacity-0 md:ml-0" : "md:max-w-xs md:opacity-100 md:ml-3"}
+                overflow-hidden
+              `}
+              style={{ transitionProperty: "max-width, opacity, margin" }}
+            >
+              Logout
+            </span>
+          </button>
+        </div>
 
-        {/* Pocket */}
-        <NavLink
-          to="/pockets"
-          className={({ isActive }) =>
-            `flex items-center min-h-[48px] p-2 rounded-lg text-white transition-colors duration-200 group relative ${
-              isActive ? "bg-secondary" : "hover:bg-[var(--color-hov)]"
-            }`
-          }
-        >
-          <Wallet size={20} className="mr-3 flex-shrink-0" />
-          <span
-            className={`font-medium whitespace-nowrap overflow-hidden ${
-              isCollapsed ? "hidden" : ""
-            }`}
-          >
-            Pocket
-          </span>
-          <span
-            className={`ml-auto bg-red-500 text-white text-xs font-semibold px-2 py-0.5 rounded-full whitespace-nowrap overflow-hidden ${
-              isCollapsed ? "hidden" : ""
-            }`}
-          >
-            New 6
-          </span>
-        </NavLink>
-
-        {/* Savings */}
-        <NavLink
-          to="/savings"
-          className={({ isActive }) =>
-            `flex items-center min-h-[48px] p-2 rounded-lg text-white transition-colors duration-200 group ${
-              isActive ? "bg-secondary" : "hover:bg-[var(--color-hov)]"
-            }`
-          }
-        >
-          <HandCoins size={20} className="mr-3 flex-shrink-0" />
-          <span
-            className={`font-medium whitespace-nowrap overflow-hidden ${
-              isCollapsed ? "hidden" : ""
-            }`}
-          >
-            Savings
-          </span>
-        </NavLink>
-
-        {/* Recomendation */}
-        <NavLink
-          to="/recomendation"
-          className={({ isActive }) =>
-            `flex items-center min-h-[48px] p-2 rounded-lg text-white transition-colors duration-200 group ${
-              isActive ? "bg-secondary" : "hover:bg-[var(--color-hov)]"
-            }`
-          }
-        >
-          <BrainCircuit size={20} className="mr-3 flex-shrink-0" />
-          <span
-            className={`font-medium whitespace-nowrap overflow-hidden ${
-              isCollapsed ? "hidden" : ""
-            }`}
-          >
-            Recomendation
-          </span>
-        </NavLink>
-      </nav>
-
-      <div className="p-4">
-        {/* Settings */}
-        <NavLink
-          to="/settings"
-          className={({ isActive }) =>
-            `flex items-center min-h-[48px] p-2 rounded-lg text-white transition-colors duration-200 group ${
-              isActive ? "bg-secondary" : "hover:bg-[var(--color-hov)]"
-            }`
-          }
-        >
-          <Settings size={20} className="mr-3 flex-shrink-0" />
-          <span
-            className={`font-medium whitespace-nowrap overflow-hidden ${
-              isCollapsed ? "hidden" : ""
-            }`}
-          >
-            Settings
-          </span>
-        </NavLink>
-
-        {/* Tombol Logout - Membuka Modal */}
-        <button
-          onClick={handleShowLogoutModal} // Mengubah ini untuk membuka modal
-          className="flex items-center min-h-[48px] p-2 rounded-lg text-white transition-colors duration-200 group cursor-pointer hover:bg-[var(--color-hov)] w-full"
-        >
-          <LogOut size={20} className="mr-3 flex-shrink-0" />
-          <span
-            className={`font-medium whitespace-nowrap overflow-hidden ${
-              isCollapsed ? "hidden" : ""
-            }`}
-          >
-            Logout
-          </span>
-        </button>
-      </div>
-
-      {/* Modal Logout */}
-      {showLogoutModal && (
-        <div className="fixed inset-0 backdrop-blur-md bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl p-6 max-w-sm w-full mx-4">
-            <h2 className="text-xl font-bold text-gray-800 mb-4">
-              Konfirmasi Logout
-            </h2>
-            <p className="text-gray-700 mb-6">
-              Apakah Anda yakin ingin keluar dari akun?
-            </p>
-            <div className="flex justify-end space-x-3">
-              <button
-                onClick={handleCloseLogoutModal}
-                className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors duration-200"
-              >
-                Batal
-              </button>
-              <button
-                onClick={confirmLogout}
-                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors duration-200"
-              >
-                Logout
-              </button>
+        {/* Modal Konfirmasi Logout */}
+        {showLogoutModal && (
+          <div className="fixed inset-0 backdrop-blur-sm bg-black/60 flex items-center justify-center z-[70]">
+            <div className="bg-white rounded-lg shadow-xl p-6 max-w-sm w-full mx-4">
+              <h2 className="text-xl font-bold text-gray-800 mb-4">Konfirmasi Logout</h2>
+              <p className="text-gray-700 mb-6">Apakah Anda yakin ingin keluar dari akun?</p>
+              <div className="flex justify-end space-x-3">
+                <button onClick={() => setShowLogoutModal(false)} className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">Batal</button>
+                <button onClick={confirmLogout} className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">Logout</button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </aside>
+    </>
+  );
+};
+
+// --- KOMPONEN SIDEBARLINK (TELAH DIPERBAIKI) ---
+const SidebarLink = ({ to, icon, text, isCollapsed, onClick }) => {
+  return (
+    <NavLink
+      to={to}
+      onClick={onClick}
+      className={({ isActive }) =>
+        `flex items-center w-full p-3 rounded-lg text-white transition-colors duration-300 group
+         ${isActive ? "bg-secondary" : "hover:bg-secondary/60"}
+         ${isCollapsed ? "md:justify-center" : ""}`
+      }
+    >
+      {icon}
+      <span
+        className={`
+          ml-3 font-medium whitespace-nowrap
+          transition-all duration-300
+          ${isCollapsed ? "md:max-w-0 md:opacity-0 md:ml-0" : "md:max-w-xs md:opacity-100 md:ml-3"}
+          overflow-hidden
+        `}
+        style={{ transitionProperty: "max-width, opacity, margin" }}
+      >
+        {text}
+      </span>
+    </NavLink>
   );
 };
 

@@ -4,80 +4,94 @@ import {
   Routes,
   Route,
   Outlet,
-  Navigate,
-  useNavigate, // Import useNavigate
+  useNavigate,
 } from "react-router-dom";
 
-// Import halaman-halaman
+// --- Halaman Autentikasi ---
 import Login from "./pages/Auth/login";
 import Register from "./pages/Auth/register";
 
-// Halaman Dashboard
+// --- Halaman Dashboard ---
 import Home from "./pages/components/Dashboard/Home";
-// Komponen dalam folder Transaction
-import Transaction from "./pages/components/transaction/transaction"; // Halaman Transactions
-import PocketsPage from "./pages/components/Pockets/PocketsPage"; // Halaman Pockets 
-import SavingsPage from "./pages/components/Savings/SavingsPage"; // Halaman Savings 
-import RecomendationPage from "./pages/components/Recomendation/RecomendationPage"; // Halaman Recomendation
 
-// Komponen Layout
+// --- Halaman Lainnya ---
+import Transaction from "./pages/components/transaction/transaction";
+import PocketsPage from "./pages/components/Pockets/PocketsPage";
+import SavingsPage from "./pages/components/Savings/SavingsPage";
+import RecomendationPage from "./pages/components/Recomendation/RecomendationPage";
+
+// --- Komponen Layout ---
 import Sidebar from "./pages/components/Sidebar/Sidebar";
+import { Menu } from "lucide-react";
 
-// MainLayout untuk menampung Sidebar dan konten utama
+// --- Komponen Header untuk Mobile View ---
+const Header = ({ onMenuClick }) => (
+  <header className="bg-white shadow-sm p-4 flex items-center md:hidden sticky top-0 z-30">
+    <button onClick={onMenuClick} className="text-gray-600 hover:text-primary">
+      <Menu size={24} />
+    </button>
+    <div className="flex-grow text-center font-bold text-primary">
+      Fin<span className="text-accent">track</span>
+    </div>
+    <div className="w-6" />
+  </header>
+);
+
+// --- Layout Dashboard Utama (DENGAN PERBAIKAN) ---
 function DashboardLayout() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const toggleSidebar = () => setIsSidebarOpen((v) => !v);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
+
+  // Efek untuk menutup menu mobile secara otomatis saat layar membesar
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768) { // 768px adalah breakpoint default 'md' di Tailwind
+        setIsMobileOpen(false);
+      }
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
 
   return (
     <div className="flex min-h-screen bg-gray-50 font-inter">
-      {/* Sidebar - melewatkan state dan setter ke Sidebar */}
       <Sidebar
-        onToggleCollapse={toggleSidebar}
-        isCollapsed={isSidebarOpen}
+        isCollapsed={isSidebarCollapsed}
+        onToggleCollapse={() => setIsSidebarCollapsed((p) => !p)}
+        isMobileOpen={isMobileOpen}
+        toggleMobileSidebar={() => setIsMobileOpen((p) => !p)}
       />
 
-      {/* Konten utama halaman */}
       <div
         className={`
-          flex-1 p-8 transition-all duration-300 ease-in-out
-          ${isSidebarOpen ? "ml-20" : "ml-64"}
-          min-h-screen overflow-auto
+          flex-1 flex flex-col transition-all duration-300 ease-in-out
+          ${isSidebarCollapsed ? "md:ml-20" : "md:ml-64"}
         `}
       >
-        <Outlet context={{ isSidebarOpen, toggleSidebar }} />
+        <Header onMenuClick={() => setIsMobileOpen(true)} />
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
+          <Outlet />
+        </main>
       </div>
     </div>
   );
 }
 
-// PrivateRoute untuk melindungi rute yang memerlukan autentikasi
+// --- Private Route Wrapper ---
 const PrivateRoute = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(null); // null: sedang memeriksa, false: tidak auth, true: auth
-  const navigate = useNavigate(); // Inisialisasi useNavigate
+  const [isAuthenticated, setIsAuthenticated] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // Memastikan kode berjalan hanya di sisi klien (browser)
-    if (typeof window !== "undefined") {
-      const token = localStorage.getItem("jwt_token"); // Gunakan kunci yang benar: "jwt_token"
-      if (token) {
-        setIsAuthenticated(true);
-      } else {
-        setIsAuthenticated(false);
-      }
-    } else {
-      // Untuk SSR, asumsikan tidak terautentikasi secara default untuk mencegah error localStorage
-      setIsAuthenticated(false);
-    }
-  }, []); // useEffect ini hanya berjalan sekali saat komponen di-mount di klien
+    const token = localStorage.getItem("jwt_token");
+    setIsAuthenticated(!!token);
+  }, []);
 
-  // Gunakan useEffect untuk navigasi jika tidak terautentikasi
   useEffect(() => {
-    if (isAuthenticated === false && typeof window !== "undefined") {
-      navigate("/login");
-    }
+    if (isAuthenticated === false) navigate("/login");
   }, [isAuthenticated, navigate]);
 
-  // Tampilkan loading spinner atau null saat status autentikasi belum diketahui
   if (isAuthenticated === null) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 text-gray-600">
@@ -86,60 +100,35 @@ const PrivateRoute = ({ children }) => {
     );
   }
 
-  // Jika tidak terautentikasi, jangan render children
-  if (isAuthenticated === false) {
-    return null;
-  }
-
-  // Jika terautentikasi, render children (komponen yang dilindungi)
-  return children;
+  return isAuthenticated ? children : null;
 };
 
-// Root untuk mengarahkan pengguna ke dashboard atau login saat pertama kali membuka aplikasi
+// --- Redirect Root Route ---
 const Root = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(null); // null: sedang memeriksa
-  const navigate = useNavigate(); // Inisialisasi useNavigate
-
+  const navigate = useNavigate();
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const token = localStorage.getItem("jwt_token"); // Gunakan kunci yang benar: "jwt_token"
-      if (token) {
-        setIsAuthenticated(true);
-      } else {
-        setIsAuthenticated(false);
-      }
-    } else {
-      setIsAuthenticated(false); // Asumsi tidak terautentikasi di SSR
-    }
-  }, []);
+    const token = localStorage.getItem("jwt_token");
+    navigate(token ? "/dashboard" : "/login");
+  }, [navigate]);
 
-  // Menggunakan useEffect untuk mengelola navigasi berdasarkan status autentikasi
-  useEffect(() => {
-    if (isAuthenticated === true) {
-      navigate("/dashboard");
-    } else if (isAuthenticated === false) {
-      navigate("/login");
-    }
-  }, [isAuthenticated, navigate]);
-
-  // Tampilkan loading spinner saat status autentikasi sedang diperiksa
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 text-gray-600">
-      Memeriksa sesi...
+      Memuat...
     </div>
   );
 };
 
-// Komponen utama App
+// --- Aplikasi Utama ---
 function App() {
-  // Menggunakan function App()
   return (
     <Router>
       <Routes>
+        {/* --- Route Publik --- */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/" element={<Root />} /> {/* Rute root */}
-        {/* Rute yang dilindungi di bawah DashboardLayout */}
+        <Route path="/" element={<Root />} />
+
+        {/* --- Route Private & Layout --- */}
         <Route
           element={
             <PrivateRoute>
@@ -151,21 +140,11 @@ function App() {
           <Route path="/transactions" element={<Transaction />} />
           <Route path="/pockets" element={<PocketsPage />} />
           <Route path="/savings" element={<SavingsPage />} />
-          <Route path="/recomendation" element={<RecomendationPage />} /> {" "}
-          {/* Rute baru untuk Pockets */}
-          {/* Tambahkan rute lain yang memerlukan DashboardLayout dan autentikasi di sini */}
+          <Route path="/recomendation" element={<RecomendationPage />} />
         </Route>
-        {/* Tambahkan rute untuk halaman Balance, Income, Expense jika Anda memiliki komponen terpisah untuk itu */}
-        {/* Contoh:
-        <Route path="/balance" element={<PrivateRoute><DashboardLayout><Balance /></DashboardLayout></PrivateRoute>} />
-        <Route path="/income" element={<PrivateRoute><DashboardLayout><Income /></DashboardLayout></PrivateRoute>} />
-        <Route path="/expense" element={<PrivateRoute><DashboardLayout><Expense /></DashboardLayout></PrivateRoute>} />
-        */}
-        {/* Opsional: Jika ada rute lain yang tidak memerlukan layout atau autentikasi */}
-        {/* <Route path="/public-page" element={<PublicComponent />} /> */}
       </Routes>
     </Router>
   );
 }
 
-export default App; // Pastikan ini adalah satu-satunya ekspor default untuk App
+export default App;

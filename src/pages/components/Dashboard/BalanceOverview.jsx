@@ -8,12 +8,11 @@ import {
   Title,
   Tooltip,
   Legend,
-  Filler, // Modul Filler penting untuk `backgroundColor` pada line chart
+  Filler,
 } from "chart.js";
 import { lineChartOptions } from "./constants"; // Pastikan path ini benar
 
-// --- PERBAIKAN: Registrasi semua modul Chart.js yang dibutuhkan ---
-// Ini penting untuk mencegah error "is not a registered scale".
+// Registrasi semua modul Chart.js yang dibutuhkan
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -46,10 +45,9 @@ const BalanceOverview = ({
         borderColor: "rgb(59, 130, 246)",
         backgroundColor: "rgba(59, 130, 246, 0.1)",
         fill: true,
-        tension: 0.4, // Membuat garis melengkung halus
-        // --- PERBAIKAN: Estetika titik pada grafik ---
-        pointRadius: 0, // Titik tidak terlihat di kondisi normal
-        pointHoverRadius: 6, // Titik membesar saat di-hover
+        tension: 0.4,
+        pointRadius: 0,
+        pointHoverRadius: 6,
         pointBackgroundColor: "rgb(59, 130, 246)",
         pointBorderColor: "#fff",
         pointHoverBackgroundColor: "#fff",
@@ -89,8 +87,9 @@ const BalanceOverview = ({
         </p>
       </div>
 
-      {/* --- PERBAIKAN: Menggunakan Grid untuk layout Income vs Expenses --- */}
-      <div className="grid grid-cols-2 gap-4 mb-6">
+      {/* --- INI BAGIAN UTAMA YANG DIPERBAIKI DENGAN FLEXBOX --- */}
+      <div className="flex flex-col md:flex-row gap-y-4 md:gap-x-12 mb-6">
+        {/* Kolom Income */}
         <div>
           <h3 className="text-sm text-gray-500 mb-1">Income</h3>
           <p className="text-xl font-bold text-green-600 flex items-center">
@@ -100,9 +99,10 @@ const BalanceOverview = ({
             </span>
           </p>
         </div>
-        <div className="text-right">
+        {/* Kolom Expenses */}
+        <div>
           <h3 className="text-sm text-gray-500 mb-1">Expenses</h3>
-          <p className="text-xl font-bold text-red-600 flex items-center justify-end">
+          <p className="text-xl font-bold text-red-600 flex items-center">
             {formatCurrency(totalExpenseCurrentMonth)}
             <span className={`ml-2 text-xs font-semibold ${expenseGrowth >= 0 ? "text-red-500" : "text-green-500"}`}>
               {Math.abs(expenseGrowth).toFixed(1)}% {expenseGrowth >= 0 ? "▲" : "▼"}
@@ -111,7 +111,7 @@ const BalanceOverview = ({
         </div>
       </div>
 
-      {/* Line Chart */}
+      {/* Line Chart (posisi tetap di bawah) */}
       <div className="h-64 relative">
         <Line data={lineChartData} options={lineChartOptions(formatCurrency)} />
       </div>
