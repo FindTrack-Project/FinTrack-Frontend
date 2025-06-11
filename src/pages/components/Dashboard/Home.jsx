@@ -11,7 +11,17 @@ import {
   PointElement,
   LineElement,
   Title,
+  
 } from "chart.js";
+
+import {
+  PiggyBank,
+  TrendingUp,
+  Shield,
+  Target,
+  Clock,
+  AlertCircle,
+} from "lucide-react";
 
 // Register necessary Chart.js components
 Chart.register(
@@ -34,6 +44,74 @@ import RecentTransactions from "./RecentTransactions";
 
 import { formatCurrency, getMonthlyData, getTransactionIcon } from "./utils";
 import { PIE_COLORS } from "./constants";
+
+// Komponen Financial Tips
+const FinancialTips = () => {
+  const tips = [
+    {
+      icon: <PiggyBank className="w-6 h-6 text-blue-500" />,
+      title: "50/30/20 Rule",
+      description:
+        "Alokasikan 50% untuk kebutuhan, 30% untuk keinginan, dan 20% untuk tabungan/investasi.",
+    },
+    {
+      icon: <TrendingUp className="w-6 h-6 text-green-500" />,
+      title: "Investasi Rutin",
+      description:
+        "Mulai investasi dengan jumlah kecil secara konsisten untuk hasil jangka panjang.",
+    },
+    {
+      icon: <Shield className="w-6 h-6 text-purple-500" />,
+      title: "Dana Darurat",
+      description:
+        "Siapkan dana darurat setara 3-6 bulan pengeluaran untuk antisipasi keadaan tak terduga.",
+    },
+    {
+      icon: <Target className="w-6 h-6 text-red-500" />,
+      title: "Target Keuangan",
+      description:
+        "Tetapkan target keuangan yang spesifik dan terukur untuk setiap periode.",
+    },
+    {
+      icon: <Clock className="w-6 h-6 text-yellow-500" />,
+      title: "Review Berkala",
+      description:
+        "Lakukan review keuangan bulanan untuk mengevaluasi dan menyesuaikan anggaran.",
+    },
+    {
+      icon: <AlertCircle className="w-6 h-6 text-orange-500" />,
+      title: "Hindari Hutang",
+      description:
+        "Batasi penggunaan kartu kredit dan hindari hutang konsumtif.",
+    },
+  ];
+
+  return (
+    <div className="bg-white rounded-2xl shadow-sm p-6 mb-8">
+      <h2 className="text-xl font-semibold text-gray-800 mb-6">
+        Tips Keuangan
+      </h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {tips.map((tip, index) => (
+          <div
+            key={index}
+            className="bg-gray-50 rounded-xl p-4 hover:shadow-md transition-shadow duration-300"
+          >
+            <div className="flex items-start gap-3">
+              <div className="p-2 bg-white rounded-lg shadow-sm">
+                {tip.icon}
+              </div>
+              <div>
+                <h3 className="font-medium text-gray-800 mb-1">{tip.title}</h3>
+                <p className="text-sm text-gray-600">{tip.description}</p>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
 
 const Home = () => {
   const [totalBalance, setTotalBalance] = useState(0);
@@ -433,7 +511,9 @@ const Home = () => {
               getTransactionIcon={getTransactionIcon}
             />
           </div>
+
         </div>
+          <FinancialTips />
       </div>
     </div>
   );
