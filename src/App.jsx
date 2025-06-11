@@ -19,6 +19,7 @@ import Transaction from "./pages/components/transaction/transaction";
 import PocketsPage from "./pages/components/Pockets/PocketsPage";
 import SavingsPage from "./pages/components/Savings/SavingsPage";
 import RecomendationPage from "./pages/components/Recomendation/RecomendationPage";
+import SettingsPage from "./pages/components/Settings/SettingsPage";
 
 // --- Komponen Layout ---
 import Sidebar from "./pages/components/Sidebar/Sidebar";
@@ -141,6 +142,7 @@ function App() {
           <Route path="/pockets" element={<PocketsPage />} />
           <Route path="/savings" element={<SavingsPage />} />
           <Route path="/recomendation" element={<RecomendationPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
         </Route>
       </Routes>
     </Router>

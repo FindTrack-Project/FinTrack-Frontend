@@ -82,11 +82,11 @@ const TransactionList = ({
         </button>
       </div>
 
-      <div className="flex flex-row flex-wrap gap-3 mb-6">
+      <div className="flex flex-col sm:flex-row flex-wrap gap-3 mb-6">
         {/* Filter Waktu */}
-        <div className="relative">
+        <div className="relative w-full sm:w-auto">
           <select
-            className="appearance-none bg-gray-50 border border-gray-200 text-gray-700 py-2 px-4 pr-8 rounded-lg font-medium text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="appearance-none bg-gray-50 border border-gray-200 text-gray-700 py-2 px-4 pr-8 rounded-lg font-medium text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
             value={selectedTimeRange}
             onChange={(e) => setSelectedTimeRange(e.target.value)}
           >
@@ -100,9 +100,9 @@ const TransactionList = ({
           </div>
         </div>
         {/* Filter Pocket */}
-        <div className="relative">
+        <div className="relative w-full sm:w-auto">
           <select
-            className="appearance-none bg-gray-50 border border-gray-200 text-gray-700 py-2 px-4 pr-8 rounded-lg font-medium text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="appearance-none bg-gray-50 border border-gray-200 text-gray-700 py-2 px-4 pr-8 rounded-lg font-medium text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
             value={selectedPocket}
             onChange={(e) => setSelectedPocket(e.target.value)}
           >
@@ -116,9 +116,9 @@ const TransactionList = ({
           </div>
         </div>
         {/* Filter Kategori */}
-        <div className="relative">
+        <div className="relative w-full sm:w-auto">
           <select
-            className="appearance-none bg-gray-50 border border-gray-200 text-gray-700 py-2 px-4 pr-8 rounded-lg font-medium text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="appearance-none bg-gray-50 border border-gray-200 text-gray-700 py-2 px-4 pr-8 rounded-lg font-medium text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
           >

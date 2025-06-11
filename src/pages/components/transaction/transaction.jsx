@@ -179,51 +179,59 @@ const TransactionPage = () => {
   }
 
   // Skeleton Loader Component (simple placeholders)
+  const SkeletonHeader = () => (
+    <header className="flex flex-row justify-between items-center mb-8 gap-4 animate-pulse">
+      <div>
+        <div className="h-8 bg-gray-200 rounded w-40 mb-2"></div>
+        <div className="h-4 bg-gray-200 rounded w-24"></div>
+      </div>
+      <div className="flex items-center gap-3">
+        <div className="h-10 w-10 bg-gray-200 rounded-full"></div>
+        <div className="hidden sm:flex flex-col gap-1">
+          <div className="h-4 bg-gray-200 rounded w-24"></div>
+          <div className="h-3 bg-gray-200 rounded w-32"></div>
+        </div>
+      </div>
+    </header>
+  );
+
   const CashFlowChartSkeleton = () => (
-  <section className="h-130 bg-white rounded-2xl shadow-sm p-6 col-span-1 animate-pulse">
-    {/* Header */}
-    <div className="flex justify-between items-center mb-6">
-      <div className="h-6 bg-gray-200 rounded w-32"></div>
-      <div className="h-8 bg-gray-200 rounded w-32"></div>
-    </div>
-    {/* Filter Buttons */}
-    <div className="flex items-center mb-6 space-x-2">
-      <div className="h-8 w-16 bg-gray-200 rounded-lg"></div>
-      <div className="h-8 w-20 bg-gray-200 rounded-lg"></div>
-      <div className="h-8 w-24 bg-gray-200 rounded-lg"></div>
-    </div>
-    {/* Legend */}
-    <div className="flex space-x-6 mb-6 text-sm">
-      <div className="flex items-center">
-        <span className="inline-block w-3 h-3 rounded-full bg-gray-300 mr-2"></span>
-        <span className="h-4 w-14 bg-gray-200 rounded"></span>
+    <section className="bg-white rounded-2xl shadow-sm p-4 sm:p-6 animate-pulse flex flex-col">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-4">
+        <div className="h-6 bg-gray-200 rounded w-32"></div>
+        <div className="h-8 bg-gray-200 rounded w-32"></div>
       </div>
-      <div className="flex items-center">
-        <span className="inline-block w-3 h-3 rounded-full bg-gray-300 mr-2"></span>
-        <span className="h-4 w-16 bg-gray-200 rounded"></span>
+      <div className="flex flex-col sm:flex-row gap-2 mb-6">
+        <div className="h-8 w-full sm:w-16 bg-gray-200 rounded-lg"></div>
+        <div className="h-8 w-full sm:w-20 bg-gray-200 rounded-lg"></div>
+        <div className="h-8 w-full sm:w-24 bg-gray-200 rounded-lg"></div>
       </div>
-    </div>
-    {/* Chart Area */}
-    <div className="h-56 bg-gray-200 rounded"></div>
-  </section>
+      <div className="flex flex-col sm:flex-row gap-4 mb-6 text-sm">
+        <div className="flex items-center">
+          <span className="inline-block w-3 h-3 rounded-full bg-gray-300 mr-2"></span>
+          <span className="h-4 w-14 bg-gray-200 rounded"></span>
+        </div>
+        <div className="flex items-center">
+          <span className="inline-block w-3 h-3 rounded-full bg-gray-300 mr-2"></span>
+          <span className="h-4 w-16 bg-gray-200 rounded"></span>
+        </div>
+      </div>
+      <div className="h-48 sm:h-56 bg-gray-200 rounded w-full"></div>
+    </section>
   );
 
   const IncomeBreakdownCardSkeleton = () => (
-    <section className="h-130 bg-white rounded-2xl shadow-sm p-6 flex flex-col animate-pulse">
-      {/* Header */}
-      <div className="flex justify-between items-center mb-6">
+    <section className="bg-white rounded-2xl shadow-sm p-4 sm:p-6 flex flex-col animate-pulse">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-4">
         <div className="h-6 bg-gray-200 rounded w-24"></div>
         <div className="h-8 bg-gray-200 rounded w-32"></div>
       </div>
-      {/* Total Expenses */}
-      <div className="text-start text-4xl font-bold text-gray-800 mb-6">
+      <div className="mb-6">
         <div className="h-8 w-32 bg-gray-200 rounded"></div>
       </div>
-      {/* Pie Chart Skeleton */}
-      <div className="h-56 w-full flex justify-center my-4 flex-shrink-0">
-        <div className="h-48 w-48 bg-gray-200 rounded-full"></div>
+      <div className="flex justify-center my-4 flex-shrink-0">
+        <div className="h-40 w-40 sm:h-48 sm:w-48 bg-gray-200 rounded-full"></div>
       </div>
-      {/* Scrollable Legend Skeleton */}
       <div className="flex-grow overflow-y-auto -mr-3 pr-3">
         <div className="flex flex-wrap justify-center gap-3">
           {[...Array(6)].map((_, i) => (
@@ -238,17 +246,15 @@ const TransactionPage = () => {
   );
 
   const TransactionListSkeleton = () => (
-    <section className="h-130 bg-white rounded-2xl shadow-sm p-6 col-span-1 animate-pulse">
-      {/* Header & Filters */}
-      <div className="flex justify-between items-start mb-6 flex-wrap gap-3">
+    <section className="bg-white rounded-2xl shadow-sm p-4 sm:p-6 animate-pulse flex flex-col">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-6 gap-3">
         <div className="h-6 bg-gray-200 rounded w-32"></div>
-        <div className="flex flex-wrap gap-2">
-          <div className="h-8 w-28 bg-gray-200 rounded-lg"></div>
-          <div className="h-8 w-20 bg-gray-200 rounded-lg"></div>
-          <div className="h-8 w-24 bg-gray-200 rounded-lg"></div>
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+          <div className="h-8 w-full sm:w-28 bg-gray-200 rounded-lg"></div>
+          <div className="h-8 w-full sm:w-20 bg-gray-200 rounded-lg"></div>
+          <div className="h-8 w-full sm:w-24 bg-gray-200 rounded-lg"></div>
         </div>
       </div>
-      {/* List Skeleton */}
       <div className="space-y-4 max-h-96 overflow-y-auto">
         {[...Array(2)].map((_, dateIdx) => (
           <div key={dateIdx}>
@@ -258,10 +264,7 @@ const TransactionPage = () => {
             </div>
             <div className="space-y-3">
               {[...Array(3)].map((_, trxIdx) => (
-                <div
-                  key={trxIdx}
-                  className="flex items-center p-3 rounded-lg"
-                >
+                <div key={trxIdx} className="flex items-center p-3 rounded-lg">
                   <div className="w-10 h-10 rounded-full bg-gray-200 mr-4 flex-shrink-0"></div>
                   <div className="flex-grow flex justify-between items-center">
                     <div>
@@ -283,21 +286,17 @@ const TransactionPage = () => {
   );
 
   const ExpenseBreakdownCardSkeleton = () => (
-    <section className="h-130 bg-white rounded-2xl shadow-sm p-6 flex flex-col animate-pulse">
-      {/* Header */}
-      <div className="flex justify-between items-center mb-6">
+    <section className="bg-white rounded-2xl shadow-sm p-4 sm:p-6 flex flex-col animate-pulse">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-4">
         <div className="h-6 bg-gray-200 rounded w-24"></div>
         <div className="h-8 bg-gray-200 rounded w-32"></div>
       </div>
-      {/* Total Expenses */}
-      <div className="text-start text-4xl font-bold text-gray-800 mb-6">
+      <div className="mb-6">
         <div className="h-8 w-32 bg-gray-200 rounded"></div>
       </div>
-      {/* Pie Chart Skeleton */}
-      <div className="h-56 w-full flex justify-center my-4 flex-shrink-0">
-        <div className="h-48 w-48 bg-gray-200 rounded-full"></div>
+      <div className="flex justify-center my-4 flex-shrink-0">
+        <div className="h-40 w-40 sm:h-48 sm:w-48 bg-gray-200 rounded-full"></div>
       </div>
-      {/* Scrollable Legend Skeleton */}
       <div className="flex-grow overflow-y-auto -mr-3 pr-3">
         <div className="flex flex-wrap justify-center gap-3">
           {[...Array(6)].map((_, i) => (
@@ -311,47 +310,26 @@ const TransactionPage = () => {
     </section>
   );
 
-  const SkeletonHeader = () => (
-    <header className="flex justify-between items-center mb-8 animate-pulse">
-      <div>
-        <div className="h-8 bg-gray-200 rounded w-48 mb-2"></div>
-        <div className="h-4 bg-gray-200 rounded w-32"></div>
-      </div>
-      <div className="flex items-center space-x-4">
-        <div className="h-10 w-10 bg-gray-200 rounded-full"></div>
-        <div className="h-10 w-40 bg-gray-200 rounded-full"></div>
-      </div>
-    </header>
-  );
-
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 p-6 text-gray-800">
-        {/* Skeleton Header */}
+      <div className="min-h-screen bg-gray-50 p-4 sm:p-6 text-gray-800">
         <SkeletonHeader />
-        {/* Main Grid Layout for 3x2 */}
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-8">
-          {/* Top-Left: Cash Flow Section */}
           <div className="lg:col-span-3 min-w-0">
             <CashFlowChartSkeleton />
           </div>
-          {/* Top-Right: Income Section */}
           <div className="lg:col-span-2 min-w-0">
             <IncomeBreakdownCardSkeleton />
           </div>
         </div>
-        {/* Main Grid Layout for 3x2 */}
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-8">
-          {/* Bottom-Left: Transactions List Section */}
           <div className="lg:col-span-3 min-w-0">
             <TransactionListSkeleton />
           </div>
-          {/* Bottom-Right: Expenses Section */}
           <div className="lg:col-span-2 min-w-0">
             <ExpenseBreakdownCardSkeleton />
           </div>
         </div>
-        {/* End of Main Grid */}
       </div>
     );
   }

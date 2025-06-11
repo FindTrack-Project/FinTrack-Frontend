@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import ReactDOM from "react-dom"; // --- 1. IMPORT ReactDOM ---
 import { NavLink, useNavigate } from "react-router-dom";
 import {
   Wallet,
@@ -8,8 +9,8 @@ import {
   ArrowRightLeft,
   LogOut,
   BrainCircuit,
-  ChevronLast,
-  X,
+  ChevronFirst,
+  X
 } from "lucide-react";
 import Logo from "../../../assets/logo.svg";
 
@@ -32,6 +33,24 @@ const Sidebar = ({ isCollapsed, onToggleCollapse, isMobileOpen, toggleMobileSide
     localStorage.removeItem("user_name");
     navigate("/login");
   };
+
+  const LogoutModal = () => (
+    // --- 2. BUNGKUS MODAL DENGAN PORTAL ---
+    ReactDOM.createPortal(
+      <div className="fixed inset-0 backdrop-blur-sm bg-black/60 flex items-center justify-center z-[70]">
+        <div className="bg-white rounded-lg shadow-xl p-6 max-w-sm w-full mx-4">
+          <h2 className="text-xl font-bold text-gray-800 mb-4">Konfirmasi Logout</h2>
+          <p className="text-gray-700 mb-6">Apakah Anda yakin ingin keluar dari akun?</p>
+          <div className="flex justify-end space-x-3">
+            <button onClick={() => setShowLogoutModal(false)} className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">Batal</button>
+            <button onClick={confirmLogout} className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">Logout</button>
+          </div>
+        </div>
+      </div>,
+      document.getElementById('modal-root') // --- 3. Tentukan tujuan portal ---
+    )
+  );
+
 
   return (
     <>
@@ -65,11 +84,10 @@ const Sidebar = ({ isCollapsed, onToggleCollapse, isMobileOpen, toggleMobileSide
               className={`
                 text-lg font-bold text-white whitespace-nowrap
                 transition-all duration-300
-                ml-3
-                ${isCollapsed ? "md:max-w-0 md:opacity-0 md:ml-0" : "md:max-w-xs md:opacity-100"}
+                ${isCollapsed ? "md:max-w-0 md:opacity-0 md:ml-0" : "md:max-w-xs md:opacity-100 ml-3"}
                 overflow-hidden
               `}
-              style={{ transitionProperty: "max-width, opacity, margin" }}
+              style={{ transitionProperty: "max-width, opacity, margin-left" }}
             >
               Fin<span className="text-accent">track</span>
             </span>
@@ -77,9 +95,9 @@ const Sidebar = ({ isCollapsed, onToggleCollapse, isMobileOpen, toggleMobileSide
 
           <button
             onClick={onToggleCollapse}
-            className="p-1.5 rounded-full bg-white text-primary hidden md:block absolute top-1/2 -translate-y-1/2 -right-3 border border-secondary shadow-md"
+            className="p-1.5 rounded-full bg-white text-primary hidden md:block absolute top-1/2 -translate-y-1/2 -right-3 border border-secondary shadow-md cursor-pointer"
           >
-            <ChevronLast size={18} className={`transition-transform duration-300 ${isCollapsed ? "rotate-180" : ""}`} />
+            <ChevronFirst size={18} className={`transition-transform duration-300 ${isCollapsed ? "rotate-180" : ""}`} />
           </button>
           
           <button onClick={toggleMobileSidebar} className="md:hidden text-white">
@@ -110,7 +128,7 @@ const Sidebar = ({ isCollapsed, onToggleCollapse, isMobileOpen, toggleMobileSide
           />
           <button
             onClick={() => setShowLogoutModal(true)}
-            className={`flex items-center w-full p-3 mt-1 rounded-lg text-white transition-colors duration-300 group hover:bg-secondary/60 ${isCollapsed ? 'md:justify-center' : ''}`}
+            className={`flex items-center w-full p-3 mt-1 rounded-lg text-white transition-colors duration-300 group hover:bg-secondary/60 cursor-pointer ${isCollapsed ? 'md:justify-center' : ''}`}
           >
             <LogOut size={20} className="flex-shrink-0" />
             <span
@@ -120,32 +138,22 @@ const Sidebar = ({ isCollapsed, onToggleCollapse, isMobileOpen, toggleMobileSide
                 ${isCollapsed ? "md:max-w-0 md:opacity-0 md:ml-0" : "md:max-w-xs md:opacity-100 md:ml-3"}
                 overflow-hidden
               `}
-              style={{ transitionProperty: "max-width, opacity, margin" }}
+              style={{ transitionProperty: "max-width, opacity, margin-left" }}
             >
               Logout
             </span>
           </button>
         </div>
-
-        {/* Modal Konfirmasi Logout */}
-        {showLogoutModal && (
-          <div className="fixed inset-0 backdrop-blur-sm bg-black/60 flex items-center justify-center z-[70]">
-            <div className="bg-white rounded-lg shadow-xl p-6 max-w-sm w-full mx-4">
-              <h2 className="text-xl font-bold text-gray-800 mb-4">Konfirmasi Logout</h2>
-              <p className="text-gray-700 mb-6">Apakah Anda yakin ingin keluar dari akun?</p>
-              <div className="flex justify-end space-x-3">
-                <button onClick={() => setShowLogoutModal(false)} className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">Batal</button>
-                <button onClick={confirmLogout} className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">Logout</button>
-              </div>
-            </div>
-          </div>
-        )}
       </aside>
+
+      {/* --- 4. PANGGIL MODAL DI SINI --- */}
+      {/* JSX ini tidak dirender di sini, tapi di 'modal-root' berkat Portal */}
+      {showLogoutModal && <LogoutModal />}
     </>
   );
 };
 
-// --- KOMPONEN SIDEBARLINK (TELAH DIPERBAIKI) ---
+// --- KOMPONEN SIDEBARLINK ---
 const SidebarLink = ({ to, icon, text, isCollapsed, onClick }) => {
   return (
     <NavLink
@@ -165,7 +173,7 @@ const SidebarLink = ({ to, icon, text, isCollapsed, onClick }) => {
           ${isCollapsed ? "md:max-w-0 md:opacity-0 md:ml-0" : "md:max-w-xs md:opacity-100 md:ml-3"}
           overflow-hidden
         `}
-        style={{ transitionProperty: "max-width, opacity, margin" }}
+        style={{ transitionProperty: "max-width, opacity, margin-left" }}
       >
         {text}
       </span>

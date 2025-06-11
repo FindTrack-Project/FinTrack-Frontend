@@ -219,25 +219,26 @@ const Home = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8 w-full animate-pulse">
-        {/* Skeleton Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="h-8 w-48 bg-gray-300 rounded-md"></div>
-          <div className="flex items-center gap-4">
-            <div className="h-10 w-10 bg-gray-300 rounded-full"></div>
-            <div className="flex items-center gap-3 bg-gray-300 rounded-full pr-3 pl-1 py-1">
-              <div className="w-10 h-10 bg-gray-400 rounded-full"></div>
-              <div className="text-right">
-                <div className="h-4 w-24 bg-gray-400 rounded-md mb-1"></div>
-                <div className="h-3 w-32 bg-gray-400 rounded-md"></div>
-              </div>
+        {/* Skeleton Header (Sudah cukup responsif) */}
+        <header className="flex flex-row justify-between items-center mb-8 gap-4 animate-pulse">
+          <div>
+            <div className="h-8 bg-gray-200 rounded w-40 mb-2"></div>
+            <div className="h-4 bg-gray-200 rounded w-24"></div>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 bg-gray-200 rounded-full"></div>
+            <div className="hidden sm:flex flex-col gap-1">
+              <div className="h-4 bg-gray-200 rounded w-24 mb-1"></div>
+              <div className="h-3 bg-gray-200 rounded w-32"></div>
             </div>
           </div>
-        </div>
+        </header>
 
         {/* Skeleton Atas: Balance & Expenses */}
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-8">
           {/* Skeleton BalanceOverview */}
-          <div className="lg:col-span-3 bg-white border border-gray-200 p-6 rounded-xl shadow-sm flex flex-col h-110">
+          {/* PERBAIKAN: Menghapus h-110 agar tinggi fleksibel */}
+          <div className="lg:col-span-3 bg-white border border-gray-200 p-6 rounded-xl shadow-sm flex flex-col">
             <div className="flex items-center justify-between mb-6">
               <div className="h-6 w-32 bg-gray-300 rounded-md"></div>
               <div className="h-8 w-32 bg-gray-300 rounded-md"></div>
@@ -256,39 +257,44 @@ const Home = () => {
                 <div className="h-6 w-24 bg-gray-400 rounded-md"></div>
               </div>
             </div>
-            <div className="h-64 bg-gray-200 rounded-md flex-1"></div>
+            {/* PERBAIKAN: Tinggi grafik dibuat responsif */}
+            <div className="h-48 sm:h-64 bg-gray-200 rounded-md flex-1"></div>
           </div>
 
           {/* Skeleton ExpensesChart */}
-          <div className="lg:col-span-2 bg-white border border-gray-200 p-6 rounded-xl shadow-sm flex flex-col h-110">
+          {/* PERBAIKAN: Menghapus h-110 agar tinggi fleksibel */}
+          <div className="lg:col-span-2 bg-white border border-gray-200 p-6 rounded-xl shadow-sm flex flex-col">
             <div className="flex items-center justify-between mb-6">
               <div className="h-6 w-32 bg-gray-300 rounded-md"></div>
               <div className="h-8 w-32 bg-gray-300 rounded-md"></div>
             </div>
-            <div className="flex flex-col items-center flex-1 min-h-0">
-              <div className="h-60 w-60 rounded-full bg-gray-200 mb-6"></div>
-              <div className="flex-grow overflow-y-auto -mr-3 pr-3">
-              <div className="flex flex-wrap justify-center gap-3">
-                {[...Array(6)].map((_, i) => (
-                  <div key={i} className="flex items-center border border-gray-200 rounded-lg px-3 py-1.5 text-sm mb-2">
-                    <span className="w-3 h-3 rounded-lg mr-2 flex-shrink-0 bg-gray-300"></span>
-                    <span className="h-4 w-16 bg-gray-200 rounded"></span>
-                  </div>
-                ))}
+            <div className="flex flex-col items-center justify-center flex-1 min-h-0">
+              {/* PERBAIKAN: Ukuran donat dibuat responsif */}
+              <div className="h-40 w-40 sm:h-52 sm:w-52 rounded-full bg-gray-200 mb-6"></div>
+              <div className="w-full">
+                <div className="flex flex-wrap justify-center gap-3">
+                  {/* PERBAIKAN: Jumlah legenda dikurangi agar lebih rapi di mobile */}
+                  {[...Array(4)].map((_, i) => (
+                    <div key={i} className="flex items-center rounded-lg px-3 py-1.5 text-sm">
+                      <span className="w-3 h-3 rounded-lg mr-2 flex-shrink-0 bg-gray-300"></span>
+                      <span className="h-4 w-16 bg-gray-200 rounded"></span>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
             </div>
           </div>
         </div>
 
         {/* Skeleton Bawah: Pockets, Saving Goals, Recent Transactions */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {/* Skeleton PocketsSection */}
-          <div className="bg-white border border-gray-200 p-6 rounded-xl shadow-sm flex flex-col h-100">
+          {/* PERBAIKAN: Menghapus h-100 agar tinggi fleksibel */}
+          <div className="bg-white border border-gray-200 p-6 rounded-xl shadow-sm flex flex-col">
             <div className="h-6 w-24 bg-gray-300 rounded-md mb-6"></div>
-            <div className="flex-grow space-y-4 max-h-[22rem] overflow-y-auto -mr-2 pr-2 custom-scrollbar min-h-0">
+            <div className="space-y-4">
               {[...Array(3)].map((_, i) => (
-                <div key={i} className="flex items-center p-3 rounded-lg">
+                <div key={i} className="flex items-center p-2 rounded-lg">
                   <div className="w-10 h-10 rounded-full bg-gray-200 mr-3"></div>
                   <div className="flex-1">
                     <div className="h-4 w-24 bg-gray-300 rounded-md"></div>
@@ -300,9 +306,10 @@ const Home = () => {
           </div>
 
           {/* Skeleton SavingGoalsSection */}
-          <div className="bg-white border border-gray-200 p-6 rounded-xl shadow-sm flex flex-col h-100">
+          {/* PERBAIKAN: Menghapus h-100 agar tinggi fleksibel */}
+          <div className="bg-white border border-gray-200 p-6 rounded-xl shadow-sm flex flex-col">
             <div className="h-6 w-28 bg-gray-300 rounded-md mb-6"></div>
-            <div className="flex-grow space-y-4 max-h-[22rem] overflow-y-auto -mr-2 pr-2 custom-scrollbar min-h-0">
+            <div className="space-y-4">
               {[...Array(2)].map((_, i) => (
                 <div key={i} className="p-4 bg-gray-100 rounded-lg">
                   <div className="flex items-center justify-between mb-2">
@@ -319,15 +326,16 @@ const Home = () => {
           </div>
 
           {/* Skeleton RecentTransactions */}
-          <div className="lg:col-span-2 bg-white border border-gray-200 p-6 rounded-xl shadow-sm flex flex-col h-100">
+          {/* PERBAIKAN: Mengubah grid span dan menghapus h-100 */}
+          <div className="md:col-span-2 bg-white border border-gray-200 p-6 rounded-xl shadow-sm flex flex-col">
             <div className="h-6 w-32 bg-gray-300 rounded-md mb-6"></div>
             <div className="flex flex-row flex-wrap gap-3 mb-6">
               <div className="h-8 w-32 bg-gray-200 rounded-lg"></div>
               <div className="h-8 w-32 bg-gray-200 rounded-lg"></div>
-              <div className="h-8 w-32 bg-gray-200 rounded-lg"></div>
             </div>
-            <div className="flex-grow space-y-2 max-h-[22rem] overflow-y-auto -mr-2 pr-2 custom-scrollbar min-h-0">
-              {[...Array(2)].map((_, dateIdx) => (
+            <div className="space-y-4">
+              {/* PERBAIKAN: Menyederhanakan jumlah transaksi agar tidak terlalu panjang di mobile */}
+              {[...Array(1)].map((_, dateIdx) => (
                 <div key={dateIdx}>
                   <div className="flex justify-between items-center text-sm font-medium text-gray-600 mb-3 px-2">
                     <div className="h-4 w-32 bg-gray-200 rounded"></div>
@@ -335,7 +343,7 @@ const Home = () => {
                   </div>
                   <div className="space-y-3">
                     {[...Array(3)].map((_, trxIdx) => (
-                      <div key={trxIdx} className="flex items-center p-3 rounded-lg">
+                      <div key={trxIdx} className="flex items-center p-2 rounded-lg">
                         <div className="w-10 h-10 rounded-full bg-gray-200 mr-4 flex-shrink-0"></div>
                         <div className="flex-grow flex justify-between items-center">
                           <div>

@@ -6,18 +6,17 @@ const DashboardHeader = ({ userName, userEmail }) => {
     <div className="flex items-center justify-between mb-8">
       <div className="flex items-center gap-4">
         <div>
-          <h1 className="text-3xl text-gray-900 font-bold">Dashboard</h1>
+          <h1 className="text-2xl sm:text-3xl text-gray-900 font-bold">Dashboard</h1>
           <p className="text-gray-500 text-sm mt-1">
             Welcome back, {userName}!
           </p>
         </div>
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3">
         {/* Notifikasi */}
         <button className="relative bg-white border border-gray-200 rounded-full p-2.5 shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer">
           <Bell size={20} className="text-gray-600" />
-          <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full border border-white"></span>
         </button>
 
         {/* Profil user */}

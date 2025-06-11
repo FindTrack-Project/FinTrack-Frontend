@@ -29,7 +29,7 @@ const CustomTooltip = ({ active, payload, label }) => {
 
 const CashFlowChart = ({ cashFlowData, cashFlowFilter, setCashFlowFilter }) => {
   return (
-    <section className="bg-white rounded-2xl shadow-sm p-6 col-span-1">
+    <section className="h-full bg-white rounded-2xl shadow-sm p-6 col-span-1">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-lg font-semibold text-gray-800">Cash Flow</h2>
         <select className="px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-transparent cursor-pointer">
@@ -40,14 +40,14 @@ const CashFlowChart = ({ cashFlowData, cashFlowFilter, setCashFlowFilter }) => {
       </div>
 
       {/* Filter Buttons */}
-      <div className="flex items-center mb-6 space-x-2">
-         {["All", "Incomes", "Expenses"].map((filter) => (
+      <div className="inline-flex bg-gray-100 rounded-lg p-1 mb-6 self-start">
+        {["All", "Incomes", "Expenses"].map((filter) => (
           <button
             key={filter}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
               cashFlowFilter === filter
-                ? "bg-gray-800 text-white"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  ? "bg-white text-gray-900 shadow-sm"
+                  : "text-gray-500 hover:text-gray-700"
             }`}
             onClick={() => setCashFlowFilter(filter)}
           >
