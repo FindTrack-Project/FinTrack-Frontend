@@ -18,6 +18,7 @@ import Home from "./pages/components/Dashboard/Home";
 import Transaction from "./pages/components/transaction/transaction"; // Halaman Transactions
 import PocketsPage from "./pages/components/Pockets/PocketsPage"; // Halaman Pockets 
 import SavingsPage from "./pages/components/Savings/SavingsPage"; // Halaman Savings 
+import RecomendationPage from "./pages/components/Recomendation/RecomendationPage"; // Halaman Recomendation
 
 // Komponen Layout
 import Sidebar from "./pages/components/Sidebar/Sidebar";
@@ -149,7 +150,8 @@ function App() {
           <Route path="/dashboard" element={<Home />} />
           <Route path="/transactions" element={<Transaction />} />
           <Route path="/pockets" element={<PocketsPage />} />
-          <Route path="/savings" element={<SavingsPage />} />{" "}
+          <Route path="/savings" element={<SavingsPage />} />
+          <Route path="/recomendation" element={<RecomendationPage />} /> {" "}
           {/* Rute baru untuk Pockets */}
           {/* Tambahkan rute lain yang memerlukan DashboardLayout dan autentikasi di sini */}
         </Route>

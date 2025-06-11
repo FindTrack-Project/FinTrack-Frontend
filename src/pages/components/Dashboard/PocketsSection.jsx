@@ -52,9 +52,11 @@ const PocketsSection = ({ accounts, formatCurrency }) => {
   };
 
   return (
-    <div className="bg-white border h-100 border-gray-200 p-6 rounded-xl shadow-sm">
-      <h2 className="text-lg font-semibold text-gray-800 mb-6">Pockets</h2>
-      <div className="space-y-4">
+    <div className="bg-white border h-100 border-gray-200 p-6 rounded-xl shadow-sm flex flex-col">
+      <h2 className="text-lg font-semibold text-gray-800 mb-6 flex-shrink-0">
+        Pockets
+      </h2>
+      <div className="flex-grow space-y-4 max-h-[22rem] overflow-y-auto -mr-2 pr-2 custom-scrollbar min-h-0">
         {accounts.length === 0 ? (
           <div className="text-center py-4 text-gray-500 text-sm">
             No accounts found.
@@ -72,7 +74,7 @@ const PocketsSection = ({ accounts, formatCurrency }) => {
             return (
               <div
                 key={account.id}
-                className="flex items-center p-3 rounded-lg hover:bg-gray-50 transition-colors" // Hover effect
+                className="flex items-center p-3 rounded-lg hover:bg-gray-50 transition-colors"
               >
                 <div
                   className="w-10 h-10 rounded-full flex items-center justify-center mr-3 flex-shrink-0"
@@ -93,6 +95,12 @@ const PocketsSection = ({ accounts, formatCurrency }) => {
           })
         )}
       </div>
+      <style>{`
+      .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+      .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+      .custom-scrollbar::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 10px; }
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #d1d5db; }
+    `}</style>
     </div>
   );
 };

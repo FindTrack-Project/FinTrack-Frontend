@@ -57,25 +57,31 @@ const ExpensesChart = ({
           <div className="h-60 w-60 relative mb-6">
             <Pie data={pieData} options={pieOptions(formatCurrency)} />
           </div>
-          <div className="grid grid-cols-2 gap-x-6 gap-y-3 w-full max-w-xs">
-            {Object.entries(expenseByCategory)
-              .sort(([, a], [, b]) => b - a)
-              .map(([cat, amount], idx) => (
-                <div key={cat} className="flex items-center">
-                  <span
-                    className="inline-block w-3 h-3 rounded-full mr-2"
-                    style={{
-                      backgroundColor: PIE_COLORS[idx % PIE_COLORS.length],
-                    }}
-                  ></span>
-                  <span className="text-sm font-medium text-gray-700 truncate">
-                    {cat}
-                  </span>
-                  <span className="text-xs text-gray-500 ml-auto">
-                    {((amount / totalAllExpenses) * 100).toFixed(1)}%
-                  </span>
-                </div>
-              ))}
+          <div className="flex-grow overflow-y-auto -mr-3 pr-3 custom-scrollbar max-h-40">
+            <div className="flex flex-wrap justify-center gap-3">
+              {Object.entries(expenseByCategory)
+                .sort(([, a], [, b]) => b - a)
+                .map(([cat, amount], idx) => (
+                  <div
+                    key={cat}
+                    className="flex items-center border border-gray-200 rounded-lg px-3 py-1.5 text-sm"
+                  >
+                    <span
+                      className="w-3 h-3 rounded-full mr-2"
+                      style={{
+                        backgroundColor: PIE_COLORS[idx % PIE_COLORS.length],
+                      }}
+                    ></span>
+                    <span className="text-gray-700">{cat}</span>
+                  </div>
+                ))}
+            </div>
+            <style>{`
+              .custom-scrollbar::-webkit-scrollbar { width: 8px; }
+              .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+              .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #93c5fd; border-radius: 10px; border: 2px solid #ffffff; }
+              .custom-scrollbar::-webkit-scrollbar-thumb:hover { background-color: #60a5fa; }
+            `}</style>
           </div>
         </div>
       )}

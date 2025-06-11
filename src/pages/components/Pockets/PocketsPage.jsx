@@ -77,9 +77,8 @@ const pieOptions = (formatter) => ({
     },
   },
   // PERUBAHAN DI SINI: Nilai lebih kecil = chart lebih tebal
-  cutout: "45%",
+  cutout: "50%",
 });
-
 
 const PocketsPage = () => {
   const [totalBalance, setTotalBalance] = useState(0);
@@ -196,21 +195,26 @@ const PocketsPage = () => {
       },
     ],
   };
-  
+
   // Handler untuk menghapus pocket
   const handleDeletePocket = async (pocketId) => {
     if (window.confirm("Anda yakin ingin menghapus pocket ini?")) {
       try {
-        await Api.delete(`/accounts/${pocketId}`);
-        await refetchAllPocketData();
+      await Api.delete(`/accounts/${pocketId}`); // 1. Kirim request hapus
+      await refetchAllPocketData(); // 2. Muat ulang data
       } catch (err) {
-        console.error("Gagal menghapus pocket:", err);
-        alert("Gagal menghapus pocket.");
+      console.error("Gagal menghapus pocket:", err);
+      alert("Gagal menghapus pocket.");
       }
     }
   };
 
-  const handlePocketSaved = async () => {
+  const handlePocketSaved = async (dataToSave) => {
+    if (editingPocket) {
+      await Api.put(`/accounts/${editingPocket.id}`, dataToSave);
+    } else {
+      await Api.post("/accounts", dataToSave);
+    }
     await refetchAllPocketData();
   };
 
@@ -229,7 +233,6 @@ const PocketsPage = () => {
     // Tidak perlu setEditingPocket(null) di sini, karena useEffect di modal akan menanganinya
   };
 
-  
   // --- Skeleton Loaders ---
   const SkeletonHeader = () => (
     <header className="flex justify-between items-center mb-8 animate-pulse">
@@ -285,7 +288,7 @@ const PocketsPage = () => {
       </div>
     </div>
   );
-  
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 p-6 text-gray-800">
@@ -360,8 +363,9 @@ const PocketsPage = () => {
     </header>
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+        {/* Left Column: Daftar Pocket */}
         <div className="lg:col-span-3 min-w-0">
-          <div className="bg-white rounded-2xl shadow-sm p-6 mb-6">
+          <div className="h-120 bg-white rounded-2xl shadow-sm p-6 mb-6 flex flex-col">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-lg font-semibold text-gray-800">
                 Total Balance
@@ -376,61 +380,67 @@ const PocketsPage = () => {
             <p className="text-3xl font-bold text-gray-900 mb-6">
               {formatCurrency(totalBalance)}
             </p>
-
-            <div className="space-y-4">
-              {accounts.length === 0 ? (
-                <div className="text-center py-8 text-gray-500 text-sm">
-                  Belum ada pocket.
-                  <button
-                    onClick={() => setIsPocketModalOpen(true)}
-                    className="text-blue-500 ml-1 font-semibold cursor-pointer"
-                  >
-                    Buat baru?
-                  </button>
-                </div>
-              ) : (
-                accounts.map((account, index) => {
-                  const IconComponent = getAccountIconComponent(account);
-                  const color = PIE_COLORS[index % PIE_COLORS.length];
-
-                  return (
-                    <div
-                      key={account.id}
-                      className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-100"
+            <div className="flex-1 min-h-0">
+              <div className="space-y-4 h-full overflow-y-auto pr-1 custom-scrollbar">
+                {accounts.length === 0 ? (
+                  <div className="text-center py-8 text-gray-500 text-sm">
+                    Belum ada pocket.
+                    <button
+                      onClick={() => setIsPocketModalOpen(true)}
+                      className="text-blue-500 ml-1 font-semibold cursor-pointer"
                     >
-                      <div className="flex items-center min-w-0">
-                        <div
-                          className="p-2 rounded-lg mr-3 flex-shrink-0"
-                          style={{ backgroundColor: `${color}20` }}
-                        >
-                          <IconComponent size={20} style={{ color }} />
+                      Buat baru?
+                    </button>
+                  </div>
+                ) : (
+                  accounts.map((account, index) => {
+                    const IconComponent = getAccountIconComponent(account);
+                    const color = PIE_COLORS[index % PIE_COLORS.length];
+                    return (
+                      <div
+                        key={account.id}
+                        className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-100"
+                      >
+                        <div className="flex items-center min-w-0">
+                          <div
+                            className="p-2 rounded-lg mr-3 flex-shrink-0"
+                            style={{ backgroundColor: `${color}20` }}
+                          >
+                            <IconComponent size={20} style={{ color }} />
+                          </div>
+                          <span className="font-medium text-gray-800 truncate">
+                            {account.name}
+                          </span>
                         </div>
-                        <span className="font-medium text-gray-800 truncate">
-                          {account.name}
-                        </span>
+                        <div className="flex items-center space-x-3 flex-shrink-0">
+                          <span className="font-semibold text-gray-900">
+                            {formatCurrency(account.currentBalance)}
+                          </span>
+                          <button className="px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer" disabled>
+                            <Pen size={16} />
+                          </button>
+                          <button onClick={() => handleDeletePocket(account.id)} className="px-4 py-2 text-sm font-medium border border-red-200 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 hover:border-red-300 transition-colors cursor-pointer">
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
                       </div>
-                      <div className="flex items-center space-x-3 flex-shrink-0">
-                        <span className="font-semibold text-gray-900">
-                          {formatCurrency(account.currentBalance)}
-                        </span>
-                        <button className="px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer" disabled>
-                          <Pen size={16} />
-                        </button>
-                        <button onClick={() => handleDeletePocket(account.id)} className="px-4 py-2 text-sm font-medium border border-red-200 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 hover:border-red-300 transition-colors cursor-pointer">
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })
-              )}
+                    );
+                  })
+                )}
+              </div>
             </div>
+            <style>{`
+              .custom-scrollbar::-webkit-scrollbar { width: 8px; }
+              .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+              .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #e5e7eb; border-radius: 10px; }
+              .custom-scrollbar::-webkit-scrollbar-thumb:hover { background-color: #d1d5db; }
+            `}</style>
           </div>
         </div>
 
         {/* Right Column: Ringkasan (Summary Pie Chart) */}
         <div className="lg:col-span-2 min-w-0">
-          <div className="bg-white rounded-2xl shadow-sm p-6">
+          <div className="h-120 bg-white rounded-2xl shadow-sm p-6 flex flex-col">
             <h2 className="text-lg font-semibold text-gray-800 mb-6">
               Ringkasan
             </h2>
@@ -439,41 +449,52 @@ const PocketsPage = () => {
                 Tidak ada data untuk ditampilkan.
               </div>
             ) : (
-              <div className="flex flex-col items-center">
-                <div className="h-60 w-60 relative mb-6">
+              <div className="flex flex-col items-center flex-1 min-h-0">
+                <div className="h-60 w-60 relative mb-6 flex-shrink-0">
                    <Pie data={pieChartData} options={pieOptions(formatCurrency)} />
                 </div>
-                <div className="grid grid-cols-2 gap-x-6 gap-y-3 w-full max-w-xs">
-                  {accounts
-                    .sort((a, b) => b.currentBalance - a.currentBalance)
-                    .map((account, idx) => (
-                      <div key={account.id} className="flex items-center">
-                        <span
-                          className="inline-block w-3 h-3 rounded-full mr-2"
-                          style={{
-                            backgroundColor: PIE_COLORS[idx % PIE_COLORS.length],
-                          }}
-                        ></span>
-                        <span className="text-sm font-medium text-gray-700 truncate">
-                          {account.name}
-                        </span>
-                        <span className="text-xs text-gray-500 ml-auto">
-                          {totalBalance > 0
-                            ? ((account.currentBalance / totalBalance) * 100).toFixed(1) + "%"
-                            : "0%"}
-                        </span>
-                      </div>
-                    ))}
+                <div className="flex-1 min-h-0 w-full max-w-xs">
+                  <div className="h-full flex-grow overflow-y-auto -mr-3 pr-3 custom-scrollbar">
+                    <div className="flex flex-wrap justify-center gap-3">
+                      {accounts
+                        .sort((a, b) => b.currentBalance - a.currentBalance)
+                        .map((account, idx) => (
+                          <div
+                            key={account.id}
+                            className="flex items-center border border-gray-200 rounded-lg px-3 py-1.5 text-sm"
+                          >
+                            <span
+                              className="w-3 h-3 rounded-full mr-2"
+                              style={{
+                                backgroundColor: PIE_COLORS[idx % PIE_COLORS.length],
+                              }}
+                            ></span>
+                            <span className="text-gray-700">{account.name}</span>
+                            <span className="text-xs text-gray-500 ml-2">
+                              {totalBalance > 0
+                                ? ((account.currentBalance / totalBalance) * 100).toFixed(1) + "%"
+                                : "0%"}
+                            </span>
+                          </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
+            <style>{`
+              .custom-scrollbar::-webkit-scrollbar { width: 8px; }
+              .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+              .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #e5e7eb; border-radius: 10px; }
+              .custom-scrollbar::-webkit-scrollbar-thumb:hover { background-color: #d1d5db; }
+            `}</style>
           </div>
         </div>
       </div>
 
       <PocketModal
         isOpen={isPocketModalOpen}
-        onClose={() => setIsPocketModalOpen(false)}
+        onClose={handleCloseModal}
         onPocketSaved={handlePocketSaved}
       />
     </div>

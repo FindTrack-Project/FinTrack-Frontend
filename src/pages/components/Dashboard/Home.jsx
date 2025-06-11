@@ -234,13 +234,18 @@ const Home = () => {
           </div>
         </div>
 
-        {/* Skeleton Balance and Expenses Sections */}
+        {/* Skeleton Atas: Balance & Expenses */}
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-8">
-          {/* Skeleton Balance Section */}
-          <div className="lg:col-span-3 bg-white border border-gray-200 p-6 rounded-xl shadow-sm">
-            <div className="h-6 w-32 bg-gray-300 rounded-md mb-6"></div>
-            <div className="h-4 w-24 bg-gray-300 rounded-md mb-1"></div>
-            <div className="h-8 w-48 bg-gray-400 rounded-md mb-6"></div>
+          {/* Skeleton BalanceOverview */}
+          <div className="lg:col-span-3 bg-white border border-gray-200 p-6 rounded-xl shadow-sm flex flex-col h-110">
+            <div className="flex items-center justify-between mb-6">
+              <div className="h-6 w-32 bg-gray-300 rounded-md"></div>
+              <div className="h-8 w-32 bg-gray-300 rounded-md"></div>
+            </div>
+            <div className="mb-6">
+              <div className="h-4 w-24 bg-gray-300 rounded-md mb-1"></div>
+              <div className="h-8 w-48 bg-gray-400 rounded-md"></div>
+            </div>
             <div className="flex justify-between items-end mb-6">
               <div>
                 <div className="h-4 w-20 bg-gray-300 rounded-md mb-1"></div>
@@ -251,111 +256,111 @@ const Home = () => {
                 <div className="h-6 w-24 bg-gray-400 rounded-md"></div>
               </div>
             </div>
-            <div className="h-64 bg-gray-200 rounded-md"></div>{" "}
-            {/* Placeholder for line chart */}
+            <div className="h-64 bg-gray-200 rounded-md flex-1"></div>
           </div>
 
-          {/* Skeleton Expenses Pie Chart Section */}
-          <div className="lg:col-span-2 bg-white border border-gray-200 p-6 rounded-xl shadow-sm">
-            <div className="h-6 w-32 bg-gray-300 rounded-md mb-6"></div>
-            <div className="flex flex-col items-center">
-              <div className="h-48 w-48 rounded-full bg-gray-200 mb-6"></div>{" "}
-              {/* Placeholder for pie chart */}
-              <div className="grid grid-cols-2 gap-x-6 gap-y-3 w-full max-w-xs">
-                {[...Array(4)].map(
-                  (
-                    _,
-                    i // 4 placeholder categories
-                  ) => (
-                    <div key={i} className="flex items-center">
-                      <div className="w-3 h-3 rounded-full bg-gray-300 mr-2"></div>
-                      <div className="h-4 w-20 bg-gray-300 rounded-md"></div>
-                      <div className="h-3 w-8 bg-gray-400 rounded-md ml-auto"></div>
-                    </div>
-                  )
-                )}
+          {/* Skeleton ExpensesChart */}
+          <div className="lg:col-span-2 bg-white border border-gray-200 p-6 rounded-xl shadow-sm flex flex-col h-110">
+            <div className="flex items-center justify-between mb-6">
+              <div className="h-6 w-32 bg-gray-300 rounded-md"></div>
+              <div className="h-8 w-32 bg-gray-300 rounded-md"></div>
+            </div>
+            <div className="flex flex-col items-center flex-1 min-h-0">
+              <div className="h-60 w-60 rounded-full bg-gray-200 mb-6"></div>
+              <div className="flex-grow overflow-y-auto -mr-3 pr-3">
+              <div className="flex flex-wrap justify-center gap-3">
+                {[...Array(6)].map((_, i) => (
+                  <div key={i} className="flex items-center border border-gray-200 rounded-lg px-3 py-1.5 text-sm mb-2">
+                    <span className="w-3 h-3 rounded-lg mr-2 flex-shrink-0 bg-gray-300"></span>
+                    <span className="h-4 w-16 bg-gray-200 rounded"></span>
+                  </div>
+                ))}
               </div>
             </div>
+            </div>
           </div>
         </div>
 
-        {/* Skeleton Pockets, Saving Goals, and Transactions */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          {/* Skeleton Pockets */}
-          <div className="bg-white border border-gray-200 p-6 rounded-xl shadow-sm">
+        {/* Skeleton Bawah: Pockets, Saving Goals, Recent Transactions */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
+          {/* Skeleton PocketsSection */}
+          <div className="bg-white border border-gray-200 p-6 rounded-xl shadow-sm flex flex-col h-100">
             <div className="h-6 w-24 bg-gray-300 rounded-md mb-6"></div>
-            <div className="space-y-4">
-              {[...Array(3)].map(
-                (
-                  _,
-                  i // 3 placeholder accounts
-                ) => (
-                  <div
-                    key={i}
-                    className="flex items-center justify-between p-4 bg-gray-100 rounded-lg"
-                  >
+            <div className="flex-grow space-y-4 max-h-[22rem] overflow-y-auto -mr-2 pr-2 custom-scrollbar min-h-0">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="flex items-center p-3 rounded-lg">
+                  <div className="w-10 h-10 rounded-full bg-gray-200 mr-3"></div>
+                  <div className="flex-1">
+                    <div className="h-4 w-24 bg-gray-300 rounded-md"></div>
+                  </div>
+                  <div className="h-5 w-20 bg-gray-400 rounded-md ml-auto"></div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Skeleton SavingGoalsSection */}
+          <div className="bg-white border border-gray-200 p-6 rounded-xl shadow-sm flex flex-col h-100">
+            <div className="h-6 w-28 bg-gray-300 rounded-md mb-6"></div>
+            <div className="flex-grow space-y-4 max-h-[22rem] overflow-y-auto -mr-2 pr-2 custom-scrollbar min-h-0">
+              {[...Array(2)].map((_, i) => (
+                <div key={i} className="p-4 bg-gray-100 rounded-lg">
+                  <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center">
                       <div className="p-2 rounded-lg bg-gray-200 mr-3 h-8 w-8"></div>
-                      <div className="h-5 w-24 bg-gray-300 rounded-md"></div>
+                      <div className="h-5 w-28 bg-gray-300 rounded-md"></div>
                     </div>
-                    <div className="h-5 w-20 bg-gray-400 rounded-md"></div>
+                    <div className="h-4 w-12 bg-gray-400 rounded-md"></div>
                   </div>
-                )
-              )}
+                  <div className="h-3 w-40 bg-gray-300 rounded-md"></div>
+                </div>
+              ))}
             </div>
           </div>
 
-          {/* Skeleton Saving Goals */}
-          <div className="bg-white border border-gray-200 p-6 rounded-xl shadow-sm">
-            <div className="h-6 w-28 bg-gray-300 rounded-md mb-6"></div>
-            <div className="space-y-4">
-              {[...Array(2)].map(
-                (
-                  _,
-                  i // 2 placeholder goals
-                ) => (
-                  <div key={i} className="p-4 bg-gray-100 rounded-lg">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center">
-                        <div className="p-2 rounded-lg bg-gray-200 mr-3 h-8 w-8"></div>
-                        <div className="h-5 w-28 bg-gray-300 rounded-md"></div>
-                      </div>
-                      <div className="h-4 w-12 bg-gray-400 rounded-md"></div>
-                    </div>
-                    <div className="h-3 w-40 bg-gray-300 rounded-md"></div>
-                  </div>
-                )
-              )}
-            </div>
-          </div>
-
-          {/* Skeleton Transactions */}
-          <div className="bg-white border border-gray-200 p-6 rounded-xl shadow-sm">
+          {/* Skeleton RecentTransactions */}
+          <div className="lg:col-span-2 bg-white border border-gray-200 p-6 rounded-xl shadow-sm flex flex-col h-100">
             <div className="h-6 w-32 bg-gray-300 rounded-md mb-6"></div>
-            <div className="space-y-4">
-              {[...Array(5)].map(
-                (
-                  _,
-                  i // 5 placeholder transactions
-                ) => (
-                  <div
-                    key={i}
-                    className="flex items-center justify-between p-3 bg-gray-100 rounded-lg"
-                  >
-                    <div className="flex items-center">
-                      <div className="w-8 h-8 bg-gray-200 rounded-full mr-3"></div>
-                      <div>
-                        <div className="h-4 w-28 bg-gray-300 rounded-md mb-1"></div>
-                        <div className="h-3 w-20 bg-gray-400 rounded-md"></div>
-                      </div>
-                    </div>
-                    <div className="h-4 w-20 bg-gray-400 rounded-md"></div>
+            <div className="flex flex-row flex-wrap gap-3 mb-6">
+              <div className="h-8 w-32 bg-gray-200 rounded-lg"></div>
+              <div className="h-8 w-32 bg-gray-200 rounded-lg"></div>
+              <div className="h-8 w-32 bg-gray-200 rounded-lg"></div>
+            </div>
+            <div className="flex-grow space-y-2 max-h-[22rem] overflow-y-auto -mr-2 pr-2 custom-scrollbar min-h-0">
+              {[...Array(2)].map((_, dateIdx) => (
+                <div key={dateIdx}>
+                  <div className="flex justify-between items-center text-sm font-medium text-gray-600 mb-3 px-2">
+                    <div className="h-4 w-32 bg-gray-200 rounded"></div>
+                    <div className="h-4 w-16 bg-gray-200 rounded"></div>
                   </div>
-                )
-              )}
+                  <div className="space-y-3">
+                    {[...Array(3)].map((_, trxIdx) => (
+                      <div key={trxIdx} className="flex items-center p-3 rounded-lg">
+                        <div className="w-10 h-10 rounded-full bg-gray-200 mr-4 flex-shrink-0"></div>
+                        <div className="flex-grow flex justify-between items-center">
+                          <div>
+                            <div className="h-4 w-32 bg-gray-200 rounded mb-2"></div>
+                            <div className="h-3 w-20 bg-gray-200 rounded"></div>
+                          </div>
+                          <div className="text-right">
+                            <div className="h-4 w-16 bg-gray-200 rounded mb-2"></div>
+                            <div className="h-3 w-20 bg-gray-200 rounded"></div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
+        <style>{`
+          .custom-scrollbar::-webkit-scrollbar { width: 8px; }
+          .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+          .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #e5e7eb; border-radius: 10px; }
+          .custom-scrollbar::-webkit-scrollbar-thumb:hover { background-color: #d1d5db; }
+        `}</style>
       </div>
     );
   }
@@ -394,7 +399,6 @@ const Home = () => {
 
         {/* Kolom Bawah*/}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
-
           {/* Kolom 1: Pockets */}
           <div className="lg:col-span-1 min-w-0">
             <PocketsSection
@@ -416,12 +420,11 @@ const Home = () => {
             <RecentTransactions
               incomes={incomes}
               expenses={expenses}
-              accounts={accounts} 
+              accounts={accounts}
               formatCurrency={formatCurrency}
               getTransactionIcon={getTransactionIcon}
             />
           </div>
-
         </div>
       </div>
     </div>

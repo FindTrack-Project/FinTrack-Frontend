@@ -26,7 +26,7 @@ const pieOptions = {
       },
     },
   },
-  cutout: "70%",
+  cutout: "50%",
 };
 
 const ExpenseBreakdownCard = ({ expensesPieData }) => {
@@ -82,7 +82,7 @@ const ExpenseBreakdownCard = ({ expensesPieData }) => {
         <div className="flex flex-wrap justify-center gap-3">
           {expensesPieData
             .map((entry, index) => (
-              <div key={index} className="flex items-center border border-gray-200 rounded-full px-3 py-1.5 text-sm">
+              <div key={index} className="flex items-center border border-gray-200 rounded-lg px-3 py-1.5 text-sm">
                 <span
                   className="w-3 h-3 rounded-full mr-2"
                   style={{

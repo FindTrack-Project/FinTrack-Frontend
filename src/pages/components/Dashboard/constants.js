@@ -67,25 +67,19 @@ export const pieOptions = (formatCurrency) => ({
   responsive: true,
   maintainAspectRatio: false,
   plugins: {
-    legend: {
-      display: false,
-    },
+    legend: { display: false },
     tooltip: {
-      backgroundColor: "rgba(0, 0, 0, 0.8)",
-      titleColor: "#ffffff",
-      bodyColor: "#ffffff",
-      borderColor: "rgba(255, 255, 255, 0.1)",
-      borderWidth: 1,
-      cornerRadius: 8,
+      enabled: true,
+      backgroundColor: "#111827",
+      titleColor: "#FFFFFF",
+      bodyColor: "#E5E7EB",
+      borderRadius: 8,
+      padding: 12,
+      boxPadding: 4,
       callbacks: {
-        label: function (context) {
-          const value = context.parsed;
-          const total = context.dataset.data.reduce((a, b) => a + b, 0);
-          const percentage = ((value / total) * 100).toFixed(1);
-          return `${context.label}: ${formatCurrency(value)} (${percentage}%)`;
-        },
+        label: (context) => `${formatCurrency(context.parsed)}`,
       },
     },
   },
-  cutout: "60%",
+  cutout: "50%", // Tebalkan pie chart
 });

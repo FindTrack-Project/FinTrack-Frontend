@@ -180,7 +180,7 @@ const TransactionPage = () => {
 
   // Skeleton Loader Component (simple placeholders)
   const CashFlowChartSkeleton = () => (
-  <section className="bg-white rounded-2xl shadow-sm p-6 col-span-1 animate-pulse">
+  <section className="h-130 bg-white rounded-2xl shadow-sm p-6 col-span-1 animate-pulse">
     {/* Header */}
     <div className="flex justify-between items-center mb-6">
       <div className="h-6 bg-gray-200 rounded w-32"></div>
@@ -209,34 +209,36 @@ const TransactionPage = () => {
   );
 
   const IncomeBreakdownCardSkeleton = () => (
-    <section className="h-full bg-white rounded-2xl shadow-sm p-6 col-span-1 animate-pulse">
+    <section className="h-130 bg-white rounded-2xl shadow-sm p-6 flex flex-col animate-pulse">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <div className="h-6 bg-gray-200 rounded w-24"></div>
         <div className="h-8 bg-gray-200 rounded w-32"></div>
       </div>
-      {/* Total Income */}
-      <div className="text-center text-2xl font-bold text-gray-800 mb-6">
-        <div className="h-8 w-32 mx-auto bg-gray-200 rounded"></div>
+      {/* Total Expenses */}
+      <div className="text-start text-4xl font-bold text-gray-800 mb-6">
+        <div className="h-8 w-32 bg-gray-200 rounded"></div>
       </div>
       {/* Pie Chart Skeleton */}
-      <div className="flex justify-center mb-6">
+      <div className="h-56 w-full flex justify-center my-4 flex-shrink-0">
         <div className="h-48 w-48 bg-gray-200 rounded-full"></div>
       </div>
-      {/* Legend Skeleton */}
-      <div className="grid grid-cols-2 gap-3 text-sm text-gray-700">
-        {[...Array(4)].map((_, i) => (
-          <div key={i} className="flex items-center">
-            <span className="w-3 h-3 rounded-full mr-2 flex-shrink-0 bg-gray-300"></span>
-            <span className="h-4 w-16 bg-gray-200 rounded"></span>
-          </div>
-        ))}
+      {/* Scrollable Legend Skeleton */}
+      <div className="flex-grow overflow-y-auto -mr-3 pr-3">
+        <div className="flex flex-wrap justify-center gap-3">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="flex items-center border border-gray-200 rounded-lg px-3 py-1.5 text-sm mb-2">
+              <span className="w-3 h-3 rounded-lg mr-2 flex-shrink-0 bg-gray-300"></span>
+              <span className="h-4 w-16 bg-gray-200 rounded"></span>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );
 
   const TransactionListSkeleton = () => (
-    <section className="bg-white rounded-2xl shadow-sm p-6 col-span-1 animate-pulse">
+    <section className="h-130 bg-white rounded-2xl shadow-sm p-6 col-span-1 animate-pulse">
       {/* Header & Filters */}
       <div className="flex justify-between items-start mb-6 flex-wrap gap-3">
         <div className="h-6 bg-gray-200 rounded w-32"></div>
@@ -281,28 +283,30 @@ const TransactionPage = () => {
   );
 
   const ExpenseBreakdownCardSkeleton = () => (
-    <section className="h-full bg-white rounded-2xl shadow-sm p-6 col-span-1 animate-pulse">
+    <section className="h-130 bg-white rounded-2xl shadow-sm p-6 flex flex-col animate-pulse">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <div className="h-6 bg-gray-200 rounded w-24"></div>
         <div className="h-8 bg-gray-200 rounded w-32"></div>
       </div>
       {/* Total Expenses */}
-      <div className="text-center text-2xl font-bold text-gray-800 mb-6">
-        <div className="h-8 w-32 mx-auto bg-gray-200 rounded"></div>
+      <div className="text-start text-4xl font-bold text-gray-800 mb-6">
+        <div className="h-8 w-32 bg-gray-200 rounded"></div>
       </div>
       {/* Pie Chart Skeleton */}
-      <div className="flex justify-center mb-6">
+      <div className="h-56 w-full flex justify-center my-4 flex-shrink-0">
         <div className="h-48 w-48 bg-gray-200 rounded-full"></div>
       </div>
-      {/* Legend Skeleton */}
-      <div className="grid grid-cols-2 gap-3 text-sm text-gray-700">
-        {[...Array(4)].map((_, i) => (
-          <div key={i} className="flex items-center">
-            <span className="w-3 h-3 rounded-full mr-2 flex-shrink-0 bg-gray-300"></span>
-            <span className="h-4 w-16 bg-gray-200 rounded"></span>
-          </div>
-        ))}
+      {/* Scrollable Legend Skeleton */}
+      <div className="flex-grow overflow-y-auto -mr-3 pr-3">
+        <div className="flex flex-wrap justify-center gap-3">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="flex items-center border border-gray-200 rounded-lg px-3 py-1.5 text-sm mb-2">
+              <span className="w-3 h-3 rounded-lg mr-2 flex-shrink-0 bg-gray-300"></span>
+              <span className="h-4 w-16 bg-gray-200 rounded"></span>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );

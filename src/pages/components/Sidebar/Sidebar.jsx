@@ -7,6 +7,7 @@ import {
   Settings,
   ArrowRightLeft,
   LogOut,
+  BrainCircuit,
   CircleHelp,
   ChevronLast,
   CreditCard,
@@ -165,6 +166,25 @@ const Sidebar = ({ isCollapsed, onToggleCollapse }) => {
             }`}
           >
             Savings
+          </span>
+        </NavLink>
+
+        {/* Recomendation */}
+        <NavLink
+          to="/recomendation"
+          className={({ isActive }) =>
+            `flex items-center min-h-[48px] p-2 rounded-lg text-white transition-colors duration-200 group ${
+              isActive ? "bg-secondary" : "hover:bg-[var(--color-hov)]"
+            }`
+          }
+        >
+          <BrainCircuit size={20} className="mr-3 flex-shrink-0" />
+          <span
+            className={`font-medium whitespace-nowrap overflow-hidden ${
+              isCollapsed ? "hidden" : ""
+            }`}
+          >
+            Recomendation
           </span>
         </NavLink>
       </nav>
