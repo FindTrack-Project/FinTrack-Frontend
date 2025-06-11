@@ -1,28 +1,28 @@
-import { Line } from "react-chartjs-2";
+import React from "react";
 import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
   Tooltip,
-  Legend,
-  Filler,
-} from "chart.js";
-import { lineChartOptions } from "./constants"; // Pastikan path ini benar
+  ResponsiveContainer,
+} from "recharts";
 
-// Registrasi semua modul Chart.js yang dibutuhkan
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  Filler
-);
+// Komponen tooltip kustom (tidak ada perubahan)
+const CustomTooltip = ({ active, payload, label, formatCurrency }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-white p-3 rounded-lg shadow-lg border border-gray-200">
+        <p className="font-semibold text-sm text-gray-800">{label}</p>
+        <p className="font-bold text-base text-blue-600">
+          {formatCurrency(payload[0].value)}
+        </p>
+      </div>
+    );
+  }
+  return null;
+};
 
 const BalanceOverview = ({
   totalBalance,
@@ -36,29 +36,18 @@ const BalanceOverview = ({
   onTimeRangeChange,
   selectedTimeRange,
 }) => {
-  const lineChartData = {
-    labels: months,
-    datasets: [
-      {
-        label: "Balance",
-        data: balanceOverTime,
-        borderColor: "rgb(59, 130, 246)",
-        backgroundColor: "rgba(59, 130, 246, 0.1)",
-        fill: true,
-        tension: 0.4,
-        pointRadius: 0,
-        pointHoverRadius: 6,
-        pointBackgroundColor: "rgb(59, 130, 246)",
-        pointBorderColor: "#fff",
-        pointHoverBackgroundColor: "#fff",
-        pointHoverBorderColor: "rgb(59, 130, 246)",
-      },
-    ],
-  };
+  const chartData = months.map((month, index) => ({
+    name: month,
+    balance: balanceOverTime[index] || 0,
+  }));
+
+  // Responsive: gunakan interval dan fontSize berbeda untuk mobile
+  const isMobile = window.innerWidth < 640;
 
   return (
-    <div className="bg-white h-full border border-gray-200 p-6 rounded-xl shadow-sm">
-      {/* Header */}
+    // PERBAIKAN RESPONSIVE: Padding kartu disesuaikan
+    <div className="bg-white h-full border border-gray-200 p-4 sm:p-6 rounded-xl shadow-sm flex flex-col">
+      {/* Header (tidak ada perubahan) */}
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-lg font-semibold text-gray-800">Balance</h2>
         <div className="relative">
@@ -79,17 +68,14 @@ const BalanceOverview = ({
         </div>
       </div>
 
-      {/* Total Balance */}
+      {/* Info Saldo, Pemasukan, Pengeluaran (tidak ada perubahan) */}
       <div className="mb-6">
         <h3 className="text-sm text-gray-500 mb-1">Total Balance</h3>
-        <p className="text-3xl font-bold text-gray-900">
+        <p className="text-2xl sm:text-3xl font-bold text-gray-900">
           {formatCurrency(totalBalance)}
         </p>
       </div>
-
-      {/* --- INI BAGIAN UTAMA YANG DIPERBAIKI DENGAN FLEXBOX --- */}
       <div className="flex flex-col md:flex-row gap-y-4 md:gap-x-12 mb-6">
-        {/* Kolom Income */}
         <div>
           <h3 className="text-sm text-gray-500 mb-1">Income</h3>
           <p className="text-xl font-bold text-green-600 flex items-center">
@@ -99,7 +85,6 @@ const BalanceOverview = ({
             </span>
           </p>
         </div>
-        {/* Kolom Expenses */}
         <div>
           <h3 className="text-sm text-gray-500 mb-1">Expenses</h3>
           <p className="text-xl font-bold text-red-600 flex items-center">
@@ -111,9 +96,54 @@ const BalanceOverview = ({
         </div>
       </div>
 
-      {/* Line Chart (posisi tetap di bawah) */}
-      <div className="h-64 relative">
-        <Line data={lineChartData} options={lineChartOptions(formatCurrency)} />
+      {/* Chart */}
+      <div className="h-64 min-h-[200px] sm:min-h-[256px] relative flex-1">
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart
+            data={chartData}
+            // PERBAIKAN RESPONSIVE: Margin disesuaikan untuk mobile
+            margin={
+              isMobile
+                ? { top: 5, right: 0, left: 20, bottom: 0 }
+                : { top: 5, right: 0, left: 20, bottom: 0 }
+            }
+          >
+            <defs>
+              <linearGradient id="colorBalance" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.4}/>
+                <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+              </linearGradient>
+            </defs>
+            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
+            <XAxis
+              dataKey="name"
+              stroke="#9ca3af"
+              fontSize={isMobile ? 10 : 12}
+              tickLine={false}
+              axisLine={false}
+              interval={isMobile ? "preserveStart" : "preserveStartEnd"}
+            />
+            <YAxis
+              tickFormatter={(value) => formatCurrency(value)}
+              stroke="#9ca3af"
+              fontSize={isMobile ? 10 : 12}
+              tickLine={false}
+              axisLine={false}
+              width={isMobile ? 50 : 70}
+            />
+            <Tooltip content={<CustomTooltip formatCurrency={formatCurrency} />} />
+            <Area
+              type="monotone"
+              dataKey="balance"
+              stroke="#3b82f6"
+              strokeWidth={2}
+              fillOpacity={1}
+              fill="url(#colorBalance)"
+              dot={false}
+              activeDot={{ r: 6, stroke: 'white', strokeWidth: 2, fill: '#3b82f6' }}
+            />
+          </AreaChart>
+        </ResponsiveContainer>
       </div>
     </div>
   );

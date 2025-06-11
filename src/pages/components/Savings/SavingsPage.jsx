@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Api from "../../../config/apiConfig"; // Pastikan path ini benar
+import Api from "../../../config/apiConfig";
 import {
   DollarSign, Laptop, Plane, HomeIcon, GraduationCap, Car, Book, TrendingUp, PlusCircle, Trash2, Pen, Bell
 } from "lucide-react";
-import SavingGoalModal from "./SavingGoalModal"; // Pastikan path ini benar
-import AllocateFundModal from "./AllocateFundModal"; // Pastikan path ini benar
+import SavingGoalModal from "./SavingGoalModal";
+import AllocateFundModal from "./AllocateFundModal";
 
-// --- KONSTANTA & FUNGSI BANTU ---
-
-const GOAL_COLORS = [ "#3B82F6", "#8B5CF6", "#10B981", "#EF4444", "#F59E0B", "#06B6D4" ];
+const GOAL_COLORS = ["#3B82F6", "#8B5CF6", "#10B981", "#EF4444", "#F59E0B", "#06B6D4"];
 
 const getGoalIcon = (goalName) => {
   const nameLower = goalName.toLowerCase();
@@ -26,56 +24,51 @@ const getGoalIcon = (goalName) => {
 export const formatCurrency = (value) =>
   "Rp" + (value || 0).toLocaleString("id-ID", { minimumFractionDigits: 0 });
 
-// --- KOMPONEN SKELETON (RESPONSIVE) ---
-
 const SkeletonHeader = () => (
-    <header className="flex flex-row justify-between items-center mb-8 gap-4 animate-pulse">
-        <div>
-            <div className="h-8 bg-gray-200 rounded w-40 mb-2"></div>
-            <div className="h-4 bg-gray-200 rounded w-24"></div>
-        </div>
-        <div className="flex items-center gap-3">
-            <div className="h-10 w-10 bg-gray-200 rounded-full"></div>
-            <div className="hidden sm:block">
-                <div className="h-4 bg-gray-200 rounded w-24 mb-1"></div>
-                <div className="h-3 bg-gray-200 rounded w-32"></div>
-            </div>
-        </div>
-    </header>
+  <header className="flex flex-row justify-between items-center mb-8 gap-4 animate-pulse">
+    <div>
+      <div className="h-8 bg-gray-200 rounded w-40 mb-2"></div>
+      <div className="h-4 bg-gray-200 rounded w-24"></div>
+    </div>
+    <div className="flex items-center gap-3">
+      <div className="h-10 w-10 bg-gray-200 rounded-full"></div>
+      <div className="hidden sm:block">
+        <div className="h-4 bg-gray-200 rounded w-24 mb-1"></div>
+        <div className="h-3 bg-gray-200 rounded w-32"></div>
+      </div>
+    </div>
+  </header>
 );
 
 const SkeletonSavingsCard = () => (
-    <div className="bg-white rounded-2xl shadow-sm p-4 sm:p-8 animate-pulse">
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-8 gap-4">
-            <div>
-                <div className="h-4 bg-gray-200 rounded w-24 mb-2"></div>
-                <div className="h-10 bg-gray-200 rounded w-40"></div>
-            </div>
-            <div className="h-10 w-full sm:w-40 bg-gray-200 rounded-lg"></div>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {[...Array(2)].map((_, i) => (
-                <div key={i} className="flex flex-col sm:flex-row sm:items-center gap-4 py-2 px-2 bg-gray-50 rounded-lg border border-gray-100">
-                    <div className="flex items-center w-full">
-                        <div className="flex-shrink-0 w-12 h-12 bg-gray-200 rounded-lg"></div>
-                        <div className="flex-grow space-y-2 ml-4">
-                            <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-                            <div className="w-full bg-gray-200 rounded-full h-2.5"></div>
-                            <div className="h-3 bg-gray-200 rounded w-3/4"></div>
-                        </div>
-                    </div>
-                    <div className="flex-shrink-0 flex items-center gap-2 self-end sm:self-center mt-3 sm:mt-0">
-                        <div className="h-10 w-20 bg-gray-200 rounded-lg"></div>
-                        <div className="h-10 w-10 bg-gray-200 rounded-lg"></div>
-                    </div>
-                </div>
-            ))}
-        </div>
+  <div className="bg-white rounded-2xl shadow-sm p-4 sm:p-8 animate-pulse">
+    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-8 gap-4">
+      <div>
+        <div className="h-4 bg-gray-200 rounded w-24 mb-2"></div>
+        <div className="h-10 bg-gray-200 rounded w-40"></div>
+      </div>
+      <div className="h-10 w-full sm:w-40 bg-gray-200 rounded-lg"></div>
     </div>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {[...Array(2)].map((_, i) => (
+        <div key={i} className="flex flex-col sm:flex-row sm:items-center gap-4 py-2 px-2 bg-gray-50 rounded-lg border border-gray-100">
+          <div className="flex items-center w-full">
+            <div className="flex-shrink-0 w-12 h-12 bg-gray-200 rounded-lg"></div>
+            <div className="flex-grow space-y-2 ml-4">
+              <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+              <div className="w-full bg-gray-200 rounded-full h-2.5"></div>
+              <div className="h-3 bg-gray-200 rounded w-3/4"></div>
+            </div>
+          </div>
+          <div className="flex-shrink-0 flex items-center gap-2 self-end sm:self-center mt-3 sm:mt-0">
+            <div className="h-10 w-20 bg-gray-200 rounded-lg"></div>
+            <div className="h-10 w-10 bg-gray-200 rounded-lg"></div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
 );
-
-
-// --- KOMPONEN UTAMA ---
 
 const SavingsPage = () => {
   const [savingGoals, setSavingGoals] = useState([]);
@@ -85,6 +78,7 @@ const SavingsPage = () => {
   const [userName, setUserName] = useState("Pengguna");
   const [userEmail, setUserEmail] = useState("email@example.com");
   const [isGoalModalOpen, setIsGoalModalOpen] = useState(false);
+  const [editingGoal, setEditingGoal] = useState(null);
   const [isAllocateModalOpen, setIsAllocateModalOpen] = useState(false);
   const [selectedGoal, setSelectedGoal] = useState(null);
   const navigate = useNavigate();
@@ -106,7 +100,7 @@ const SavingsPage = () => {
       const cachedUserEmail = localStorage.getItem("user_email");
       if (cachedUserName) setUserName(cachedUserName);
       if (cachedUserEmail) setUserEmail(cachedUserEmail);
-      
+
       const [goalsResult, accountsResult, userResult] = await Promise.allSettled([
         Api.get(`/saving-goals`),
         Api.get(`/accounts`),
@@ -140,24 +134,47 @@ const SavingsPage = () => {
 
   const handleSaveGoal = async (goalData) => {
     try {
-      await Api.post("/saving-goals", goalData);
+      if (editingGoal) {
+        await Api.put(`/saving-goals/${editingGoal.id}`, goalData);
+      } else {
+        await Api.post("/saving-goals", goalData);
+      }
       await refetchAllSavingsData();
     } catch (err) {
       throw new Error(err.response?.data?.message || "Gagal menyimpan.");
+    } finally {
+      setIsGoalModalOpen(false);
+      setEditingGoal(null);
     }
   };
 
   const handleDeleteGoal = async (goalId) => {
     if (window.confirm("Apakah Anda yakin ingin menghapus tujuan tabungan ini?")) {
       try {
-        await Api.delete(`/saving-goals/${goalId}`);
+        // Perubahan di sini: Mengirim ID di body JSON
+        await Api.delete(`/saving-goals`, { id: goalId });
         await refetchAllSavingsData();
       } catch (err) {
         alert("Gagal menghapus tujuan.");
       }
     }
   };
-  
+
+  const handleOpenAddModal = () => {
+    setEditingGoal(null);
+    setIsGoalModalOpen(true);
+  };
+
+  const handleOpenEditModal = (goal) => {
+    setEditingGoal(goal);
+    setIsGoalModalOpen(true);
+  };
+
+  const handleCloseGoalModal = () => {
+    setIsGoalModalOpen(false);
+    setEditingGoal(null);
+  };
+
   const handleOpenAllocateModal = (goal) => {
     setSelectedGoal(goal);
     setIsAllocateModalOpen(true);
@@ -170,6 +187,9 @@ const SavingsPage = () => {
       await refetchAllSavingsData();
     } catch (err) {
       throw new Error(err.response?.data?.message || "Alokasi dana gagal.");
+    } finally {
+      setIsAllocateModalOpen(false);
+      setSelectedGoal(null);
     }
   };
 
@@ -185,7 +205,7 @@ const SavingsPage = () => {
       </div>
     );
   }
-  
+
   if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
@@ -241,7 +261,7 @@ const SavingsPage = () => {
             <p className="text-2xl sm:text-4xl font-bold text-gray-900">{formatCurrency(totalSavings)}</p>
           </div>
           <button
-            onClick={() => setIsGoalModalOpen(true)}
+            onClick={handleOpenAddModal}
             className="mt-4 sm:mt-0 px-4 py-2 bg-primary text-white rounded-lg text-sm font-semibold hover:bg-secondary transition-colors flex items-center gap-2 cursor-pointer w-full sm:w-auto justify-center"
           >
             <PlusCircle size={16} /> Tambah savings baru
@@ -270,24 +290,23 @@ const SavingsPage = () => {
                   <p className="text-xs text-gray-500 mt-1">{formatCurrency(goal.currentSavedAmount)} / {formatCurrency(goal.targetAmount)}</p>
                 </div>
                 <div className="flex-shrink-0 flex items-center gap-2 self-end sm:self-center">
-                  <button 
+                  <button
                     onClick={() => handleOpenAllocateModal(goal)}
                     disabled={goal.isCompleted}
                     className="px-3 py-2 text-xs sm:text-sm font-medium border border-blue-500 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:bg-gray-300 disabled:border-gray-300 disabled:cursor-not-allowed cursor-pointer"
                   >
                     Alokasi
                   </button>
-                  <button 
-                    className="px-3 py-2 text-xs sm:text-sm font-medium border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-                    disabled 
-                    title="Fungsi edit belum tersedia"
+                  <button
+                    onClick={() => handleOpenEditModal(goal)}
+                    className="px-3 py-2 text-xs sm:text-sm font-medium border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer"
                   >
                     <Pen size={16} />
                   </button>
-                  <button 
+                  <button
                     onClick={() => handleDeleteGoal(goal.id)}
                     className="px-3 py-2 text-xs sm:text-sm font-medium border border-red-200 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 hover:border-red-300 transition-colors cursor-pointer"
-                  > 
+                  >
                     <Trash2 size={16} />
                   </button>
                 </div>
@@ -305,8 +324,9 @@ const SavingsPage = () => {
 
       <SavingGoalModal
         isOpen={isGoalModalOpen}
-        onClose={() => setIsGoalModalOpen(false)}
+        onClose={handleCloseGoalModal}
         onSave={handleSaveGoal}
+        existingGoal={editingGoal}
       />
       <AllocateFundModal
         isOpen={isAllocateModalOpen}

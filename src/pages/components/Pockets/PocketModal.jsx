@@ -1,38 +1,65 @@
 import React, { useState, useEffect } from "react";
 
-const PocketModal = ({ isOpen, onClose, onPocketSaved }) => {
-  const [name, setName] = useState("");
-  const [type, setType] = useState("Bank");
-  const [initialBalance, setInitialBalance] = useState("");
+const PocketModal = ({ isOpen, onClose, onPocketSaved, existingPocket }) => {
+  // Gunakan satu state untuk form agar lebih mudah dikelola
+  const [formData, setFormData] = useState({
+    name: "",
+    type: "Bank",
+    initialBalance: "",
+  });
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  
+  // PERBAIKAN: Tentukan mode berdasarkan prop `existingPocket`
+  const isEditMode = Boolean(existingPocket);
 
-  // Efek untuk mereset form setiap kali modal ditutup
+  // PERBAIKAN: Gunakan useEffect untuk mengisi form saat mode edit atau mereset saat mode tambah
   useEffect(() => {
-    if (!isOpen) {
-      setName("");
-      setType("Bank");
-      setInitialBalance("");
-      setError("");
-      setIsLoading(false);
+    if (isOpen) {
+      if (isEditMode) {
+        setFormData({
+          name: existingPocket.name,
+          type: existingPocket.type,
+          initialBalance: existingPocket.initialBalance, // Tetap simpan untuk data, tapi tidak ditampilkan
+        });
+      } else {
+        // Reset form untuk mode "Tambah Baru"
+        setFormData({
+          name: "",
+          type: "Bank",
+          initialBalance: "",
+        });
+      }
+      setError(""); // Selalu reset error saat modal dibuka
     }
-  }, [isOpen]);
+  }, [isOpen, existingPocket, isEditMode]);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
     try {
-      if (!name || !type) {
+      if (!formData.name || !formData.type) {
         throw new Error("Nama dan tipe pocket wajib diisi.");
       }
+
       const dataToSave = {
-        name,
-        type,
-        initialBalance: Number(initialBalance) || 0,
+        name: formData.name,
+        type: formData.type,
       };
+
+      // Hanya tambahkan initialBalance jika BUKAN mode edit
+      if (!isEditMode) {
+        dataToSave.initialBalance = Number(formData.initialBalance) || 0;
+      }
+      
       await onPocketSaved(dataToSave);
-      onClose(); // Tutup modal setelah berhasil
+      onClose();
     } catch (err) {
       setError(err.message || "Gagal menyimpan pocket.");
     } finally {
@@ -46,8 +73,9 @@ const PocketModal = ({ isOpen, onClose, onPocketSaved }) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm p-4">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
         <div className="p-6 pb-4 flex justify-between items-center">
+          {/* PERBAIKAN: Judul modal dinamis */}
           <h2 className="text-lg font-semibold text-gray-900">
-            Tambah Pocket Baru
+            {isEditMode ? "Edit Pocket" : "Tambah Pocket Baru"}
           </h2>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-xl p-1">&times;</button>
         </div>
@@ -57,8 +85,9 @@ const PocketModal = ({ isOpen, onClose, onPocketSaved }) => {
             <label className="block text-sm font-medium text-gray-700 mb-1.5">Nama Pocket</label>
             <input
               type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              name="name"
+              value={formData.name}
+              onChange={handleInputChange}
               required
               placeholder="Contoh: BCA, Dana, Uang Tunai"
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -67,8 +96,9 @@ const PocketModal = ({ isOpen, onClose, onPocketSaved }) => {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">Tipe Pocket</label>
             <select
-              value={type}
-              onChange={(e) => setType(e.target.value)}
+              name="type"
+              value={formData.type}
+              onChange={handleInputChange}
               required
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
             >
@@ -78,18 +108,22 @@ const PocketModal = ({ isOpen, onClose, onPocketSaved }) => {
               <option value="Other">Other</option>
             </select>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Saldo Awal</label>
-            <input
-              type="number"
-              value={initialBalance}
-              onChange={(e) => setInitialBalance(e.target.value)}
-              required
-              min={0}
-              placeholder="Rp0"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
+          {/* PERBAIKAN: Saldo Awal hanya muncul saat mode Tambah */}
+          {!isEditMode && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Saldo Awal</label>
+              <input
+                type="number"
+                name="initialBalance"
+                value={formData.initialBalance}
+                onChange={handleInputChange}
+                required
+                min={0}
+                placeholder="Rp 0"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          )}
           <div className="flex space-x-3 pt-2">
             <button type="button" onClick={onClose} className="flex-1 py-2.5 px-4 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50">
               Batal
