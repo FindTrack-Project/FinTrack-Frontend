@@ -13,56 +13,77 @@ export const PIE_COLORS = [
   "#F43F5E", // Rose fallback
 ];
 
+/**
+ * Konfigurasi untuk Line Chart (BalanceOverview).
+ * Disesuaikan agar cocok dengan desain gambar.
+ */
 export const lineChartOptions = (formatCurrency) => ({
   responsive: true,
   maintainAspectRatio: false,
   plugins: {
     legend: {
-      display: false,
-    },
-    title: {
-      display: false,
-      text: "Balance Over Time",
+      display: false, // Legenda tidak ditampilkan
     },
     tooltip: {
+      enabled: true,
+      // --- PERBAIKAN: Styling tooltip agar sesuai gambar (latar putih) ---
+      backgroundColor: '#ffffff',
+      titleColor: '#374151',    // Warna judul (misal: "Apr")
+      bodyColor: '#111827',     // Warna isi (misal: "Rp15.700.000")
+      borderColor: '#e5e7eb',   // Warna border tooltip
+      borderWidth: 1,
+      padding: 12,
+      cornerRadius: 8,
+      displayColors: false,    // Menghilangkan kotak warna di tooltip
       callbacks: {
+        // Format label tooltip agar hanya menampilkan nilai terformat
         label: function (context) {
-          let label = context.dataset.label || "";
-          if (label) {
-            label += ": ";
-          }
-          if (context.parsed.y !== null) {
-            label += formatCurrency(context.parsed.y);
-          }
-          return label;
+          const value = context.parsed.y || 0;
+          return formatCurrency(value);
         },
+        // Menghilangkan judul jika tidak diperlukan
+        title: function(context) {
+            return context[0].label;
+        }
       },
     },
   },
   scales: {
-    x: {
-      grid: {
-        display: false,
-      },
-      ticks: {
-        color: "#6B7280", // gray-500
-      },
-    },
     y: {
-      beginAtZero: false,
+      // --- PERBAIKAN: Sumbu Y wajib dimulai dari 0 untuk data finansial ---
+      beginAtZero: true,
       grid: {
-        color: "#E5E7EB", // gray-200
+        drawBorder: false, // Menghilangkan garis border sumbu
       },
       ticks: {
+        maxTicksLimit: 5, // Batasi jumlah label di sumbu Y
+        // Format label di sumbu Y (misal: "Rp0", "Rp5.000.000")
         callback: function (value) {
           return formatCurrency(value);
         },
-        color: "#6B7280", // gray-500
+        color: "#6B7280", // Warna teks label sumbu
+      },
+    },
+    x: {
+      grid: {
+        display: false, // Menghilangkan garis grid vertikal untuk tampilan bersih
+      },
+      ticks: {
+        color: "#6B7280",
       },
     },
   },
+  // Mengatur interaksi hover
+  interaction: {
+    intersect: false,
+    mode: 'index',
+  },
 });
 
+/**
+ * Konfigurasi untuk Pie/Doughnut Chart (seperti di halaman Pockets).
+ * Konfigurasi ini sudah baik.
+ */
 export const pieOptions = (formatCurrency) => ({
   responsive: true,
   maintainAspectRatio: false,
@@ -77,9 +98,13 @@ export const pieOptions = (formatCurrency) => ({
       padding: 12,
       boxPadding: 4,
       callbacks: {
-        label: (context) => `${formatCurrency(context.parsed)}`,
+        label: (context) => {
+           const label = context.label || '';
+           const value = formatCurrency(context.parsed);
+           return `${label}: ${value}`;
+        }
       },
     },
   },
-  cutout: "50%", // Tebalkan pie chart
+  cutout: "50%",
 });

@@ -88,14 +88,22 @@ export const getTransactionIcon = (description, type) => {
 };
 
 // Helper untuk Y-axis ticks di Recharts (tidak diubah)
-export const formatRupiahK = (value) => {
+export const formatRupiahJT = (value) => {
   if (value >= 1000000) {
-    return `Rp${(value / 1000000).toLocaleString("id-ID", { maximumFractionDigits: 1, })}JT`;
-  } else if (value >= 1000) {
-    return `Rp${(value / 1000).toLocaleString("id-ID")}K`;
+    // Format ke jutaan dengan satu desimal jika perlu
+    const formattedValue = (value / 1000000).toLocaleString("id-ID", {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 1,
+    });
+    return `Rp${formattedValue}JT`;
   }
-  return `Rp${value.toLocaleString("id-ID")}`;
+  if (value >= 1000) {
+    // Format ke ribuan
+    return `Rp${(value / 1000)}K`;
+  }
+  return `Rp${value}`;
 };
+
 
 // Helper untuk Pie Charts (tidak diubah)
 export const calculatePieData = (data, valueKey, nameKey) => {
