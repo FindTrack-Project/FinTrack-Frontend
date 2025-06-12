@@ -4,8 +4,7 @@ import {
   getTransactionIcon,
   formatCurrency
 } from "./utils";
-import { AlertTriangle } from 'lucide-react';
-import TransactionModal from "./TransactionModal"; // Pastikan path ini benar jika modal digunakan
+import { AlertTriangle } from 'lucide-react';// Pastikan path ini benar jika modal digunakan
 
 const POCKET_ICON_COLORS = ["#facc15", "#38bdf8", "#4ade80", "#f87171", "#a78bfa", "#fb923c"];
 
@@ -14,12 +13,10 @@ const RecentTransactions = ({
   incomes, // Disediakan dari Home.jsx
   expenses, // Disediakan dari Home.jsx
   accounts, // Disediakan dari Home.jsx
-  onTransactionAdded, // Disediakan dari Home.jsx, untuk refresh data jika ada transaksi baru
 }) => {
   const [selectedTimeRange, setSelectedTimeRange] = useState("7_days");
   const [selectedPocket, setSelectedPocket] = useState("all");
   const [selectedCategory, setSelectedCategory] = useState("all");
-  const [isModalOpen, setIsModalOpen] = useState(false); // Untuk TransactionModal
 
   const getAccountName = (accountId) => {
     const account = accounts.find((acc) => acc.id === accountId);
@@ -190,20 +187,6 @@ const RecentTransactions = ({
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 10px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #d1d5db; }
       `}</style>
-
-      {/* Modal Transaksi */}
-      <TransactionModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onTransactionAdded={() => {
-          setIsModalOpen(false);
-          // onTransactionAdded adalah callback dari induk untuk refresh data
-          onTransactionAdded();
-        }}
-        accounts={accounts}
-        categoriesList={allCategoriesAndSources.filter(c => !c.type || c.type === 'expense')} // Sesuaikan jika Anda punya properti 'type' di kategori
-        sourcesList={allCategoriesAndSources.filter(c => !c.type || c.type === 'income')} // Sesuaikan jika Anda punya properti 'type' di sumber
-      />
     </div>
   );
 };
