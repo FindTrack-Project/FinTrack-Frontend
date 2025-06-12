@@ -1,26 +1,22 @@
 import React, { useState } from "react";
-// Api tidak lagi dibutuhkan di sini
-import { 
-  getTransactionIcon, 
-  formatCurrency 
-} from "./utils"; 
+import {
+  getTransactionIcon,
+  formatCurrency
+} from "./utils";
 import { AlertTriangle } from 'lucide-react';
 
 const POCKET_ICON_COLORS = ["#facc15", "#38bdf8", "#4ade80", "#f87171", "#a78bfa", "#fb923c"];
 
-// --- PERUBAHAN UTAMA: Menerima 'accounts' sebagai props ---
 const RecentTransactions = ({
   incomes,
   expenses,
-  accounts, 
+  accounts,
 }) => {
-  // useEffect dan useState untuk 'accounts' telah dihapus untuk optimisasi
   const [selectedTimeRange, setSelectedTimeRange] = useState("7_days");
   const [selectedPocket, setSelectedPocket] = useState("all");
   const [selectedCategory, setSelectedCategory] = useState("all");
-  
+
   const getAccountName = (accountId) => {
-    // Fungsi ini sekarang menggunakan 'accounts' dari props
     const account = accounts.find((acc) => acc.id === accountId);
     return account ? account.name : "N/A";
   };
@@ -61,7 +57,7 @@ const RecentTransactions = ({
     acc[dateKey].push(trx);
     return acc;
   }, {});
-  
+
   const sortedGroupedTransactions = Object.entries(groupedTransactions).sort(([dateA], [dateB]) => new Date(dateB) - new Date(dateA));
 
   return (
@@ -113,6 +109,13 @@ const RecentTransactions = ({
             const dailyTotal = transactions.reduce((sum, trx) => sum + (trx.type === "Pemasukan" ? trx.amount : -trx.amount), 0);
             const formattedDate = new Date(dateKey).toLocaleDateString("id-ID", { weekday: 'long', day: 'numeric', month: 'long' });
 
+            // PERBAIKAN: Urutkan transaksi di dalam hari dari yang terbaru ke terlama (berdasarkan waktu)
+            const sortedDailyTransactions = [...transactions].sort((a, b) => {
+                const dateA = new Date(a.date); // Gunakan tanggal transaksi lengkap (termasuk waktu)
+                const dateB = new Date(b.date); // Gunakan tanggal transaksi lengkap (termasuk waktu)
+                return dateB.getTime() - dateA.getTime(); // Urutkan descending (terbaru di atas)
+            });
+
             return (
               <div key={dateKey}>
                 <div className="flex justify-between items-center my-3">
@@ -120,14 +123,18 @@ const RecentTransactions = ({
                   <p className="text-sm font-semibold text-gray-800">{formatCurrency(dailyTotal)}</p>
                 </div>
                 <div className="space-y-1">
-                  {transactions.map((trx) => {
+                  {sortedDailyTransactions.map((trx) => { // Gunakan sortedDailyTransactions di sini
                     const isIncome = trx.type === "Pemasukan";
                     const Icon = getTransactionIcon(trx.category || trx.source, isIncome ? 'income' : 'expense');
                     const accountIndex = accounts.findIndex(acc => acc.id === trx.accountId);
 
+                    // Pastikan accountIndex valid sebelum digunakan untuk warna
+                    const iconBgColor = isIncome ? 'bg-green-100' : 'bg-red-100'; // Default background for income/expense icon
+                    const iconTextColor = isIncome ? 'text-green-500' : 'text-red-500'; // Default text color for income/expense icon
+
                     return (
                       <div key={trx.id} className="flex items-center p-3 border-b border-gray-100 last:border-b-0">
-                        <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center mr-4 bg-blue-100 text-blue-500`}>
+                        <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center mr-4 ${iconBgColor} ${iconTextColor}`}>
                           <Icon size={20} />
                         </div>
                         <div className="flex-grow">
@@ -140,7 +147,8 @@ const RecentTransactions = ({
                           </p>
                           <div className="flex items-center justify-end gap-1.5 mt-0.5">
                             <p className="text-xs text-gray-500">{getAccountName(trx.accountId)}</p>
-                            <span className="w-2 h-2 rounded-full" style={{backgroundColor: POCKET_ICON_COLORS[accountIndex % POCKET_ICON_COLORS.length]}}></span>
+                            {/* Pastikan accountIndex valid sebelum digunakan untuk POCKET_ICON_COLORS */}
+                            <span className="w-2 h-2 rounded-full" style={{backgroundColor: accountIndex !== -1 ? POCKET_ICON_COLORS[accountIndex % POCKET_ICON_COLORS.length] : '#9ca3af'}}></span>
                           </div>
                         </div>
                       </div>
@@ -159,10 +167,9 @@ const RecentTransactions = ({
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 10px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #d1d5db; }
       `}</style>
-      
+
     </div>
   );
 };
 
 export default RecentTransactions;
-
