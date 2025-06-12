@@ -11,7 +11,6 @@ import {
   PointElement,
   LineElement,
   Title,
-  
 } from "chart.js";
 
 import {
@@ -45,7 +44,7 @@ import RecentTransactions from "./RecentTransactions";
 import { formatCurrency, getMonthlyData, getTransactionIcon } from "./utils";
 import { PIE_COLORS } from "./constants";
 
-// Komponen Financial Tips
+// Komponen Financial Tips (Tidak ada perubahan di sini)
 const FinancialTips = () => {
   const tips = [
     {
@@ -120,7 +119,7 @@ const Home = () => {
   const [accounts, setAccounts] = useState([]);
   const [savingGoals, setSavingGoals] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [setError] = useState(null);
+  const [setError] = useState(null); // Gunakan setError jika diperlukan untuk menampilkan pesan error
   const [userName, setUserName] = useState("Pengguna");
   const [userEmail, setUserEmail] = useState("email@example.com");
 
@@ -267,26 +266,29 @@ const Home = () => {
   const { months, incomeAmounts, expenseAmounts, balanceOverTime } =
     getMonthlyData(incomes, expenses, totalBalance);
 
+  // Mengambil total pendapatan dan pengeluaran bulan lalu (indeks kedua dari belakang)
+  // Default ke 0 jika tidak ada data untuk bulan lalu
   const totalIncomeLastMonth = incomeAmounts[incomeAmounts.length - 2] || 0;
-  // PERBAIKAN: Mengambil total pengeluaran bulan lalu dari expenseAmounts
   const totalExpenseLastMonth = expenseAmounts[expenseAmounts.length - 2] || 0;
+
+  // Mengambil total pendapatan dan pengeluaran bulan berjalan (indeks terakhir)
   const totalIncomeCurrentMonth = incomeAmounts[incomeAmounts.length - 1] || 0;
-  // PERBAIKAN: Mengambil total pengeluaran bulan berjalan dari expenseAmounts
   const totalExpenseCurrentMonth =
     expenseAmounts[expenseAmounts.length - 1] || 0;
 
+  // PERBAIKAN PENTING: Perhitungan incomeGrowth dan expenseGrowth
+  // Menghitung pertumbuhan pendapatan
   const incomeGrowth =
-    totalIncomeLastMonth > 0
-      ? ((totalIncomeCurrentMonth - totalIncomeLastMonth) /
-          totalIncomeLastMonth) *
-        100
-      : 0;
+    totalIncomeLastMonth !== 0 // Jika ada data pendapatan bulan lalu
+      ? (totalIncomeCurrentMonth - totalIncomeLastMonth) / totalIncomeLastMonth // Hitung pertumbuhan persentase
+      : (totalIncomeCurrentMonth > 0 ? 1 : 0); // Jika bulan lalu 0 dan bulan ini > 0, anggap 100% pertumbuhan (nilai desimal 1). Jika keduanya 0, pertumbuhan 0.
+
+  // Menghitung pertumbuhan pengeluaran
   const expenseGrowth =
-    totalExpenseLastMonth > 0
-      ? ((totalExpenseCurrentMonth - totalExpenseLastMonth) /
-          totalExpenseLastMonth) *
-        100
-      : 0;
+    totalExpenseLastMonth !== 0 // Jika ada data pengeluaran bulan lalu
+      ? (totalExpenseCurrentMonth - totalExpenseLastMonth) / totalExpenseLastMonth // Hitung pertumbuhan persentase
+      : (totalExpenseCurrentMonth > 0 ? 1 : 0); // Jika bulan lalu 0 dan bulan ini > 0, anggap 100% pertumbuhan (nilai desimal 1). Jika keduanya 0, pertumbuhan 0.
+
 
   const expenseByCategory = expenses.reduce((acc, exp) => {
     acc[exp.category] = (acc[exp.category] || 0) + exp.amount;
@@ -467,11 +469,14 @@ const Home = () => {
               totalBalance={totalBalance}
               totalIncomeCurrentMonth={totalIncomeCurrentMonth}
               totalExpenseCurrentMonth={totalExpenseCurrentMonth}
+              // Meneruskan nilai pertumbuhan yang sudah dikoreksi
               incomeGrowth={incomeGrowth}
               expenseGrowth={expenseGrowth}
               months={months}
               balanceOverTime={balanceOverTime}
               formatCurrency={formatCurrency}
+              // onTimeRangeChange dan selectedTimeRange tidak digunakan di BalanceOverview, jadi bisa dihapus jika tidak ada fungsionalitasnya
+              // atau diimplementasikan di BalanceOverview jika diperlukan
             />
           </div>
           <div className="lg:col-span-2 min-w-0">
@@ -511,7 +516,6 @@ const Home = () => {
               getTransactionIcon={getTransactionIcon}
             />
           </div>
-
         </div>
           <FinancialTips />
       </div>

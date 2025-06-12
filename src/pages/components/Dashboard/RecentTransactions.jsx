@@ -1,46 +1,58 @@
 import React, { useState } from "react";
+// Api tidak lagi dibutuhkan di sini
 import {
   getTransactionIcon,
   formatCurrency
 } from "./utils";
 import { AlertTriangle } from 'lucide-react';
+import TransactionModal from "./TransactionModal"; // Pastikan path ini benar jika modal digunakan
 
 const POCKET_ICON_COLORS = ["#facc15", "#38bdf8", "#4ade80", "#f87171", "#a78bfa", "#fb923c"];
 
+// --- PERUBAHAN UTAMA: Menerima 'incomes', 'expenses', 'accounts' sebagai props ---
 const RecentTransactions = ({
-  incomes,
-  expenses,
-  accounts,
+  incomes, // Disediakan dari Home.jsx
+  expenses, // Disediakan dari Home.jsx
+  accounts, // Disediakan dari Home.jsx
+  onTransactionAdded, // Disediakan dari Home.jsx, untuk refresh data jika ada transaksi baru
 }) => {
   const [selectedTimeRange, setSelectedTimeRange] = useState("7_days");
   const [selectedPocket, setSelectedPocket] = useState("all");
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [isModalOpen, setIsModalOpen] = useState(false); // Untuk TransactionModal
 
   const getAccountName = (accountId) => {
     const account = accounts.find((acc) => acc.id === accountId);
     return account ? account.name : "N/A";
   };
 
+  // Gabungkan dan tandai semua transaksi
   const allTransactions = [
     ...incomes.map(i => ({ ...i, type: 'Pemasukan' })),
     ...expenses.map(e => ({ ...e, type: 'Pengeluaran' }))
   ];
 
+  // Buat daftar kategori dan sumber dinamis untuk filter
   const allCategoriesAndSources = [...new Set(
     allTransactions.map(trx => trx.category || trx.source).filter(Boolean)
   )].sort();
 
+  // Filter transaksi berdasarkan rentang waktu, pocket, dan kategori
   const filteredTransactions = allTransactions.filter((trx) => {
     const transactionDate = new Date(trx.date);
     const now = new Date();
     const isDateMatch = () => {
-      if (selectedTimeRange === "all") return true;
+      if (selectedTimeRange === "all") return true; // 'all' di sini berarti semua waktu yang tersedia
+      if (selectedTimeRange === "current_month") { // Tambahkan filter bulan ini
+          return transactionDate.getMonth() === now.getMonth() && transactionDate.getFullYear() === now.getFullYear();
+      }
       let startDate = new Date();
       if (selectedTimeRange === "7_days") {
         startDate.setDate(now.getDate() - 7);
       } else if (selectedTimeRange === "30_days") {
         startDate.setDate(now.getDate() - 30);
       }
+      // Set hours to 0 to compare just the date part
       return transactionDate.setHours(0,0,0,0) >= startDate.setHours(0,0,0,0);
     };
     const isPocketMatch = selectedPocket === 'all' || trx.accountId === selectedPocket;
@@ -51,26 +63,37 @@ const RecentTransactions = ({
     return isDateMatch() && isPocketMatch && isCategoryMatch();
   });
 
+  // Kelompokkan transaksi berdasarkan tanggal
   const groupedTransactions = filteredTransactions.reduce((acc, trx) => {
-    const dateKey = new Date(trx.date).toISOString().split('T')[0];
+    const dateKey = new Date(trx.date).toISOString().split('T')[0]; // Hanya ambil bagian tanggal (YYYY-MM-DD)
     if (!acc[dateKey]) acc[dateKey] = [];
     acc[dateKey].push(trx);
     return acc;
   }, {});
 
+  // Urutkan grup tanggal secara descending (tanggal terbaru di atas)
   const sortedGroupedTransactions = Object.entries(groupedTransactions).sort(([dateA], [dateB]) => new Date(dateB) - new Date(dateA));
 
   return (
     <div className="bg-white border border-gray-200 p-6 rounded-xl shadow-sm h-100 flex flex-col">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
         <h2 className="text-lg font-semibold text-gray-800">Recent Transactions</h2>
+        {/* Tombol Tambah Transaksi, jika Anda ingin menyertakannya di sini */}
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="px-4 py-2 bg-gray-800 text-white rounded-lg text-sm font-semibold hover:bg-gray-700 transition-colors flex items-center justify-center sm:w-auto w-full gap-2 cursor-pointer"
+        >
+          <PlusCircle size={16} /> Tambah Transaksi
+        </button>
       </div>
 
+      {/* Filter Options */}
       <div className="flex flex-row flex-wrap gap-3 mb-6">
         <div className="relative">
           <select value={selectedTimeRange} onChange={(e) => setSelectedTimeRange(e.target.value)} className="appearance-none bg-gray-50 border border-gray-200 text-gray-700 py-2 px-4 pr-8 rounded-lg font-medium text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
             <option value="7_days">7 Hari Terakhir</option>
             <option value="30_days">30 Hari Terakhir</option>
+            <option value="current_month">Bulan Ini</option> {/* Tambahkan opsi Bulan Ini */}
             <option value="all">Semua Waktu</option>
           </select>
           <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
@@ -109,11 +132,11 @@ const RecentTransactions = ({
             const dailyTotal = transactions.reduce((sum, trx) => sum + (trx.type === "Pemasukan" ? trx.amount : -trx.amount), 0);
             const formattedDate = new Date(dateKey).toLocaleDateString("id-ID", { weekday: 'long', day: 'numeric', month: 'long' });
 
-            // PERBAIKAN: Urutkan transaksi di dalam hari dari yang terbaru ke terlama (berdasarkan waktu)
+            // PERBAIKAN PENTING: Urutkan transaksi di dalam hari dari yang terbaru ke terlama
             const sortedDailyTransactions = [...transactions].sort((a, b) => {
                 const dateA = new Date(a.date); // Gunakan tanggal transaksi lengkap (termasuk waktu)
                 const dateB = new Date(b.date); // Gunakan tanggal transaksi lengkap (termasuk waktu)
-                return dateB.getTime() - dateA.getTime(); // Urutkan descending (terbaru di atas)
+                return dateB.getTime() - dateA.getTime(); // Urutkan descending berdasarkan timestamp
             });
 
             return (
@@ -123,14 +146,14 @@ const RecentTransactions = ({
                   <p className="text-sm font-semibold text-gray-800">{formatCurrency(dailyTotal)}</p>
                 </div>
                 <div className="space-y-1">
-                  {sortedDailyTransactions.map((trx) => { // Gunakan sortedDailyTransactions di sini
+                  {sortedDailyTransactions.map((trx) => { // Menggunakan sortedDailyTransactions
                     const isIncome = trx.type === "Pemasukan";
                     const Icon = getTransactionIcon(trx.category || trx.source, isIncome ? 'income' : 'expense');
                     const accountIndex = accounts.findIndex(acc => acc.id === trx.accountId);
 
-                    // Pastikan accountIndex valid sebelum digunakan untuk warna
-                    const iconBgColor = isIncome ? 'bg-green-100' : 'bg-red-100'; // Default background for income/expense icon
-                    const iconTextColor = isIncome ? 'text-green-500' : 'text-red-500'; // Default text color for income/expense icon
+                    // Menyesuaikan warna ikon background dan teks
+                    const iconBgColor = isIncome ? 'bg-green-100' : 'bg-red-100';
+                    const iconTextColor = isIncome ? 'text-green-500' : 'text-red-500';
 
                     return (
                       <div key={trx.id} className="flex items-center p-3 border-b border-gray-100 last:border-b-0">
@@ -168,6 +191,19 @@ const RecentTransactions = ({
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #d1d5db; }
       `}</style>
 
+      {/* Modal Transaksi */}
+      <TransactionModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onTransactionAdded={() => {
+          setIsModalOpen(false);
+          // onTransactionAdded adalah callback dari induk untuk refresh data
+          onTransactionAdded();
+        }}
+        accounts={accounts}
+        categoriesList={allCategoriesAndSources.filter(c => !c.type || c.type === 'expense')} // Sesuaikan jika Anda punya properti 'type' di kategori
+        sourcesList={allCategoriesAndSources.filter(c => !c.type || c.type === 'income')} // Sesuaikan jika Anda punya properti 'type' di sumber
+      />
     </div>
   );
 };
