@@ -1,3 +1,5 @@
+// components/BalanceOverview.jsx
+
 import React from "react";
 import {
   AreaChart,
@@ -27,8 +29,8 @@ const BalanceOverview = ({
   totalBalance,
   totalIncomeCurrentMonth,
   totalExpenseCurrentMonth,
-  incomeGrowth, // Asumsi ini adalah desimal (misal: 0.05 untuk 5%)
-  expenseGrowth, // Asumsi ini adalah desimal (misal: 0.10 untuk 10%)
+  incomeGrowth, // Ini diharapkan sebagai desimal (misal: 0.05 untuk 5%)
+  expenseGrowth, // Ini diharapkan sebagai desimal (misal: 0.10 untuk 10%)
   months,
   balanceOverTime,
   formatCurrency,
@@ -76,7 +78,6 @@ const BalanceOverview = ({
           <p className="text-xl font-bold text-green-600 flex items-center">
             {formatCurrency(totalIncomeCurrentMonth)}
             <span className={`ml-2 text-xs font-semibold ${incomeGrowth >= 0 ? "text-green-500" : "text-red-500"}`}>
-              {/* PERBAIKAN: Kalikan dengan 100 untuk persentase */}
               {Math.abs(incomeGrowth * 100).toFixed(1)}% {incomeGrowth >= 0 ? "▲" : "▼"}
             </span>
           </p>
@@ -86,7 +87,6 @@ const BalanceOverview = ({
           <p className="text-xl font-bold text-red-600 flex items-center">
             {formatCurrency(totalExpenseCurrentMonth)}
             <span className={`ml-2 text-xs font-semibold ${expenseGrowth >= 0 ? "text-red-500" : "text-green-500"}`}>
-              {/* PERBAIKAN: Kalikan dengan 100 untuk persentase */}
               {Math.abs(expenseGrowth * 100).toFixed(1)}% {expenseGrowth >= 0 ? "▲" : "▼"}
             </span>
           </p>

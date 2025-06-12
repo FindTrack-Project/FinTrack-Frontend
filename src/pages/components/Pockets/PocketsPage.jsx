@@ -375,7 +375,7 @@ const PocketsPage = () => {
               </h2>
               <button
                 onClick={handleOpenAddModal}
-                className="px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-secondary transition-colors flex items-center gap-1"
+                className="px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-secondary transition-colors flex items-center gap-1 cursor-pointer"
               >
                 <PlusCircle size={16} /> Tambah Pocket
               </button>
@@ -411,7 +411,7 @@ const PocketsPage = () => {
                           </span>
                           <button
                             onClick={() => handleOpenEditModal(account)}
-                            className="p-2 text-gray-500 hover:bg-gray-200 rounded-full transition-colors"
+                            className="p-2 text-gray-500 hover:bg-gray-200 rounded-full transition-colors cursor-pointer"
                           >
                             <Pen size={16} />
                           </button>

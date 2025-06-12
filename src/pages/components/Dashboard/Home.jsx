@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
-import Api from "../../../config/apiConfig";
+import Api from "../../../config/apiConfig"; // Pastikan path ini benar
 import {
   Chart,
   ArcElement,
@@ -11,7 +11,6 @@ import {
   PointElement,
   LineElement,
   Title,
-  
 } from "chart.js";
 
 import {
@@ -43,7 +42,7 @@ import SavingGoalsSection from "./SavingGoalsSection";
 import RecentTransactions from "./RecentTransactions";
 
 import { formatCurrency, getMonthlyData, getTransactionIcon } from "./utils";
-import { PIE_COLORS } from "./constants";
+import { PIE_COLORS } from "./constants"; // Pastikan PIE_COLORS diekspor dari sini jika digunakan
 
 // Komponen Financial Tips
 const FinancialTips = () => {
@@ -120,179 +119,214 @@ const Home = () => {
   const [accounts, setAccounts] = useState([]);
   const [savingGoals, setSavingGoals] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [setError] = useState(null);
+  const [dashboardError, setDashboardError] = useState(null); // Ganti nama state error agar tidak konflik dengan setError dari useState(null)
   const [userName, setUserName] = useState("Pengguna");
   const [userEmail, setUserEmail] = useState("email@example.com");
+  const [selectedChartTimeRange, setSelectedChartTimeRange] = useState("6_months"); // State untuk filter chart BalanceOverview
 
   const navigate = useNavigate();
   const outletContext = useOutletContext() || {};
   const isSidebarOpen = outletContext.isSidebarOpen ?? false;
   const toggleSidebar = outletContext.toggleSidebar ?? (() => {});
 
-  useEffect(() => {
-    const fetchAllData = async () => {
-      setLoading(true);
-      if (typeof setError === "function") {
-        setError(null);
+  const fetchAllData = async () => {
+    setLoading(true);
+    setDashboardError(null); // Reset error
+    try {
+      let token = null;
+      let userId = null;
+
+      if (typeof window !== "undefined") {
+        token = localStorage.getItem("jwt_token");
+        userId = localStorage.getItem("user_id");
       }
-      try {
-        let token = null;
-        let userId = null;
 
+      if (!token || !userId) {
+        setDashboardError(
+          "Sesi Anda tidak valid atau kedaluwarsa. Silakan login kembali."
+        );
         if (typeof window !== "undefined") {
-          token = localStorage.getItem("jwt_token");
-          userId = localStorage.getItem("user_id");
+          localStorage.removeItem("jwt_token");
+          localStorage.removeItem("user_id");
+          localStorage.removeItem("user_name");
+          localStorage.removeItem("user_email");
         }
+        setTimeout(() => navigate("/login"), 1500);
+        return;
+      }
 
-        if (!token || !userId) {
-          if (typeof setError === "function") {
-            setError(
-              "Sesi Anda tidak valid atau kedaluwarsa. Silakan login kembali."
-            );
-          }
+      const userDataPromise = Api.get(`/users/${userId}`);
+
+      // --- Perbaikan: Mengambil data transaksi yang cukup untuk 2 bulan terakhir ---
+      const now = new Date();
+      const twoMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 1, 1); // Awal bulan lalu
+      const startDateForGrowth = twoMonthsAgo.toISOString().split('T')[0]; // Format YYYY-MM-DD
+
+      const [
+        balanceResult,
+        accountsResult,
+        savingGoalsResult,
+        allTransactionsResult, // Mengambil semua transaksi dari periode yang relevan
+        userResult,
+      ] = await Promise.allSettled([ // Menggunakan Promise.allSettled untuk mencegah satu error menghentikan semua
+        Api.get(`/users/balance`),
+        Api.get(`/accounts`),
+        Api.get(`/saving-goals`),
+        Api.get(`/transactions?startDate=${startDateForGrowth}`), // Ambil transaksi dari 2 bulan lalu
+        userDataPromise,
+      ]);
+
+      // Handle results dari Promise.allSettled
+      if (balanceResult.status === "fulfilled") {
+        setTotalBalance(balanceResult.value.currentBalance || 0);
+      } else {
+        console.error("Error fetching balance:", balanceResult.reason);
+      }
+
+      if (accountsResult.status === "fulfilled") {
+        setAccounts(accountsResult.value.accounts || []);
+      } else {
+        console.error("Error fetching accounts:", accountsResult.reason);
+      }
+
+      if (savingGoalsResult.status === "fulfilled") {
+        setSavingGoals(savingGoalsResult.value.savingGoals || []);
+      } else {
+        console.error("Error fetching saving goals:", savingGoalsResult.reason);
+      }
+
+      let fetchedIncomes = [];
+      let fetchedExpenses = [];
+      if (allTransactionsResult.status === "fulfilled" && allTransactionsResult.value?.transactions) {
+          const allTrx = allTransactionsResult.value.transactions;
+          fetchedIncomes = allTrx.filter(t => t.type === 'Pemasukan');
+          fetchedExpenses = allTrx.filter(t => t.type === 'Pengeluaran');
+      } else {
+          console.error("Error fetching all transactions for growth calculation:", allTransactionsResult.reason);
+      }
+      setIncomes(fetchedIncomes); // Set incomes
+      setExpenses(fetchedExpenses); // Set expenses
+
+      if (userResult.status === "fulfilled" && (userResult.value?.user || userResult.value)) {
+        const userData = userResult.value.user || userResult.value;
+        setUserName(userData?.name || "Pengguna");
+        setUserEmail(userData?.email || "email@example.com");
+        localStorage.setItem("user_name", userData?.name || "Pengguna");
+        localStorage.setItem("user_email", userData?.email || "email@example.com");
+      } else {
+        console.error("Error fetching user profile:", userResult.reason);
+      }
+
+    } catch (err) {
+      console.error("Failed to fetch data in Home component:", err);
+      let errorMessage = "Gagal memuat data dashboard.";
+      if (err.message) {
+        errorMessage = err.message;
+        if (
+          errorMessage.includes("401") ||
+          errorMessage.toLowerCase().includes("unauthorized") ||
+          errorMessage.toLowerCase().includes("expired token")
+        ) {
+          errorMessage =
+            "Sesi Anda tidak valid atau kedaluwarsa. Silakan login kembali.";
           if (typeof window !== "undefined") {
             localStorage.removeItem("jwt_token");
             localStorage.removeItem("user_id");
             localStorage.removeItem("user_name");
+            localStorage.removeItem("user_email");
           }
           setTimeout(() => navigate("/login"), 1500);
-          return;
+        } else if (
+          errorMessage.toLowerCase().includes("server error") ||
+          errorMessage.toLowerCase().includes("api error")
+        ) {
+          errorMessage =
+            "Terjadi masalah server. Silakan coba beberapa saat lagi.";
+        } else if (
+          errorMessage.toLowerCase().includes("koneksi atau kebijakan keamanan")
+        ) {
+          errorMessage =
+            "Tidak dapat terhubung ke server. Periksa koneksi internet Anda atau masalah CORS.";
+        } else if (
+          errorMessage.toLowerCase().includes("failed to parse response")
+        ) {
+          errorMessage =
+            "Gagal memproses respons dari server. Mungkin masalah CORS/jaringan.";
+        } else if (
+          errorMessage.toLowerCase().includes("cannot read properties of undefined")
+        ) {
+          errorMessage =
+            "Terjadi kesalahan data. Beberapa informasi mungkin tidak tersedia.";
         }
-
-        const userDataPromise = Api.get(`/users/${userId}`);
-
-        const [
-          balanceResponse,
-          accountsResponse,
-          savingGoalsResponse,
-          expensesResponse,
-          incomesResponse,
-          userResponse,
-        ] = await Promise.all([
-          Api.get(`/users/balance`).catch((err) => {
-            console.error("Error fetching balance:", err);
-            return { currentBalance: 0 };
-          }),
-          Api.get(`/accounts`).catch((err) => {
-            console.error("Error fetching accounts:", err);
-            return { accounts: [] };
-          }),
-          Api.get(`/saving-goals`).catch((err) => {
-            console.error("Error fetching saving goals:", err);
-            return { savingGoals: [] };
-          }),
-          Api.get(`/expenses`).catch((err) => {
-            console.error("Error fetching expenses:", err);
-            return { expenses: [] };
-          }),
-          Api.get(`/incomes`).catch((err) => {
-            console.error("Error fetching incomes:", err);
-            return { incomes: [] };
-          }),
-          userDataPromise.catch((err) => {
-            console.error(
-              "Error fetching user profile for user ID:",
-              userId,
-              err
-            );
-            return { name: "Guest", email: "guest@example.com" };
-          }),
-        ]);
-
-        setTotalBalance(balanceResponse.currentBalance || 0);
-        setAccounts(accountsResponse.accounts || []);
-        setSavingGoals(savingGoalsResponse.savingGoals || []);
-        setExpenses(expensesResponse.expenses || []);
-        setIncomes(incomesResponse.incomes || []);
-
-        setUserName(userResponse?.name || "Pengguna");
-        setUserEmail(userResponse?.email || "email@example.com");
-      } catch (err) {
-        console.error("Failed to fetch data in Promise.all:", err);
-        let errorMessage = "Gagal memuat data.";
-
-        if (err.message) {
-          errorMessage = err.message;
-          if (
-            errorMessage.includes("401") ||
-            errorMessage.toLowerCase().includes("unauthorized") ||
-            errorMessage.toLowerCase().includes("expired token")
-          ) {
-            errorMessage =
-              "Sesi Anda tidak valid atau kedaluwarsa. Silakan login kembali.";
-            if (typeof window !== "undefined") {
-              localStorage.removeItem("jwt_token");
-              localStorage.removeItem("user_id");
-              localStorage.removeItem("user_name");
-            }
-            setTimeout(() => navigate("/login"), 1500);
-          } else if (
-            errorMessage.toLowerCase().includes("server error") ||
-            errorMessage.toLowerCase().includes("api error")
-          ) {
-            errorMessage =
-              "Terjadi masalah server. Silakan coba beberapa saat lagi.";
-          } else if (
-            errorMessage
-              .toLowerCase()
-              .includes("koneksi atau kebijakan keamanan")
-          ) {
-            errorMessage =
-              "Tidak dapat terhubung ke server. Periksa koneksi internet Anda atau masalah CORS.";
-          } else if (
-            errorMessage.toLowerCase().includes("failed to parse response")
-          ) {
-            errorMessage =
-              "Gagal memproses respons dari server. Mungkin masalah CORS/jaringan.";
-          } else if (
-            errorMessage
-              .toLowerCase()
-              .includes("cannot read properties of undefined")
-          ) {
-            errorMessage =
-              "Terjadi kesalahan data. Beberapa informasi mungkin tidak tersedia.";
-          }
-        }
-        if (typeof setError === "function") {
-          setError(errorMessage);
-        }
-      } finally {
-        setLoading(false);
       }
-    };
+      setDashboardError(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchAllData();
-  }, [setError, navigate]);
+  }, [navigate]); // Hapus `setError` dari dependency array, gunakan `setDashboardError`
 
-  const { months, incomeAmounts, expenseAmounts, balanceOverTime } =
-    getMonthlyData(incomes, expenses, totalBalance);
+  // --- LOGIKA PENTING: PERHITUNGAN DATA UNTUK BALANCE OVERVIEW DAN CHART ---
+  const now = new Date();
+  const currentMonth = now.getMonth(); // 0-11
+  const currentYear = now.getFullYear();
 
-  const totalIncomeLastMonth = incomeAmounts[incomeAmounts.length - 2] || 0;
-  // PERBAIKAN: Mengambil total pengeluaran bulan lalu dari expenseAmounts
-  const totalExpenseLastMonth = expenseAmounts[expenseAmounts.length - 2] || 0;
-  const totalIncomeCurrentMonth = incomeAmounts[incomeAmounts.length - 1] || 0;
-  // PERBAIKAN: Mengambil total pengeluaran bulan berjalan dari expenseAmounts
-  const totalExpenseCurrentMonth =
-    expenseAmounts[expenseAmounts.length - 1] || 0;
+  let totalIncomeCurrentMonth = 0;
+  let totalExpenseCurrentMonth = 0;
+  let totalIncomeLastMonth = 0;
+  let totalExpenseLastMonth = 0;
 
+  const prevMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+  const prevYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+
+  // Filter incomes untuk bulan ini dan bulan lalu
+  incomes.forEach(income => {
+    const incomeDate = new Date(income.date);
+    if (incomeDate.getMonth() === currentMonth && incomeDate.getFullYear() === currentYear) {
+      totalIncomeCurrentMonth += income.amount;
+    } else if (incomeDate.getMonth() === prevMonth && incomeDate.getFullYear() === prevYear) {
+      totalIncomeLastMonth += income.amount;
+    }
+  });
+
+  // Filter expenses untuk bulan ini dan bulan lalu
+  expenses.forEach(expense => {
+    const expenseDate = new Date(expense.date);
+    if (expenseDate.getMonth() === currentMonth && expenseDate.getFullYear() === currentYear) {
+      totalExpenseCurrentMonth += expense.amount;
+    } else if (expenseDate.getMonth() === prevMonth && expenseDate.getFullYear() === prevYear) {
+      totalExpenseLastMonth += expense.amount;
+    }
+  });
+
+  // Hitung pertumbuhan Income (dalam desimal)
   const incomeGrowth =
-    totalIncomeLastMonth > 0
-      ? ((totalIncomeCurrentMonth - totalIncomeLastMonth) /
-          totalIncomeLastMonth) *
-        100
-      : 0;
-  const expenseGrowth =
-    totalExpenseLastMonth > 0
-      ? ((totalExpenseCurrentMonth - totalExpenseLastMonth) /
-          totalExpenseLastMonth) *
-        100
-      : 0;
+    totalIncomeLastMonth === 0
+      ? (totalIncomeCurrentMonth > 0 ? 1 : 0) // Jika bulan lalu 0, sekarang ada, anggap 100%
+      : (totalIncomeCurrentMonth - totalIncomeLastMonth) / totalIncomeLastMonth;
 
+  // Hitung pertumbuhan Expense (dalam desimal)
+  const expenseGrowth =
+    totalExpenseLastMonth === 0
+      ? (totalExpenseCurrentMonth > 0 ? 1 : 0) // Jika bulan lalu 0, sekarang ada, anggap 100%
+      : (totalExpenseCurrentMonth - totalExpenseLastMonth) / totalExpenseLastMonth;
+
+  // Data untuk ExpensesChart (Donut Chart)
   const expenseByCategory = expenses.reduce((acc, exp) => {
     acc[exp.category] = (acc[exp.category] || 0) + exp.amount;
     return acc;
   }, {});
   const totalAllExpenses = expenses.reduce((sum, exp) => sum + exp.amount, 0);
+
+  // Data untuk BalanceOverview Chart (Area Chart)
+  // Ini memerlukan perhitungan saldo bulanan dari data transaksi yang relevan dengan selectedChartTimeRange
+  // Untuk kesederhanaan, kita akan menggunakan getMonthlyData utility Anda, tapi perlu pastikan utility ini sesuai
+  // dengan range yang dipilih (3, 6, 12 bulan).
+  const { months, balanceOverTime } = getMonthlyData(incomes, expenses, totalBalance, selectedChartTimeRange);
+
 
   if (loading) {
     return (
@@ -315,7 +349,6 @@ const Home = () => {
         {/* Skeleton Atas: Balance & Expenses */}
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-8">
           {/* Skeleton BalanceOverview */}
-          {/* PERBAIKAN: Menghapus h-110 agar tinggi fleksibel */}
           <div className="lg:col-span-3 bg-white border border-gray-200 p-6 rounded-xl shadow-sm flex flex-col">
             <div className="flex items-center justify-between mb-6">
               <div className="h-6 w-32 bg-gray-300 rounded-md"></div>
@@ -335,23 +368,19 @@ const Home = () => {
                 <div className="h-6 w-24 bg-gray-400 rounded-md"></div>
               </div>
             </div>
-            {/* PERBAIKAN: Tinggi grafik dibuat responsif */}
             <div className="h-48 sm:h-64 bg-gray-200 rounded-md flex-1"></div>
           </div>
 
           {/* Skeleton ExpensesChart */}
-          {/* PERBAIKAN: Menghapus h-110 agar tinggi fleksibel */}
           <div className="lg:col-span-2 bg-white border border-gray-200 p-6 rounded-xl shadow-sm flex flex-col">
             <div className="flex items-center justify-between mb-6">
               <div className="h-6 w-32 bg-gray-300 rounded-md"></div>
               <div className="h-8 w-32 bg-gray-300 rounded-md"></div>
             </div>
             <div className="flex flex-col items-center justify-center flex-1 min-h-0">
-              {/* PERBAIKAN: Ukuran donat dibuat responsif */}
               <div className="h-40 w-40 sm:h-52 sm:w-52 rounded-full bg-gray-200 mb-6"></div>
               <div className="w-full">
                 <div className="flex flex-wrap justify-center gap-3">
-                  {/* PERBAIKAN: Jumlah legenda dikurangi agar lebih rapi di mobile */}
                   {[...Array(4)].map((_, i) => (
                     <div key={i} className="flex items-center rounded-lg px-3 py-1.5 text-sm">
                       <span className="w-3 h-3 rounded-lg mr-2 flex-shrink-0 bg-gray-300"></span>
@@ -367,7 +396,6 @@ const Home = () => {
         {/* Skeleton Bawah: Pockets, Saving Goals, Recent Transactions */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {/* Skeleton PocketsSection */}
-          {/* PERBAIKAN: Menghapus h-100 agar tinggi fleksibel */}
           <div className="bg-white border border-gray-200 p-6 rounded-xl shadow-sm flex flex-col">
             <div className="h-6 w-24 bg-gray-300 rounded-md mb-6"></div>
             <div className="space-y-4">
@@ -384,7 +412,6 @@ const Home = () => {
           </div>
 
           {/* Skeleton SavingGoalsSection */}
-          {/* PERBAIKAN: Menghapus h-100 agar tinggi fleksibel */}
           <div className="bg-white border border-gray-200 p-6 rounded-xl shadow-sm flex flex-col">
             <div className="h-6 w-28 bg-gray-300 rounded-md mb-6"></div>
             <div className="space-y-4">
@@ -404,7 +431,6 @@ const Home = () => {
           </div>
 
           {/* Skeleton RecentTransactions */}
-          {/* PERBAIKAN: Mengubah grid span dan menghapus h-100 */}
           <div className="md:col-span-2 bg-white border border-gray-200 p-6 rounded-xl shadow-sm flex flex-col">
             <div className="h-6 w-32 bg-gray-300 rounded-md mb-6"></div>
             <div className="flex flex-row flex-wrap gap-3 mb-6">
@@ -412,7 +438,6 @@ const Home = () => {
               <div className="h-8 w-32 bg-gray-200 rounded-lg"></div>
             </div>
             <div className="space-y-4">
-              {/* PERBAIKAN: Menyederhanakan jumlah transaksi agar tidak terlalu panjang di mobile */}
               {[...Array(1)].map((_, dateIdx) => (
                 <div key={dateIdx}>
                   <div className="flex justify-between items-center text-sm font-medium text-gray-600 mb-3 px-2">
@@ -472,6 +497,8 @@ const Home = () => {
               months={months}
               balanceOverTime={balanceOverTime}
               formatCurrency={formatCurrency}
+              onTimeRangeChange={setSelectedChartTimeRange} // Passing handler untuk filter chart
+              selectedTimeRange={selectedChartTimeRange} // Passing state filter chart
             />
           </div>
           <div className="lg:col-span-2 min-w-0">
@@ -511,9 +538,8 @@ const Home = () => {
               getTransactionIcon={getTransactionIcon}
             />
           </div>
-
         </div>
-          <FinancialTips />
+        <FinancialTips />
       </div>
     </div>
   );

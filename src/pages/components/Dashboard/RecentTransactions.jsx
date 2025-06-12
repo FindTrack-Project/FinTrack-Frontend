@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 // Api tidak lagi dibutuhkan di sini
-import { 
-  getTransactionIcon, 
-  formatCurrency 
-} from "./utils"; 
+import {
+  getTransactionIcon,
+  formatCurrency
+} from "./utils";
 import { AlertTriangle } from 'lucide-react';
 
 const POCKET_ICON_COLORS = ["#facc15", "#38bdf8", "#4ade80", "#f87171", "#a78bfa", "#fb923c"];
@@ -12,13 +12,12 @@ const POCKET_ICON_COLORS = ["#facc15", "#38bdf8", "#4ade80", "#f87171", "#a78bfa
 const RecentTransactions = ({
   incomes,
   expenses,
-  accounts, 
+  accounts,
 }) => {
-  // useEffect dan useState untuk 'accounts' telah dihapus untuk optimisasi
   const [selectedTimeRange, setSelectedTimeRange] = useState("7_days");
   const [selectedPocket, setSelectedPocket] = useState("all");
   const [selectedCategory, setSelectedCategory] = useState("all");
-  
+
   const getAccountName = (accountId) => {
     // Fungsi ini sekarang menggunakan 'accounts' dari props
     const account = accounts.find((acc) => acc.id === accountId);
@@ -61,7 +60,7 @@ const RecentTransactions = ({
     acc[dateKey].push(trx);
     return acc;
   }, {});
-  
+
   const sortedGroupedTransactions = Object.entries(groupedTransactions).sort(([dateA], [dateB]) => new Date(dateB) - new Date(dateA));
 
   return (
@@ -72,7 +71,7 @@ const RecentTransactions = ({
 
       <div className="flex flex-row flex-wrap gap-3 mb-6">
         <div className="relative">
-          <select value={selectedTimeRange} onChange={(e) => setSelectedTimeRange(e.target.value)} className="appearance-none bg-gray-50 border border-gray-200 text-gray-700 py-2 px-4 pr-8 rounded-lg font-medium text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <select value={selectedTimeRange} onChange={(e) => setSelectedTimeRange(e.target.value)} className="appearance-none bg-gray-50 border border-gray-200 text-gray-700 py-2 px-4 pr-8 rounded-lg font-medium text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
             <option value="7_days">7 Hari Terakhir</option>
             <option value="30_days">30 Hari Terakhir</option>
             <option value="all">Semua Waktu</option>
@@ -82,7 +81,7 @@ const RecentTransactions = ({
           </div>
         </div>
         <div className="relative">
-          <select value={selectedPocket} onChange={(e) => setSelectedPocket(e.target.value)} className="appearance-none bg-gray-50 border border-gray-200 text-gray-700 py-2 px-4 pr-8 rounded-lg font-medium text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <select value={selectedPocket} onChange={(e) => setSelectedPocket(e.target.value)} className="appearance-none bg-gray-50 border border-gray-200 text-gray-700 py-2 px-4 pr-8 rounded-lg font-medium text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
             <option value="all">Pocket</option>
             {accounts.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
           </select>
@@ -91,7 +90,7 @@ const RecentTransactions = ({
           </div>
         </div>
         <div className="relative">
-          <select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)} className="appearance-none bg-gray-50 border border-gray-200 text-gray-700 py-2 px-4 pr-8 rounded-lg font-medium text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)} className="appearance-none bg-gray-50 border border-gray-200 text-gray-700 py-2 px-4 pr-8 rounded-lg font-medium text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
             <option value="all">Kategori</option>
             {allCategoriesAndSources.map((c) => <option key={c} value={c}>{c}</option>)}
           </select>
@@ -113,6 +112,14 @@ const RecentTransactions = ({
             const dailyTotal = transactions.reduce((sum, trx) => sum + (trx.type === "Pemasukan" ? trx.amount : -trx.amount), 0);
             const formattedDate = new Date(dateKey).toLocaleDateString("id-ID", { weekday: 'long', day: 'numeric', month: 'long' });
 
+            // PERBAIKAN: Urutkan transaksi di dalam hari dari yang terbaru ke terlama
+            const sortedDailyTransactions = [...transactions].sort((a, b) => {
+                const dateA = new Date(a.date);
+                const dateB = new Date(b.date);
+                // Urutkan berdasarkan waktu transaksi (date prop) secara descending
+                return dateB.getTime() - dateA.getTime();
+            });
+
             return (
               <div key={dateKey}>
                 <div className="flex justify-between items-center my-3">
@@ -120,14 +127,19 @@ const RecentTransactions = ({
                   <p className="text-sm font-semibold text-gray-800">{formatCurrency(dailyTotal)}</p>
                 </div>
                 <div className="space-y-1">
-                  {transactions.map((trx) => {
+                  {sortedDailyTransactions.map((trx) => { // Gunakan sortedDailyTransactions di sini
                     const isIncome = trx.type === "Pemasukan";
                     const Icon = getTransactionIcon(trx.category || trx.source, isIncome ? 'income' : 'expense');
                     const accountIndex = accounts.findIndex(acc => acc.id === trx.accountId);
 
+                    // Pastikan accountIndex valid sebelum digunakan untuk warna
+                    const iconBgColor = isIncome ? 'bg-green-100' : 'bg-red-100'; // Default background for income/expense icon
+                    const iconTextColor = isIncome ? 'text-green-500' : 'text-red-500'; // Default text color for income/expense icon
+
+
                     return (
                       <div key={trx.id} className="flex items-center p-3 border-b border-gray-100 last:border-b-0">
-                        <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center mr-4 bg-blue-100 text-blue-500`}>
+                        <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center mr-4 ${iconBgColor} ${iconTextColor}`}>
                           <Icon size={20} />
                         </div>
                         <div className="flex-grow">
@@ -140,7 +152,8 @@ const RecentTransactions = ({
                           </p>
                           <div className="flex items-center justify-end gap-1.5 mt-0.5">
                             <p className="text-xs text-gray-500">{getAccountName(trx.accountId)}</p>
-                            <span className="w-2 h-2 rounded-full" style={{backgroundColor: POCKET_ICON_COLORS[accountIndex % POCKET_ICON_COLORS.length]}}></span>
+                            {/* Pastikan accountIndex valid sebelum digunakan untuk POCKET_ICON_COLORS */}
+                            <span className="w-2 h-2 rounded-full" style={{backgroundColor: accountIndex !== -1 ? POCKET_ICON_COLORS[accountIndex % POCKET_ICON_COLORS.length] : '#9ca3af'}}></span>
                           </div>
                         </div>
                       </div>
@@ -165,4 +178,3 @@ const RecentTransactions = ({
 };
 
 export default RecentTransactions;
-

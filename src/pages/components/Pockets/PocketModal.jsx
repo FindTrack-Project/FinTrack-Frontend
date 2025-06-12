@@ -100,7 +100,7 @@ const PocketModal = ({ isOpen, onClose, onPocketSaved, existingPocket }) => {
               value={formData.type}
               onChange={handleInputChange}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white cursor-pointer"
             >
               <option value="Bank">Bank</option>
               <option value="E-Wallet">E-Wallet</option>
@@ -125,10 +125,10 @@ const PocketModal = ({ isOpen, onClose, onPocketSaved, existingPocket }) => {
             </div>
           )}
           <div className="flex space-x-3 pt-2">
-            <button type="button" onClick={onClose} className="flex-1 py-2.5 px-4 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50">
+            <button type="button" onClick={onClose} className="flex-1 py-2.5 px-4 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 cursor-pointer">
               Batal
             </button>
-            <button type="submit" disabled={isLoading} className="flex-1 py-2.5 px-4 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50">
+            <button type="submit" disabled={isLoading} className="flex-1 py-2.5 px-4 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50 cursor-pointer">
               {isLoading ? "Menyimpan..." : "Simpan"}
             </button>
           </div>

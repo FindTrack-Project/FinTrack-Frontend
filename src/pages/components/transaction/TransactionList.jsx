@@ -74,7 +74,7 @@ const TransactionList = ({
         <h2 className="text-xl font-bold text-gray-800">Recent Transactions</h2>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="px-4 py-2 bg-gray-800 text-white rounded-lg text-sm font-semibold hover:bg-gray-700 transition-colors flex items-center justify-center sm:w-auto w-full gap-2"
+          className="px-4 py-2 bg-gray-800 text-white rounded-lg text-sm font-semibold hover:bg-gray-700 transition-colors flex items-center justify-center sm:w-auto w-full gap-2 cursor-pointer"
         >
           <PlusCircle size={16} /> Tambah Transaksi
         </button>
@@ -84,7 +84,7 @@ const TransactionList = ({
         {/* Filter Waktu */}
         <div className="relative w-full sm:w-auto">
           <select
-            className="appearance-none bg-gray-50 border border-gray-200 text-gray-700 py-2 px-4 pr-8 rounded-lg font-medium text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+            className="appearance-none bg-gray-50 border border-gray-200 text-gray-700 py-2 px-4 pr-8 rounded-lg font-medium text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full cursor-pointer"
             value={selectedTimeRange}
             onChange={(e) => setSelectedTimeRange(e.target.value)}
           >
@@ -100,7 +100,7 @@ const TransactionList = ({
         {/* Filter Pocket */}
         <div className="relative w-full sm:w-auto">
           <select
-            className="appearance-none bg-gray-50 border border-gray-200 text-gray-700 py-2 px-4 pr-8 rounded-lg font-medium text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+            className="appearance-none bg-gray-50 border border-gray-200 text-gray-700 py-2 px-4 pr-8 rounded-lg font-medium text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full cursor-pointer"
             value={selectedPocket}
             onChange={(e) => setSelectedPocket(e.target.value)}
           >
@@ -116,7 +116,7 @@ const TransactionList = ({
         {/* Filter Kategori */}
         <div className="relative w-full sm:w-auto">
           <select
-            className="appearance-none bg-gray-50 border border-gray-200 text-gray-700 py-2 px-4 pr-8 rounded-lg font-medium text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+            className="appearance-none bg-gray-50 border border-gray-200 text-gray-700 py-2 px-4 pr-8 rounded-lg font-medium text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full cursor-pointer"
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
           >
