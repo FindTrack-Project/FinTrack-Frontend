@@ -56,7 +56,7 @@ const IncomeBreakdownCard = ({ incomePieData }) => {
   return (
     <section className="h-full bg-white rounded-2xl shadow-sm p-6 col-span-1">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-lg font-semibold text-gray-800">Income</h2>
+        <h2 className="text-lg font-semibold text-gray-800">Incomes</h2>
         <select className="px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200 cursor-pointer">
           <option>Last 6 month</option>
           <option>Last month</option>

@@ -54,7 +54,7 @@ const ExpenseBreakdownCard = ({ expensesPieData }) => {
     <section className="h-130 bg-white rounded-2xl shadow-sm p-6 flex flex-col">
       {/* Header Kartu */}
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-lg font-semibold text-gray-800">Income</h2>
+        <h2 className="text-lg font-semibold text-gray-800">Expenses</h2>
         <select className="px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200 cursor-pointer">
           <option>Last 6 month</option>
           <option>Last month</option>

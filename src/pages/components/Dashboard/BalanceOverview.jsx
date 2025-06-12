@@ -91,7 +91,7 @@ const BalanceOverview = ({
       <div className="flex flex-col md:flex-row gap-y-4 md:gap-x-12 mb-6">
         {/* Kolom Income */}
         <div>
-          <h3 className="text-sm text-gray-500 mb-1">Income</h3>
+          <h3 className="text-sm text-gray-500 mb-1">Incomes</h3>
           <p className="text-xl font-bold text-green-600 flex items-center">
             {formatCurrency(totalIncomeCurrentMonth)}
           </p>
