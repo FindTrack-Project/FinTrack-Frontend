@@ -5,29 +5,27 @@ const PocketModal = ({ isOpen, onClose, onPocketSaved, existingPocket }) => {
   const [formData, setFormData] = useState({
     name: "",
     type: "Bank",
-    initialBalance: "",
+    // initialBalance tidak lagi ada di sini sebagai bagian dari form input
   });
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   
-  // PERBAIKAN: Tentukan mode berdasarkan prop `existingPocket`
+  // Tentukan mode berdasarkan prop `existingPocket`
   const isEditMode = Boolean(existingPocket);
 
-  // PERBAIKAN: Gunakan useEffect untuk mengisi form saat mode edit atau mereset saat mode tambah
+  // Gunakan useEffect untuk mengisi form saat mode edit atau mereset saat mode tambah
   useEffect(() => {
     if (isOpen) {
       if (isEditMode) {
         setFormData({
           name: existingPocket.name,
           type: existingPocket.type,
-          initialBalance: existingPocket.initialBalance, // Tetap simpan untuk data, tapi tidak ditampilkan
         });
       } else {
         // Reset form untuk mode "Tambah Baru"
         setFormData({
           name: "",
           type: "Bank",
-          initialBalance: "",
         });
       }
       setError(""); // Selalu reset error saat modal dibuka
@@ -53,9 +51,8 @@ const PocketModal = ({ isOpen, onClose, onPocketSaved, existingPocket }) => {
         type: formData.type,
       };
 
-      // Hanya tambahkan initialBalance jika BUKAN mode edit
       if (!isEditMode) {
-        dataToSave.initialBalance = Number(formData.initialBalance) || 0;
+        dataToSave.initialBalance = 0; // Saldo awal otomatis 0 untuk pocket baru
       }
       
       await onPocketSaved(dataToSave);
@@ -73,7 +70,7 @@ const PocketModal = ({ isOpen, onClose, onPocketSaved, existingPocket }) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm p-4">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
         <div className="p-6 pb-4 flex justify-between items-center">
-          {/* PERBAIKAN: Judul modal dinamis */}
+          {/* Judul modal dinamis */}
           <h2 className="text-lg font-semibold text-gray-900">
             {isEditMode ? "Edit Pocket" : "Tambah Pocket Baru"}
           </h2>
@@ -108,22 +105,6 @@ const PocketModal = ({ isOpen, onClose, onPocketSaved, existingPocket }) => {
               <option value="Other">Other</option>
             </select>
           </div>
-          {/* PERBAIKAN: Saldo Awal hanya muncul saat mode Tambah */}
-          {!isEditMode && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Saldo Awal</label>
-              <input
-                type="number"
-                name="initialBalance"
-                value={formData.initialBalance}
-                onChange={handleInputChange}
-                required
-                min={0}
-                placeholder="Rp 0"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-          )}
           <div className="flex space-x-3 pt-2">
             <button type="button" onClick={onClose} className="flex-1 py-2.5 px-4 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 cursor-pointer">
               Batal

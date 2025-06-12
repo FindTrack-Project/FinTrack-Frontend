@@ -415,12 +415,6 @@ const PocketsPage = () => {
                           >
                             <Pen size={16} />
                           </button>
-                          {/* <button
-                            onClick={() => handleOpenDeleteConfirm(account.id)}
-                            className="p-2 text-red-500 hover:bg-red-100 rounded-full transition-colors"
-                          >
-                            <Trash2 size={16} />
-                          </button> */}
                         </div>
                       </div>
                     );

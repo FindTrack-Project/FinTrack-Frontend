@@ -208,7 +208,7 @@ const TransactionModal = ({
             </h2>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 text-xl leading-none p-1"
+              className="text-gray-400 hover:text-gray-600 text-xl leading-none p-1 cursor-pointer"
             >
               ×
             </button>
@@ -220,7 +220,7 @@ const TransactionModal = ({
             {['Income', 'Expense', 'Transfer'].map((tab) => (
               <button
                 key={tab}
-                className={`flex-1 py-2 px-4 text-sm font-medium rounded-md transition-all ${
+                className={`flex-1 py-2 px-4 text-sm font-medium rounded-md transition-all cursor-pointer ${
                   activeTab === tab
                     ? "bg-white text-gray-900 shadow-sm"
                     : "text-gray-500 hover:text-gray-700"
@@ -325,7 +325,7 @@ const TransactionModal = ({
                   value={formData.category}
                   onChange={handleChange}
                   required
-                  className="w-full px-3 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm bg-white"
+                  className="w-full px-3 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm bg-white cursor-pointer"
                 >
                   <option value="">Pilih Kategori</option>
                   {categoriesList.map((cat) => (
@@ -349,7 +349,7 @@ const TransactionModal = ({
                   value={formData.accountId}
                   onChange={handleChange}
                   required
-                  className="w-full px-3 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm bg-white"
+                  className="w-full px-3 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm bg-white cursor-pointer"
                 >
                   {accounts.length === 0 ? (
                     <option value="">Tidak ada akun</option>
@@ -371,7 +371,7 @@ const TransactionModal = ({
                   value={formData.source}
                   onChange={handleChange}
                   required
-                  className="w-full px-3 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm bg-white"
+                  className="w-full px-3 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm bg-white cursor-pointer"
                 >
                   <option value="">Pilih Sumber</option>
                   {sourcesList.map((src) => (
@@ -395,7 +395,7 @@ const TransactionModal = ({
                   value={formData.sourceAccountId}
                   onChange={handleChange}
                   required
-                  className="w-full px-3 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm bg-white"
+                  className="w-full px-3 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm bg-white cursor-pointer"
                 >
                   {accounts.map((acc) => (
                     <option key={acc.id} value={acc.id}>
@@ -413,7 +413,7 @@ const TransactionModal = ({
                   value={formData.destinationAccountId}
                   onChange={handleChange}
                   required
-                  className="w-full px-3 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm bg-white"
+                  className="w-full px-3 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm bg-white cursor-pointer"
                 >
                   {accounts.map((acc) => (
                     <option key={acc.id} value={acc.id}>
@@ -450,7 +450,7 @@ const TransactionModal = ({
                 (activeTab === "Transfer" && accounts.length < 2) ||
                 (activeTab === "Transfer" && formData.sourceAccountId === formData.destinationAccountId)
               }
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all disabled:opacity-50"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all disabled:opacity-50 cursor-pointer"
             >
               {isLoading ? "Menyimpan..." : `Simpan`}
             </button>
