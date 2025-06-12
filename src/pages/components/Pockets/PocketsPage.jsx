@@ -360,7 +360,7 @@ const PocketsPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8 text-gray-800">
+    <div className="min-h-screen bg-gray-50 p-4 sm:p-6 text-gray-800">
       <PocketsPageHeader userName={userName} userEmail={userEmail} />
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">

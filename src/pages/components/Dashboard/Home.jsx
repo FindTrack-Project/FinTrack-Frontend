@@ -296,7 +296,7 @@ const Home = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8 w-full animate-pulse">
+      <div className="min-h-screen bg-gray-50 p-4 sm:p-6 w-full animate-pulse">
         {/* Skeleton Header (Sudah cukup responsif) */}
         <header className="flex flex-row justify-between items-center mb-8 gap-4 animate-pulse">
           <div>
@@ -453,7 +453,7 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="p-4 sm:p-6 lg:p-8 w-full">
+      <div className="p-4 sm:p-6 text-gray-800">
         <DashboardHeader
           userName={userName}
           userEmail={userEmail}
