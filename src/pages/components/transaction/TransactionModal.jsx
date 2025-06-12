@@ -8,7 +8,7 @@ const TransactionModal = ({
   isOpen,
   onClose,
   onTransactionAdded,
-  accounts, // <-- Pastikan ini tersedia sebagai prop
+  accounts, // Pastikan ini tersedia sebagai prop
   categoriesList,
   sourcesList,
 }) => {
@@ -60,7 +60,7 @@ const TransactionModal = ({
       setDisplayAmount("");
       setError(null); // Reset error saat modal dibuka
     }
-  }, [isOpen, accounts, categoriesList, sourcesList]); // Tambahkan accounts ke dependency array
+  }, [isOpen, accounts, categoriesList, sourcesList]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -147,7 +147,7 @@ const TransactionModal = ({
       }
 
 
-      const fullDateTime = `<span class="math-inline">\{formData\.date\}T</span>{formData.time}:00Z`;
+      const fullDateTime = `${formData.date}T${formData.time}:00Z`;
 
       if (activeTab === "Income") {
         endpoint = "/incomes";
@@ -240,6 +240,7 @@ const TransactionModal = ({
             </p>
           )}
 
+          {/* Bagian Tanggal & Waktu */}
           {(activeTab === "Income" || activeTab === "Expense") && (
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -271,30 +272,31 @@ const TransactionModal = ({
             </div>
           )}
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Jumlah
-              </label>
-              <input
-                type="text"
-                name="amount"
-                value={displayAmount}
-                onChange={handleChange}
-                onBlur={handleAmountBlur}
-                onFocus={handleAmountFocus}
-                required
-                placeholder="Rp5.000.000"
-                className="w-full px-3 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                inputMode="decimal"
-              />
-            </div>
+          {/* Bagian Jumlah */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Jumlah
+            </label>
+            <input
+              type="text"
+              name="amount"
+              value={displayAmount}
+              onChange={handleChange}
+              onBlur={handleAmountBlur}
+              onFocus={handleAmountFocus}
+              required
+              placeholder="Rp5.000.000"
+              className="w-full px-3 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+              inputMode="decimal"
+            />
+          </div>
 
-            {/* Account selection for Income/Expense */}
-            {(activeTab === "Income" || activeTab === "Expense") && (
+          {/* Bagian Sumber/Kategori/Akun (Disusun di bawah Jumlah) */}
+          {activeTab === "Expense" && (
+            <div className="space-y-4"> {/* Menggunakan space-y untuk jarak vertikal */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {activeTab === "Income" ? "Akun Penerima" : "Akun Pengeluaran"}
+                  Akun Pengeluaran
                 </label>
                 <select
                   name="accountId"
@@ -314,9 +316,6 @@ const TransactionModal = ({
                   )}
                 </select>
               </div>
-            )}
-
-            {activeTab === "Expense" && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Kategori
@@ -336,9 +335,33 @@ const TransactionModal = ({
                   ))}
                 </select>
               </div>
-            )}
+            </div>
+          )}
 
-            {activeTab === "Income" && (
+          {activeTab === "Income" && (
+            <div className="space-y-4"> {/* Menggunakan space-y untuk jarak vertikal */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Akun Penerima
+                </label>
+                <select
+                  name="accountId"
+                  value={formData.accountId}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-3 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm bg-white"
+                >
+                  {accounts.length === 0 ? (
+                    <option value="">Tidak ada akun</option>
+                  ) : (
+                    accounts.map((acc) => (
+                      <option key={acc.id} value={acc.id}>
+                        {acc.name} (Saldo: {formatCurrency(acc.currentBalance)})
+                      </option>
+                    ))
+                  )}
+                </select>
+              </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Sumber
@@ -358,50 +381,51 @@ const TransactionModal = ({
                   ))}
                 </select>
               </div>
-            )}
+            </div>
+          )}
 
-            {activeTab === "Transfer" && (
-              <>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Dari Akun
-                  </label>
-                  <select
-                    name="sourceAccountId"
-                    value={formData.sourceAccountId}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-3 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm bg-white"
-                  >
-                    {accounts.map((acc) => (
-                      <option key={acc.id} value={acc.id}>
-                        {acc.name} (Saldo: {formatCurrency(acc.currentBalance)})
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Ke Akun
-                  </label>
-                  <select
-                    name="destinationAccountId"
-                    value={formData.destinationAccountId}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-3 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm bg-white"
-                  >
-                    {accounts.map((acc) => (
-                      <option key={acc.id} value={acc.id}>
-                        {acc.name} (Saldo: {formatCurrency(acc.currentBalance)})
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </>
-            )}
-          </div>
+          {activeTab === "Transfer" && (
+            <div className="space-y-4"> {/* Menggunakan space-y untuk jarak vertikal */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Dari Akun
+                </label>
+                <select
+                  name="sourceAccountId"
+                  value={formData.sourceAccountId}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-3 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm bg-white"
+                >
+                  {accounts.map((acc) => (
+                    <option key={acc.id} value={acc.id}>
+                      {acc.name} (Saldo: {formatCurrency(acc.currentBalance)})
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Ke Akun
+                </label>
+                <select
+                  name="destinationAccountId"
+                  value={formData.destinationAccountId}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-3 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm bg-white"
+                >
+                  {accounts.map((acc) => (
+                    <option key={acc.id} value={acc.id}>
+                      {acc.name} (Saldo: {formatCurrency(acc.currentBalance)})
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          )}
 
+          {/* Bagian Deskripsi */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Deskripsi (Opsional)
@@ -416,13 +440,19 @@ const TransactionModal = ({
             />
           </div>
 
+          {/* Tombol Submit */}
           <div>
             <button
               type="submit"
-              disabled={isLoading || accounts.length === 0 || (activeTab === "Transfer" && accounts.length < 2 && (formData.sourceAccountId === formData.destinationAccountId))} // Add disable condition for transfer with insufficient accounts
+              disabled={
+                isLoading ||
+                accounts.length === 0 ||
+                (activeTab === "Transfer" && accounts.length < 2) ||
+                (activeTab === "Transfer" && formData.sourceAccountId === formData.destinationAccountId)
+              }
               className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all disabled:opacity-50"
             >
-              {isLoading ? "Menyimpan..." : `Tambah ${activeTab}`}
+              {isLoading ? "Menyimpan..." : `Simpan`}
             </button>
           </div>
         </form>
