@@ -269,7 +269,7 @@ const RecommendationPage = () => {
           </h1>
         </div>
         <div className="flex items-center gap-3">
-          <button className="relative bg-white border border-gray-200 rounded-full p-2.5 shadow-sm hover:shadow-md transition-all duration-200">
+          <button className="relative bg-white border border-gray-200 rounded-full p-2.5 shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer">
             <Bell size={20} className="text-gray-600" />
           </button>
           <div className="hidden sm:flex items-center gap-3 bg-white border border-gray-200 rounded-full pr-3 pl-1 py-1 shadow-sm">
