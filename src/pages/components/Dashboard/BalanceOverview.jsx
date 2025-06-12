@@ -94,9 +94,6 @@ const BalanceOverview = ({
           <h3 className="text-sm text-gray-500 mb-1">Income</h3>
           <p className="text-xl font-bold text-green-600 flex items-center">
             {formatCurrency(totalIncomeCurrentMonth)}
-            <span className={`ml-2 text-xs font-semibold ${incomeGrowth >= 0 ? "text-green-500" : "text-red-500"}`}>
-              {Math.abs(incomeGrowth).toFixed(1)}% {incomeGrowth >= 0 ? "▲" : "▼"}
-            </span>
           </p>
         </div>
         {/* Kolom Expenses */}
@@ -104,9 +101,6 @@ const BalanceOverview = ({
           <h3 className="text-sm text-gray-500 mb-1">Expenses</h3>
           <p className="text-xl font-bold text-red-600 flex items-center">
             {formatCurrency(totalExpenseCurrentMonth)}
-            <span className={`ml-2 text-xs font-semibold ${expenseGrowth >= 0 ? "text-red-500" : "text-green-500"}`}>
-              {Math.abs(expenseGrowth).toFixed(1)}% {expenseGrowth >= 0 ? "▲" : "▼"}
-            </span>
           </p>
         </div>
       </div>
