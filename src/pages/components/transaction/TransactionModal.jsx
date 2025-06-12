@@ -16,7 +16,7 @@ const TransactionModal = ({
   const [formData, setFormData] = useState({
     date: "",
     time: "",
-    amount: "", // Menyimpan nilai numerik (atau string kosong)
+    amount: "",
     description: "",
     accountId: "",
     category: "",
@@ -24,7 +24,7 @@ const TransactionModal = ({
     sourceAccountId: "",
     destinationAccountId: "",
   });
-  const [displayAmount, setDisplayAmount] = useState(""); // Menyimpan nilai string yang diformat untuk input
+  const [displayAmount, setDisplayAmount] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -42,7 +42,7 @@ const TransactionModal = ({
       setFormData({
         date: todayDate,
         time: currentTime,
-        amount: "", // Reset amount to empty string
+        amount: "",
         description: "",
         accountId: accounts.length > 0 ? accounts[0].id : "",
         category: categoriesList.length > 0 ? categoriesList[0] : "",
@@ -55,7 +55,7 @@ const TransactionModal = ({
             ? accounts[0].id
             : "",
       });
-      setDisplayAmount(""); // Reset display amount when modal opens
+      setDisplayAmount("");
       setError(null);
     }
   }, [isOpen, accounts, categoriesList, sourcesList]);
@@ -64,32 +64,21 @@ const TransactionModal = ({
     const { name, value } = e.target;
 
     if (name === "amount") {
-      // 1. Hapus semua karakter selain digit dan koma/titik.
       let cleanValue = value.replace(/[^0-9.,]/g, "");
-
-      // 2. Ganti koma dengan titik untuk konsistensi parseFloat
       cleanValue = cleanValue.replace(/,/g, ".");
-
-      // 3. Pastikan hanya ada satu titik desimal
       const parts = cleanValue.split(".");
       if (parts.length > 2) {
         cleanValue = parts[0] + "." + parts.slice(1).join("");
       }
-
-      // 4. Konversi ke angka float
       let numericValue = parseFloat(cleanValue);
-
-      // 5. Jika hasilnya NaN (misal inputnya hanya "."), set ke 0 atau ""
       if (isNaN(numericValue) && cleanValue !== "") {
-        // Biarkan "" jika inputnya kosong
-        numericValue = 0; // Atau biarkan string kosong jika input benar-benar tidak valid
+        numericValue = 0;
       }
-
       setFormData((prev) => ({
         ...prev,
         amount: numericValue === 0 && cleanValue === "" ? "" : numericValue,
-      })); // Set to "" if user clears
-      setDisplayAmount(cleanValue); // Display the cleaned string for direct editing
+      }));
+      setDisplayAmount(cleanValue);
     } else {
       setFormData((prev) => ({ ...prev, [name]: value }));
     }
@@ -99,13 +88,11 @@ const TransactionModal = ({
     if (formData.amount !== "" && typeof formData.amount === "number") {
       setDisplayAmount(formatCurrency(formData.amount));
     } else {
-      setDisplayAmount(""); // Kosongkan tampilan jika nilai numerik kosong
+      setDisplayAmount("");
     }
   };
 
   const handleAmountFocus = () => {
-    // Saat fokus, tampilkan angka mentah tanpa format (gunakan . toString() untuk memastikan)
-    // dan ganti titik desimal kembali ke koma jika pengguna Indonesia.
     if (formData.amount !== "") {
       setDisplayAmount(String(formData.amount).replace(".", ","));
     } else {
@@ -122,7 +109,6 @@ const TransactionModal = ({
     let payload = {};
 
     try {
-      // Validasi jumlah nominal sebelum pengiriman
       const finalAmount = parseFloat(formData.amount);
       if (isNaN(finalAmount) || finalAmount <= 0) {
         throw new Error(
@@ -135,7 +121,7 @@ const TransactionModal = ({
       if (activeTab === "Income") {
         endpoint = "/incomes";
         payload = {
-          amount: finalAmount, // Menggunakan nilai numerik yang sudah divalidasi
+          amount: finalAmount,
           date: fullDateTime,
           description: formData.description,
           source: formData.source,
@@ -144,7 +130,7 @@ const TransactionModal = ({
       } else if (activeTab === "Expense") {
         endpoint = "/expenses";
         payload = {
-          amount: finalAmount, // Menggunakan nilai numerik yang sudah divalidasi
+          amount: finalAmount,
           date: fullDateTime,
           description: formData.description,
           category: formData.category,
@@ -153,7 +139,7 @@ const TransactionModal = ({
       } else if (activeTab === "Transfer") {
         endpoint = "/transfers";
         payload = {
-          amount: finalAmount, // Menggunakan nilai numerik yang sudah divalidasi
+          amount: finalAmount,
           description: formData.description,
           sourceAccountId: formData.sourceAccountId,
           destinationAccountId: formData.destinationAccountId,
@@ -180,7 +166,6 @@ const TransactionModal = ({
   return (
     <div className="fixed inset-0 backdrop-blur-sm bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
-        {/* Header */}
         <div className="p-6 pb-4">
           <div className="flex justify-between items-center">
             <h2 className="text-lg font-semibold text-gray-900">
@@ -195,43 +180,24 @@ const TransactionModal = ({
           </div>
         </div>
 
-        {/* Tabs */}
         <div className="px-6">
           <div className="flex bg-gray-100 rounded-lg p-1">
-            <button
-              className={`flex-1 py-2 px-4 text-sm font-medium rounded-md transition-all ${
-                activeTab === "Income"
-                  ? "bg-white text-gray-900 shadow-sm"
-                  : "text-gray-500 hover:text-gray-700"
-              }`}
-              onClick={() => setActiveTab("Income")}
-            >
-              Income
-            </button>
-            <button
-              className={`flex-1 py-2 px-4 text-sm font-medium rounded-md transition-all ${
-                activeTab === "Expense"
-                  ? "bg-white text-gray-900 shadow-sm"
-                  : "text-gray-500 hover:text-gray-700"
-              }`}
-              onClick={() => setActiveTab("Expense")}
-            >
-              Expense
-            </button>
-            <button
-              className={`flex-1 py-2 px-4 text-sm font-medium rounded-md transition-all ${
-                activeTab === "Transfer"
-                  ? "bg-white text-gray-900 shadow-sm"
-                  : "text-gray-500 hover:text-gray-700"
-              }`}
-              onClick={() => setActiveTab("Transfer")}
-            >
-              Transfer
-            </button>
+            {['Income', 'Expense', 'Transfer'].map((tab) => (
+              <button
+                key={tab}
+                className={`flex-1 py-2 px-4 text-sm font-medium rounded-md transition-all ${
+                  activeTab === tab
+                    ? "bg-white text-gray-900 shadow-sm"
+                    : "text-gray-500 hover:text-gray-700"
+                }`}
+                onClick={() => setActiveTab(tab)}
+              >
+                {tab}
+              </button>
+            ))}
           </div>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 pt-6 space-y-6">
           {error && (
             <p className="text-red-600 text-center text-sm bg-red-50 p-3 rounded-lg">
@@ -239,7 +205,6 @@ const TransactionModal = ({
             </p>
           )}
 
-          {/* Date and Time for Income/Expense */}
           {(activeTab === "Income" || activeTab === "Expense") && (
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -271,64 +236,44 @@ const TransactionModal = ({
             </div>
           )}
 
-          {/* Combined Amount and Category/Source/Pocket */}
           <div className="grid grid-cols-2 gap-4">
-            {/* Amount */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Jumlah
               </label>
               <input
-                type="text" // Tetap type="text"
+                type="text"
                 name="amount"
-                value={displayAmount} // Tampilan dari displayAmount
-                onChange={handleChange} // Gunakan handler ini untuk membersihkan dan mengupdate nilai
-                onBlur={handleAmountBlur} // Format saat blur
-                onFocus={handleAmountFocus} // Hapus format saat fokus
+                value={displayAmount}
+                onChange={handleChange}
+                onBlur={handleAmountBlur}
+                onFocus={handleAmountFocus}
                 required
                 placeholder="Rp5.000.000"
                 className="w-full px-3 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                inputMode="decimal" // Petunjuk untuk keyboard virtual
+                inputMode="decimal"
               />
             </div>
 
-            {/* Conditional Dropdown for Category/Source/Pocket */}
             {activeTab === "Expense" && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Kategori
                 </label>
-                <div className="relative">
-                  <select
-                    name="category"
-                    value={formData.category}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-3 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm appearance-none bg-white"
-                  >
-                    <option value="">Pilih Kategori</option>
-                    {categoriesList.map((cat) => (
-                      <option key={cat} value={cat}>
-                        {cat}
-                      </option>
-                    ))}
-                  </select>
-                  <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                    <svg
-                      className="w-4 h-4 text-gray-400"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M19 9l-7 7-7-7"
-                      />
-                    </svg>
-                  </div>
-                </div>
+                <select
+                  name="category"
+                  value={formData.category}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-3 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm bg-white"
+                >
+                  <option value="">Pilih Kategori</option>
+                  {categoriesList.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
+                  ))}
+                </select>
               </div>
             )}
 
@@ -337,203 +282,91 @@ const TransactionModal = ({
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Sumber
                 </label>
-                <div className="relative">
-                  <select
-                    name="source"
-                    value={formData.source}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-3 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm appearance-none bg-white"
-                  >
-                    <option value="">Pilih Sumber</option>
-                    {sourcesList.map((src) => (
-                      <option key={src} value={src}>
-                        {src}
-                      </option>
-                    ))}
-                  </select>
-                  <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                    <svg
-                      className="w-4 h-4 text-gray-400"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M19 9l-7 7-7-7"
-                      />
-                    </svg>
-                  </div>
-                </div>
+                <select
+                  name="source"
+                  value={formData.source}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-3 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm bg-white"
+                >
+                  <option value="">Pilih Sumber</option>
+                  {sourcesList.map((src) => (
+                    <option key={src} value={src}>
+                      {src}
+                    </option>
+                  ))}
+                </select>
               </div>
             )}
 
-            {(activeTab === "Income" || activeTab === "Expense") && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Pocket
-                </label>
-                <div className="relative">
-                  <select
-                    name="accountId"
-                    value={formData.accountId}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-3 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm appearance-none bg-white"
-                  >
-                    <option value="">💰 Cash</option>
-                    {accounts.map((acc) => (
-                      <option key={acc.id} value={acc.id}>
-                        {acc.name}
-                      </option>
-                    ))}
-                  </select>
-                  <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                    <svg
-                      className="w-4 h-4 text-gray-400"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M19 9l-7 7-7-7"
-                      />
-                    </svg>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Transfer specific fields */}
-          {activeTab === "Transfer" && (
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Dari Pocket
-                </label>
-                <div className="relative">
+            {activeTab === "Transfer" && (
+              <>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Dari Akun
+                  </label>
                   <select
                     name="sourceAccountId"
                     value={formData.sourceAccountId}
                     onChange={handleChange}
                     required
-                    className="w-full px-3 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm appearance-none bg-white"
+                    className="w-full px-3 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm bg-white"
                   >
-                    <option value="">Pilih Sumber</option>
                     {accounts.map((acc) => (
                       <option key={acc.id} value={acc.id}>
                         {acc.name}
                       </option>
                     ))}
                   </select>
-                  <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                    <svg
-                      className="w-4 h-4 text-gray-400"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M19 9l-7 7-7-7"
-                      />
-                    </svg>
-                  </div>
                 </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Ke Pocket
-                </label>
-                <div className="relative">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Ke Akun
+                  </label>
                   <select
                     name="destinationAccountId"
                     value={formData.destinationAccountId}
                     onChange={handleChange}
                     required
-                    className="w-full px-3 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm appearance-none bg-white"
+                    className="w-full px-3 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm bg-white"
                   >
-                    <option value="">Pilih Tujuan</option>
                     {accounts.map((acc) => (
                       <option key={acc.id} value={acc.id}>
                         {acc.name}
                       </option>
                     ))}
                   </select>
-                  <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                    <svg
-                      className="w-4 h-4 text-gray-400"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M19 9l-7 7-7-7"
-                      />
-                    </svg>
-                  </div>
                 </div>
-              </div>
-            </div>
-          )}
+              </>
+            )}
+          </div>
 
-          {/* Description */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Deskripsi
+              Deskripsi (Opsional)
             </label>
-            <textarea
+            <input
+              type="text"
               name="description"
               value={formData.description}
               onChange={handleChange}
-              rows="3"
-              placeholder="Gaji bulan Juni"
-              className="w-full px-3 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm resize-none"
+              className="w-full px-3 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+              placeholder="Contoh: Bayaran proyek, beli pulsa, dll"
             />
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex space-x-3 pt-4">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 py-3 px-4 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition-colors text-sm"
-            >
-              Batal
-            </button>
+          <div>
             <button
               type="submit"
               disabled={isLoading}
-              className="flex-1 py-3 px-4 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all disabled:opacity-50"
             >
-              {isLoading ? "Menyimpan..." : "Simpan"}
+              {isLoading ? "Menyimpan..." : `Tambah ${activeTab}`}
             </button>
           </div>
         </form>
+        <ToastContainer />
       </div>
-      <ToastContainer
-        position="top-right"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-      />
     </div>
   );
 };
