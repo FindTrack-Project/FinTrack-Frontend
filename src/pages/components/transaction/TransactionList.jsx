@@ -14,7 +14,6 @@ const TransactionList = ({
   getAccountName,
   onTransactionAdded,
 }) => {
-  // --- Blok logika tidak ada perubahan ---
   const [selectedTimeRange, setSelectedTimeRange] = useState("all_time");
   const [selectedPocket, setSelectedPocket] = useState("all");
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -68,7 +67,6 @@ const TransactionList = ({
   }, {});
   
   const sortedGroupedTransactions = Object.entries(groupedTransactions).sort(([dateA], [dateB]) => new Date(dateB) - new Date(dateA));
-  // --- Akhir dari blok logika ---
 
   return (
     <section className="bg-white rounded-2xl shadow-sm p-6 col-span-1 lg:col-span-3 h-130 flex flex-col">
@@ -145,6 +143,9 @@ const TransactionList = ({
             const dailyTotal = transactions.reduce((sum, trx) => sum + (trx.type === "Pemasukan" ? trx.amount : -trx.amount), 0);
             const formattedDate = new Date(dateKey).toLocaleDateString("id-ID", { weekday: 'long', day: 'numeric', month: 'long' });
 
+            // Mengurutkan transaksi di dalam hari dari yang terbaru ke terlama
+            const sortedDailyTransactions = [...transactions].sort((a, b) => new Date(b.date) - new Date(a.date));
+
             return (
               <div key={dateKey}>
                 <div className="flex justify-between items-center my-3">
@@ -152,7 +153,7 @@ const TransactionList = ({
                     <p className="text-sm font-semibold text-gray-800">{formatCurrency(dailyTotal)}</p>
                 </div>
                 <div className="space-y-1">
-                  {transactions.map((trx) => {
+                  {sortedDailyTransactions.map((trx) => { // Gunakan sortedDailyTransactions di sini
                     const isIncome = trx.type === "Pemasukan";
                     const Icon = getTransactionIcon(trx.category || trx.source, isIncome ? 'income' : 'expense');
                     const accountIndex = accounts.findIndex(acc => acc.id === trx.accountId);
@@ -167,7 +168,6 @@ const TransactionList = ({
                           <p className="text-xs text-gray-500">{trx.category || trx.source}</p>
                         </div>
                         <div className="text-right flex-shrink-0 ml-4">
-                          {/* --- PERUBAHAN DIKEMBALIKAN DI SINI --- */}
                           <p className={`font-semibold text-sm ${isIncome ? 'text-green-600' : 'text-gray-700'}`}>
                             {isIncome ? '' : '-'} {formatCurrency(trx.amount)}
                           </p>

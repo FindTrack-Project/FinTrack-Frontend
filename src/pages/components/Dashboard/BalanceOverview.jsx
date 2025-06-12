@@ -9,7 +9,6 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-// Komponen tooltip kustom (tidak ada perubahan)
 const CustomTooltip = ({ active, payload, label, formatCurrency }) => {
   if (active && payload && payload.length) {
     return (
@@ -28,8 +27,8 @@ const BalanceOverview = ({
   totalBalance,
   totalIncomeCurrentMonth,
   totalExpenseCurrentMonth,
-  incomeGrowth,
-  expenseGrowth,
+  incomeGrowth, // Asumsi ini adalah desimal (misal: 0.05 untuk 5%)
+  expenseGrowth, // Asumsi ini adalah desimal (misal: 0.10 untuk 10%)
   months,
   balanceOverTime,
   formatCurrency,
@@ -41,13 +40,10 @@ const BalanceOverview = ({
     balance: balanceOverTime[index] || 0,
   }));
 
-  // Responsive: gunakan interval dan fontSize berbeda untuk mobile
   const isMobile = window.innerWidth < 640;
 
   return (
-    // PERBAIKAN RESPONSIVE: Padding kartu disesuaikan
     <div className="bg-white h-full border border-gray-200 p-4 sm:p-6 rounded-xl shadow-sm flex flex-col">
-      {/* Header (tidak ada perubahan) */}
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-lg font-semibold text-gray-800">Balance</h2>
         <div className="relative">
@@ -68,7 +64,6 @@ const BalanceOverview = ({
         </div>
       </div>
 
-      {/* Info Saldo, Pemasukan, Pengeluaran (tidak ada perubahan) */}
       <div className="mb-6">
         <h3 className="text-sm text-gray-500 mb-1">Total Balance</h3>
         <p className="text-2xl sm:text-3xl font-bold text-gray-900">
@@ -81,7 +76,8 @@ const BalanceOverview = ({
           <p className="text-xl font-bold text-green-600 flex items-center">
             {formatCurrency(totalIncomeCurrentMonth)}
             <span className={`ml-2 text-xs font-semibold ${incomeGrowth >= 0 ? "text-green-500" : "text-red-500"}`}>
-              {Math.abs(incomeGrowth).toFixed(1)}% {incomeGrowth >= 0 ? "▲" : "▼"}
+              {/* PERBAIKAN: Kalikan dengan 100 untuk persentase */}
+              {Math.abs(incomeGrowth * 100).toFixed(1)}% {incomeGrowth >= 0 ? "▲" : "▼"}
             </span>
           </p>
         </div>
@@ -90,18 +86,17 @@ const BalanceOverview = ({
           <p className="text-xl font-bold text-red-600 flex items-center">
             {formatCurrency(totalExpenseCurrentMonth)}
             <span className={`ml-2 text-xs font-semibold ${expenseGrowth >= 0 ? "text-red-500" : "text-green-500"}`}>
-              {Math.abs(expenseGrowth).toFixed(1)}% {expenseGrowth >= 0 ? "▲" : "▼"}
+              {/* PERBAIKAN: Kalikan dengan 100 untuk persentase */}
+              {Math.abs(expenseGrowth * 100).toFixed(1)}% {expenseGrowth >= 0 ? "▲" : "▼"}
             </span>
           </p>
         </div>
       </div>
 
-      {/* Chart */}
       <div className="h-64 min-h-[200px] sm:min-h-[256px] relative flex-1">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
             data={chartData}
-            // PERBAIKAN RESPONSIVE: Margin disesuaikan untuk mobile
             margin={
               isMobile
                 ? { top: 5, right: 0, left: 20, bottom: 0 }

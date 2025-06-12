@@ -3,6 +3,25 @@ import Api from "../../../config/apiConfig";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { formatCurrency } from "./utils"; // Pastikan path ini benar!
+import TransactionForm from "./TransactionForm";
+
+// ...
+
+<TransactionForm
+  activeTab={activeTab}
+  formData={formData}
+  displayAmount={displayAmount}
+  error={error}
+  isLoading={isLoading}
+  handleChange={handleChange}
+  handleSubmit={handleSubmit}
+  handleAmountBlur={handleAmountBlur}
+  handleAmountFocus={handleAmountFocus}
+  accounts={accounts}
+  categoriesList={categoriesList}
+  sourcesList={sourcesList}
+/>
+
 
 const TransactionModal = ({
   isOpen,
