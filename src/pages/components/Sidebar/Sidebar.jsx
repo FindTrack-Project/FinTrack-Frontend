@@ -66,10 +66,10 @@ const Sidebar = ({ isCollapsed, onToggleCollapse, isMobileOpen, toggleMobileSide
       {/* --- KONTENER SIDEBAR UTAMA --- */}
       <aside
         className={`
-          fixed md:fixed md:top-0 md:left-0
+          fixed top-0 left-0 md:top-0 md:left-0
           flex flex-col bg-primary shadow-lg z-50
           transition-all duration-300 ease-in-out
-          h-screen
+          h-[100dvh] overflow-hidden
           ${isMobileOpen ? "translate-x-0 w-64" : "-translate-x-full w-64"}
           md:translate-x-0
           ${isCollapsed ? "md:w-20" : "md:w-64"}
@@ -106,7 +106,7 @@ const Sidebar = ({ isCollapsed, onToggleCollapse, isMobileOpen, toggleMobileSide
         </div>
 
         {/* Navigasi Utama */}
-        <nav className="flex-1 p-2 space-y-1">
+        <nav className="flex-1 p-2 space-y-1 overflow-y-auto">
           {navItems.map((item) => (
             <SidebarLink
               key={item.text}
