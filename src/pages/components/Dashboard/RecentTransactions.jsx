@@ -140,13 +140,9 @@ const RecentTransactions = ({
                     const Icon = getTransactionIcon(trx.category || trx.source, isIncome ? 'income' : 'expense');
                     const accountIndex = accounts.findIndex(acc => acc.id === trx.accountId);
 
-                    // Menyesuaikan warna ikon background dan teks
-                    const iconBgColor = isIncome ? 'bg-green-100' : 'bg-red-100';
-                    const iconTextColor = isIncome ? 'text-green-500' : 'text-red-500';
-
                     return (
                       <div key={trx.id} className="flex items-center p-3 border-b border-gray-100 last:border-b-0">
-                        <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center mr-4 ${iconBgColor} ${iconTextColor}`}>
+                        <div className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center mr-4 bg-blue-100 text-blue-500">
                           <Icon size={20} />
                         </div>
                         <div className="flex-grow">
