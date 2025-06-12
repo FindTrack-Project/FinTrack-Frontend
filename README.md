@@ -1,4 +1,4 @@
-# 💰 FinTrack-Frontend
+![Logo](./public/pwa-512.png) FinTrack-Frontend
 
 FinTrack-Frontend adalah aplikasi web yang dirancang untuk membantu Anda mengelola keuangan pribadi dengan efisien. Aplikasi ini dibangun menggunakan **React** dan **Vite**, menawarkan antarmuka yang responsif dan mudah digunakan.
 
@@ -15,8 +15,6 @@ Aplikasi ini dilengkapi dengan berbagai fitur inti untuk pengelolaan keuangan pr
   Ikhtisar komprehensif tentang kondisi keuangan Anda, termasuk ringkasan saldo, total pengeluaran, dan grafik aktivitas keuangan harian.
 
   ![Tampilan Dashboard Desktop](./public/ss1.png)
-
-  ![Tampilan Dashboard Mobile](./public/ss2.png)
 
 - 💼 **Manajemen Dompet (Pockets)**  
   Kelola berbagai sumber dana atau kategori pengeluaran Anda.
@@ -106,6 +104,8 @@ const API_BASE_URL = "http://localhost:5000"; // Ubah sesuai backend Anda
 ## 📱 Dukungan PWA
 
 FinTrack-Frontend telah mengimplementasikan fitur **Progressive Web App (PWA)**, yang memungkinkan aplikasi dapat diakses seperti aplikasi native pada perangkat seluler:
+
+  ![Tampilan Dashboard Mobile](./public/ss2.png)
 
 - Dapat diinstal langsung ke home screen pengguna
 - Mendukung mode offline (jika didukung oleh backend/service worker)
