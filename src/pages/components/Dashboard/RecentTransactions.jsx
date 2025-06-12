@@ -4,52 +4,53 @@ import {
   getTransactionIcon,
   formatCurrency
 } from "./utils";
-import { AlertTriangle } from 'lucide-react';// Pastikan path ini benar jika modal digunakan
+import { AlertTriangle } from 'lucide-react'; // PlusCircle juga tidak dibutuhkan jika tidak ada tombol tambah
 
 const POCKET_ICON_COLORS = ["#facc15", "#38bdf8", "#4ade80", "#f87171", "#a78bfa", "#fb923c"];
 
-// --- PERUBAHAN UTAMA: Menerima 'incomes', 'expenses', 'accounts' sebagai props ---
+// --- PERUBAHAN UTAMA: Menerima 'accounts' sebagai props ---
 const RecentTransactions = ({
-  incomes, // Disediakan dari Home.jsx
-  expenses, // Disediakan dari Home.jsx
-  accounts, // Disediakan dari Home.jsx
+  incomes,
+  expenses,
+  accounts,
 }) => {
+  // useEffect dan useState untuk 'accounts' telah dihapus untuk optimisasi
   const [selectedTimeRange, setSelectedTimeRange] = useState("7_days");
   const [selectedPocket, setSelectedPocket] = useState("all");
   const [selectedCategory, setSelectedCategory] = useState("all");
+  // isModalOpen juga tidak dibutuhkan jika tidak ada tombol tambah
+  // const [isModalOpen, setIsModalOpen] = useState(false);
 
   const getAccountName = (accountId) => {
+    // Fungsi ini sekarang menggunakan 'accounts' dari props
     const account = accounts.find((acc) => acc.id === accountId);
     return account ? account.name : "N/A";
   };
 
-  // Gabungkan dan tandai semua transaksi
   const allTransactions = [
     ...incomes.map(i => ({ ...i, type: 'Pemasukan' })),
     ...expenses.map(e => ({ ...e, type: 'Pengeluaran' }))
   ];
 
-  // Buat daftar kategori dan sumber dinamis untuk filter
   const allCategoriesAndSources = [...new Set(
     allTransactions.map(trx => trx.category || trx.source).filter(Boolean)
   )].sort();
 
-  // Filter transaksi berdasarkan rentang waktu, pocket, dan kategori
   const filteredTransactions = allTransactions.filter((trx) => {
     const transactionDate = new Date(trx.date);
     const now = new Date();
     const isDateMatch = () => {
-      if (selectedTimeRange === "all") return true; // 'all' di sini berarti semua waktu yang tersedia
-      if (selectedTimeRange === "current_month") { // Tambahkan filter bulan ini
-          return transactionDate.getMonth() === now.getMonth() && transactionDate.getFullYear() === now.getFullYear();
-      }
-      let startDate = new Date();
+      if (selectedTimeRange === "all") return true;
+      let startDate;
       if (selectedTimeRange === "7_days") {
+        startDate = new Date();
         startDate.setDate(now.getDate() - 7);
       } else if (selectedTimeRange === "30_days") {
+        startDate = new Date();
         startDate.setDate(now.getDate() - 30);
+      } else if (selectedTimeRange === "current_month") { // Tambahkan filter bulan ini
+          return transactionDate.getMonth() === now.getMonth() && transactionDate.getFullYear() === now.getFullYear();
       }
-      // Set hours to 0 to compare just the date part
       return transactionDate.setHours(0,0,0,0) >= startDate.setHours(0,0,0,0);
     };
     const isPocketMatch = selectedPocket === 'all' || trx.accountId === selectedPocket;
@@ -60,31 +61,22 @@ const RecentTransactions = ({
     return isDateMatch() && isPocketMatch && isCategoryMatch();
   });
 
-  // Kelompokkan transaksi berdasarkan tanggal
   const groupedTransactions = filteredTransactions.reduce((acc, trx) => {
-    const dateKey = new Date(trx.date).toISOString().split('T')[0]; // Hanya ambil bagian tanggal (YYYY-MM-DD)
+    const dateKey = new Date(trx.date).toISOString().split('T')[0];
     if (!acc[dateKey]) acc[dateKey] = [];
     acc[dateKey].push(trx);
     return acc;
   }, {});
 
-  // Urutkan grup tanggal secara descending (tanggal terbaru di atas)
   const sortedGroupedTransactions = Object.entries(groupedTransactions).sort(([dateA], [dateB]) => new Date(dateB) - new Date(dateA));
 
   return (
     <div className="bg-white border border-gray-200 p-6 rounded-xl shadow-sm h-100 flex flex-col">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
         <h2 className="text-lg font-semibold text-gray-800">Recent Transactions</h2>
-        {/* Tombol Tambah Transaksi, jika Anda ingin menyertakannya di sini */}
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="px-4 py-2 bg-gray-800 text-white rounded-lg text-sm font-semibold hover:bg-gray-700 transition-colors flex items-center justify-center sm:w-auto w-full gap-2 cursor-pointer"
-        >
-          <PlusCircle size={16} /> Tambah Transaksi
-        </button>
+        {/* Tombol "Tambah Transaksi" telah dihapus sesuai permintaan */}
       </div>
 
-      {/* Filter Options */}
       <div className="flex flex-row flex-wrap gap-3 mb-6">
         <div className="relative">
           <select value={selectedTimeRange} onChange={(e) => setSelectedTimeRange(e.target.value)} className="appearance-none bg-gray-50 border border-gray-200 text-gray-700 py-2 px-4 pr-8 rounded-lg font-medium text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
@@ -131,9 +123,9 @@ const RecentTransactions = ({
 
             // PERBAIKAN PENTING: Urutkan transaksi di dalam hari dari yang terbaru ke terlama
             const sortedDailyTransactions = [...transactions].sort((a, b) => {
-                const dateA = new Date(a.date); // Gunakan tanggal transaksi lengkap (termasuk waktu)
-                const dateB = new Date(b.date); // Gunakan tanggal transaksi lengkap (termasuk waktu)
-                return dateB.getTime() - dateA.getTime(); // Urutkan descending berdasarkan timestamp
+                const dateA = new Date(a.date); // Menggunakan objek Date dari properti 'date' transaksi
+                const dateB = new Date(b.date); // Menggunakan objek Date dari properti 'date' transaksi
+                return dateB.getTime() - dateA.getTime(); // Urutkan secara descending berdasarkan timestamp
             });
 
             return (
@@ -148,10 +140,13 @@ const RecentTransactions = ({
                     const Icon = getTransactionIcon(trx.category || trx.source, isIncome ? 'income' : 'expense');
                     const accountIndex = accounts.findIndex(acc => acc.id === trx.accountId);
 
+                    // Menyesuaikan warna ikon background dan teks
+                    const iconBgColor = isIncome ? 'bg-green-100' : 'bg-red-100';
+                    const iconTextColor = isIncome ? 'text-green-500' : 'text-red-500';
 
                     return (
                       <div key={trx.id} className="flex items-center p-3 border-b border-gray-100 last:border-b-0">
-                        <div className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center mr-4 bg-blue-100 text-blue-500">
+                        <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center mr-4 ${iconBgColor} ${iconTextColor}`}>
                           <Icon size={20} />
                         </div>
                         <div className="flex-grow">
