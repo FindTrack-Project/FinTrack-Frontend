@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import Api from "../../../config/apiConfig";
+
 import {
   Chart,
   ArcElement,
@@ -42,7 +43,8 @@ import SavingGoalsSection from "./SavingGoalsSection";
 import RecentTransactions from "./RecentTransactions";
 
 import { formatCurrency, getMonthlyData, getTransactionIcon } from "./utils";
-import { PIE_COLORS } from "./constants";
+// Jika PIE_COLORS tidak digunakan di Home.jsx, baris ini bisa dihapus
+// import { PIE_COLORS } from "./constants";
 
 // Komponen Financial Tips (Tidak ada perubahan)
 const FinancialTips = () => {
@@ -114,163 +116,161 @@ const FinancialTips = () => {
 
 const Home = () => {
   const [totalBalance, setTotalBalance] = useState(0);
-  const [incomes, setIncomes] = useState([]);
-  const [expenses, setExpenses] = useState([]);
+  const [allIncomes, setAllIncomes] = useState([]); // Menyimpan semua data pendapatan
+  const [allExpenses, setAllExpenses] = useState([]); // Menyimpan semua data pengeluaran
   const [accounts, setAccounts] = useState([]);
   const [savingGoals, setSavingGoals] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [dashboardError, setDashboardError] = useState(null); // Ganti nama state error
+  const [dashboardError, setDashboardError] = useState(null);
   const [userName, setUserName] = useState("Pengguna");
   const [userEmail, setUserEmail] = useState("email@example.com");
-  const [selectedChartTimeRange, setSelectedChartTimeRange] = useState("6_months"); // State untuk filter chart BalanceOverview
+  const [selectedChartTimeRange, setSelectedChartTimeRange] = useState("6_months");
 
   const navigate = useNavigate();
   const outletContext = useOutletContext() || {};
   const isSidebarOpen = outletContext.isSidebarOpen ?? false;
   const toggleSidebar = outletContext.toggleSidebar ?? (() => {});
 
-  // Menggabungkan fetchAllData ke dalam useEffect atau memanggilnya secara terpisah jika ada pemicu lain
-  useEffect(() => {
-    const fetchAllData = async () => {
-      setLoading(true);
-      setDashboardError(null); // Reset error setiap kali fetch dimulai
-      try {
-        let token = null;
-        let userId = null;
+  const fetchAllData = useCallback(async () => {
+    setLoading(true);
+    setDashboardError(null);
+    try {
+      let token = null;
+      let userId = null;
 
+      if (typeof window !== "undefined") {
+        token = localStorage.getItem("jwt_token");
+        userId = localStorage.getItem("user_id");
+      }
+
+      if (!token || !userId) {
+        setDashboardError(
+          "Sesi Anda tidak valid atau kedaluwarsa. Silakan login kembali."
+        );
         if (typeof window !== "undefined") {
-          token = localStorage.getItem("jwt_token");
-          userId = localStorage.getItem("user_id");
+          localStorage.removeItem("jwt_token");
+          localStorage.removeItem("user_id");
+          localStorage.removeItem("user_name");
+          localStorage.removeItem("user_email");
         }
+        setTimeout(() => navigate("/login"), 1500);
+        return;
+      }
 
-        if (!token || !userId) {
-          setDashboardError(
-            "Sesi Anda tidak valid atau kedaluwarsa. Silakan login kembali."
-          );
+      // Mengambil transaksi dari awal tahun untuk chart multi-bulan (misal: 12 bulan)
+      const now = new Date();
+      const currentYear = now.getFullYear();
+      const startDateForCharts = new Date(currentYear, 0, 1).toISOString().split('T')[0];
+
+      const [
+        balanceResult,
+        accountsResult,
+        savingGoalsResult,
+        allTransactionsResult,
+        userResult,
+      ] = await Promise.allSettled([
+        Api.get(`/users/balance`),
+        Api.get(`/accounts`),
+        Api.get(`/saving-goals`),
+        Api.get(`/transactions?startDate=${startDateForCharts}`),
+        Api.get(`/users/${userId}`),
+      ]);
+
+      if (balanceResult.status === "fulfilled") {
+        setTotalBalance(balanceResult.value.currentBalance || 0);
+      } else {
+        console.error("Error fetching balance:", balanceResult.reason);
+      }
+
+      if (accountsResult.status === "fulfilled") {
+        setAccounts(accountsResult.value.accounts || []);
+      } else {
+        console.error("Error fetching accounts:", accountsResult.reason);
+      }
+
+      if (savingGoalsResult.status === "fulfilled") {
+        setSavingGoals(savingGoalsResult.value.savingGoals || []);
+      } else {
+        console.error("Error fetching saving goals:", savingGoalsResult.reason);
+      }
+
+      let fetchedIncomes = [];
+      let fetchedExpenses = [];
+      if (allTransactionsResult.status === "fulfilled" && allTransactionsResult.value?.transactions) {
+          const allTrx = allTransactionsResult.value.transactions;
+          fetchedIncomes = allTrx.filter(t => t.type === 'Pemasukan');
+          fetchedExpenses = allTrx.filter(t => t.type === 'Pengeluaran');
+      } else {
+          console.error("Error fetching all transactions for charts:", allTransactionsResult.reason);
+      }
+      setAllIncomes(fetchedIncomes);
+      setAllExpenses(fetchedExpenses);
+
+      if (userResult.status === "fulfilled" && (userResult.value?.user || userResult.value)) {
+        const userData = userResult.value.user || userResult.value;
+        setUserName(userData?.name || "Pengguna");
+        setUserEmail(userData?.email || "email@example.com");
+        localStorage.setItem("user_name", userData?.name || "Pengguna");
+        localStorage.setItem("user_email", userData?.email || "email@example.com");
+      } else {
+        console.error("Error fetching user profile:", userResult.reason);
+      }
+
+    } catch (err) {
+      console.error("Failed to fetch data in Home component:", err);
+      let errorMessage = "Gagal memuat data dashboard.";
+      if (err instanceof Error) {
+        errorMessage = err.message;
+        if (
+          errorMessage.includes("401") ||
+          errorMessage.toLowerCase().includes("unauthorized") ||
+          errorMessage.toLowerCase().includes("expired token")
+        ) {
+          errorMessage =
+            "Sesi Anda tidak valid atau kedaluwarsa. Silakan login kembali.";
           if (typeof window !== "undefined") {
             localStorage.removeItem("jwt_token");
             localStorage.removeItem("user_id");
             localStorage.removeItem("user_name");
-            localStorage.removeItem("user_email"); // Pastikan juga menghapus user_email
+            localStorage.removeItem("user_email");
           }
           setTimeout(() => navigate("/login"), 1500);
-          return;
+        } else if (
+          errorMessage.toLowerCase().includes("server error") ||
+          errorMessage.toLowerCase().includes("api error")
+        ) {
+          errorMessage =
+            "Terjadi masalah server. Silakan coba beberapa saat lagi.";
+        } else if (
+          errorMessage.toLowerCase().includes("koneksi atau kebijakan keamanan")
+        ) {
+          errorMessage =
+            "Tidak dapat terhubung ke server. Periksa koneksi internet Anda atau masalah CORS.";
+        } else if (
+          errorMessage.toLowerCase().includes("failed to parse response")
+        ) {
+          errorMessage =
+            "Gagal memproses respons dari server. Mungkin masalah CORS/jaringan.";
+        } else if (
+          errorMessage.toLowerCase().includes("cannot read properties of undefined")
+        ) {
+          errorMessage =
+            "Terjadi kesalahan data. Beberapa informasi mungkin tidak tersedia.";
         }
-
-        // --- Perbaikan: Mengambil data transaksi yang cukup untuk perhitungan pertumbuhan (minimal 2 bulan terakhir) ---
-        const now = new Date();
-        const twoMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 1, 1); // Awal bulan lalu
-        const startDateForGrowth = twoMonthsAgo.toISOString().split('T')[0]; // Format YYYY-MM-DD
-
-        const [
-          balanceResult,
-          accountsResult,
-          savingGoalsResult,
-          allTransactionsResult, // Mengambil semua transaksi dari periode yang relevan
-          userResult,
-        ] = await Promise.allSettled([ // Menggunakan Promise.allSettled untuk mencegah satu error menghentikan semua
-          Api.get(`/users/balance`),
-          Api.get(`/accounts`),
-          Api.get(`/saving-goals`),
-          Api.get(`/transactions?startDate=${startDateForGrowth}`), // Ambil transaksi dari 2 bulan lalu
-          Api.get(`/users/${userId}`), // Panggil userDataPromise di sini
-        ]);
-
-        // Handle results dari Promise.allSettled
-        if (balanceResult.status === "fulfilled") {
-          setTotalBalance(balanceResult.value.currentBalance || 0);
-        } else {
-          console.error("Error fetching balance:", balanceResult.reason);
-        }
-
-        if (accountsResult.status === "fulfilled") {
-          setAccounts(accountsResult.value.accounts || []);
-        } else {
-          console.error("Error fetching accounts:", accountsResult.reason);
-        }
-
-        if (savingGoalsResult.status === "fulfilled") {
-          setSavingGoals(savingGoalsResult.value.savingGoals || []);
-        } else {
-          console.error("Error fetching saving goals:", savingGoalsResult.reason);
-        }
-
-        let fetchedIncomes = [];
-        let fetchedExpenses = [];
-        if (allTransactionsResult.status === "fulfilled" && allTransactionsResult.value?.transactions) {
-            const allTrx = allTransactionsResult.value.transactions;
-            fetchedIncomes = allTrx.filter(t => t.type === 'Pemasukan');
-            fetchedExpenses = allTrx.filter(t => t.type === 'Pengeluaran');
-        } else {
-            console.error("Error fetching all transactions for growth calculation:", allTransactionsResult.reason);
-        }
-        setIncomes(fetchedIncomes); // Set incomes
-        setExpenses(fetchedExpenses); // Set expenses
-
-        if (userResult.status === "fulfilled" && (userResult.value?.user || userResult.value)) {
-          const userData = userResult.value.user || userResult.value;
-          setUserName(userData?.name || "Pengguna");
-          setUserEmail(userData?.email || "email@example.com");
-          localStorage.setItem("user_name", userData?.name || "Pengguna");
-          localStorage.setItem("user_email", userData?.email || "email@example.com");
-        } else {
-          console.error("Error fetching user profile:", userResult.reason);
-        }
-
-      } catch (err) {
-        console.error("Failed to fetch data in Home component:", err);
-        let errorMessage = "Gagal memuat data dashboard.";
-        if (err.message) {
-          errorMessage = err.message;
-          if (
-            errorMessage.includes("401") ||
-            errorMessage.toLowerCase().includes("unauthorized") ||
-            errorMessage.toLowerCase().includes("expired token")
-          ) {
-            errorMessage =
-              "Sesi Anda tidak valid atau kedaluwarsa. Silakan login kembali.";
-            if (typeof window !== "undefined") {
-              localStorage.removeItem("jwt_token");
-              localStorage.removeItem("user_id");
-              localStorage.removeItem("user_name");
-              localStorage.removeItem("user_email");
-            }
-            setTimeout(() => navigate("/login"), 1500);
-          } else if (
-            errorMessage.toLowerCase().includes("server error") ||
-            errorMessage.toLowerCase().includes("api error")
-          ) {
-            errorMessage =
-              "Terjadi masalah server. Silakan coba beberapa saat lagi.";
-          } else if (
-            errorMessage.toLowerCase().includes("koneksi atau kebijakan keamanan")
-          ) {
-            errorMessage =
-              "Tidak dapat terhubung ke server. Periksa koneksi internet Anda atau masalah CORS.";
-          } else if (
-            errorMessage.toLowerCase().includes("failed to parse response")
-          ) {
-            errorMessage =
-              "Gagal memproses respons dari server. Mungkin masalah CORS/jaringan.";
-          } else if (
-            errorMessage.toLowerCase().includes("cannot read properties of undefined")
-          ) {
-            errorMessage =
-              "Terjadi kesalahan data. Beberapa informasi mungkin tidak tersedia.";
-          }
-        }
-        setDashboardError(errorMessage);
-      } finally {
-        setLoading(false);
       }
-    };
+      setDashboardError(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  }, [navigate]);
 
+  useEffect(() => {
     fetchAllData();
-  }, [navigate]); // Hapus `setError` dari dependency array jika sudah diganti ke dashboardError
+  }, [fetchAllData]);
 
-  // --- LOGIKA PENTING: PERHITUNGAN DATA UNTUK BALANCE OVERVIEW DAN CHART ---
+  // --- LOGIKA PERHITUNGAN DATA UNTUK BALANCE OVERVIEW DAN CHART ---
   const now = new Date();
-  const currentMonth = now.getMonth(); // 0-11
+  const currentMonthIndex = now.getMonth(); // 0-indexed (Jan = 0)
   const currentYear = now.getFullYear();
 
   let totalIncomeCurrentMonth = 0;
@@ -278,26 +278,25 @@ const Home = () => {
   let totalIncomeLastMonth = 0;
   let totalExpenseLastMonth = 0;
 
-  // Hitung bulan dan tahun sebelumnya
-  const prevMonth = currentMonth === 0 ? 11 : currentMonth - 1;
-  const prevYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+  const lastMonthIndex = currentMonthIndex === 0 ? 11 : currentMonthIndex - 1;
+  const yearForLastMonth = currentMonthIndex === 0 ? currentYear - 1 : currentYear;
 
-  // Filter dan jumlahkan incomes untuk bulan ini dan bulan lalu
-  incomes.forEach(income => {
+  // Filter dan jumlahkan incomes untuk bulan ini dan bulan lalu dari SEMUA data pendapatan
+  allIncomes.forEach(income => {
     const incomeDate = new Date(income.date);
-    if (incomeDate.getMonth() === currentMonth && incomeDate.getFullYear() === currentYear) {
+    if (incomeDate.getMonth() === currentMonthIndex && incomeDate.getFullYear() === currentYear) {
       totalIncomeCurrentMonth += income.amount;
-    } else if (incomeDate.getMonth() === prevMonth && incomeDate.getFullYear() === prevYear) {
+    } else if (incomeDate.getMonth() === lastMonthIndex && incomeDate.getFullYear() === yearForLastMonth) {
       totalIncomeLastMonth += income.amount;
     }
   });
 
-  // Filter dan jumlahkan expenses untuk bulan ini dan bulan lalu
-  expenses.forEach(expense => {
+  // Filter dan jumlahkan expenses untuk bulan ini dan bulan lalu dari SEMUA data pengeluaran
+  allExpenses.forEach(expense => {
     const expenseDate = new Date(expense.date);
-    if (expenseDate.getMonth() === currentMonth && expenseDate.getFullYear() === currentYear) {
+    if (expenseDate.getMonth() === currentMonthIndex && expenseDate.getFullYear() === currentYear) {
       totalExpenseCurrentMonth += expense.amount;
-    } else if (expenseDate.getMonth() === prevMonth && expenseDate.getFullYear() === prevYear) {
+    } else if (expenseDate.getMonth() === lastMonthIndex && expenseDate.getFullYear() === yearForLastMonth) {
       totalExpenseLastMonth += expense.amount;
     }
   });
@@ -305,25 +304,28 @@ const Home = () => {
   // Hitung pertumbuhan Income (dalam desimal)
   const incomeGrowth =
     totalIncomeLastMonth === 0
-      ? (totalIncomeCurrentMonth > 0 ? 1 : 0) // Jika bulan lalu 0 dan bulan ini > 0, anggap 100% pertumbuhan (nilai desimal 1). Jika keduanya 0, pertumbuhan 0.
+      ? (totalIncomeCurrentMonth > 0 ? 1 : 0)
       : (totalIncomeCurrentMonth - totalIncomeLastMonth) / totalIncomeLastMonth;
 
   // Hitung pertumbuhan Expense (dalam desimal)
   const expenseGrowth =
     totalExpenseLastMonth === 0
-      ? (totalExpenseCurrentMonth > 0 ? 1 : 0) // Jika bulan lalu 0 dan bulan ini > 0, anggap 100% pertumbuhan (nilai desimal 1). Jika keduanya 0, pertumbuhan 0.
+      ? (totalExpenseCurrentMonth > 0 ? 1 : 0)
       : (totalExpenseCurrentMonth - totalExpenseLastMonth) / totalExpenseLastMonth;
 
   // Data untuk ExpensesChart (Donut Chart)
-  const expenseByCategory = expenses.reduce((acc, exp) => {
-    acc[exp.category] = (acc[exp.category] || 0) + exp.amount;
+  // Ini akan menampilkan pengeluaran untuk bulan saat ini
+  const expenseByCategory = allExpenses.reduce((acc, exp) => {
+    const expenseDate = new Date(exp.date);
+    if (expenseDate.getMonth() === currentMonthIndex && expenseDate.getFullYear() === currentYear) {
+      acc[exp.category] = (acc[exp.category] || 0) + exp.amount;
+    }
     return acc;
   }, {});
-  const totalAllExpenses = expenses.reduce((sum, exp) => sum + exp.amount, 0);
+  const totalAllExpenses = Object.values(expenseByCategory).reduce((sum, amount) => sum + amount, 0);
 
   // Data untuk BalanceOverview Chart (Area Chart)
-  // `getMonthlyData` perlu menerima `timeRange` untuk memfilter data yang relevan
-  const { months, balanceOverTime } = getMonthlyData(incomes, expenses, totalBalance, selectedChartTimeRange);
+  const { months, balanceOverTime } = getMonthlyData(allIncomes, allExpenses, totalBalance, selectedChartTimeRange);
 
 
   if (loading) {
@@ -481,7 +483,7 @@ const Home = () => {
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
             <strong className="font-bold">Error:</strong>
             <span className="block sm:inline ml-2">{dashboardError}</span>
-            <span className="absolute top-0 bottom-0 right-0 px-4 py-3" onClick={() => setDashboardError(null)}>
+            <span className="absolute top-0 bottom-0 right-0 px-4 py-3 cursor-pointer" onClick={() => setDashboardError(null)}>
               <svg className="fill-current h-6 w-6 text-red-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><title>Close</title><path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.196l-2.651 2.651a1.2 1.2 0 1 1-1.697-1.697L8.304 10l-2.651-2.651a1.2 1.2 0 1 1 1.697-1.697L10 8.304l2.651-2.651a1.2 1.2 0 1 1 1.697 1.697L11.696 10l2.651 2.651a1.2 1.2 0 0 1 0 1.697z"/></svg>
             </span>
           </div>
@@ -500,13 +502,13 @@ const Home = () => {
               totalBalance={totalBalance}
               totalIncomeCurrentMonth={totalIncomeCurrentMonth}
               totalExpenseCurrentMonth={totalExpenseCurrentMonth}
-              incomeGrowth={incomeGrowth} // Sudah dalam bentuk desimal
-              expenseGrowth={expenseGrowth} // Sudah dalam bentuk desimal
+              incomeGrowth={incomeGrowth}
+              expenseGrowth={expenseGrowth}
               months={months}
               balanceOverTime={balanceOverTime}
               formatCurrency={formatCurrency}
-              onTimeRangeChange={setSelectedChartTimeRange} // Passed untuk interaksi filter chart
-              selectedTimeRange={selectedChartTimeRange} // Passed untuk menampilkan pilihan saat ini
+              onTimeRangeChange={setSelectedChartTimeRange}
+              selectedTimeRange={selectedChartTimeRange}
             />
           </div>
           <div className="lg:col-span-2 min-w-0">
@@ -539,8 +541,8 @@ const Home = () => {
           {/* Kolom 3 & 4: Transactions (lebih lebar) */}
           <div className="lg:col-span-2 min-w-0">
             <RecentTransactions
-              incomes={incomes}
-              expenses={expenses}
+              incomes={allIncomes}
+              expenses={allExpenses}
               accounts={accounts}
               formatCurrency={formatCurrency}
               getTransactionIcon={getTransactionIcon}
