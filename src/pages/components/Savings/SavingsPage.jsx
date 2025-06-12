@@ -115,14 +115,14 @@ const ConfirmationModal = ({
           <button
             onClick={onClose}
             disabled={isLoading}
-            className="flex-1 py-2 px-4 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 py-2 px-4 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
             Batal
           </button>
           <button
             onClick={onConfirm}
             disabled={isLoading}
-            className="flex-1 py-2 px-4 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="flex-1 py-2 px-4 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer"
           >
             {isLoading ? (
               <>
@@ -312,7 +312,7 @@ const SavingsPage = () => {
           <p className="text-gray-700 mb-4">{error}</p>
           <button
             onClick={() => navigate("/login")}
-            className="px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-secondary transition-colors"
+            className="px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-secondary transition-colors cursor-pointer"
           >
             Kembali ke Login
           </button>
