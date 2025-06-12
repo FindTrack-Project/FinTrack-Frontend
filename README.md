@@ -19,7 +19,9 @@ Aplikasi ini dilengkapi dengan berbagai fitur inti untuk pengelolaan keuangan pr
 - 📊 **Dashboard Keuangan**  
   Ikhtisar komprehensif tentang kondisi keuangan Anda, termasuk ringkasan saldo, total pengeluaran, dan grafik aktivitas keuangan harian.
 
-  ![Tampilan Dashboard Desktop](./public/ss1.png)
+<p align="center">
+  <img src="public/ss1.png" alt="FinTrack Desktop"/>
+</p>
 
 - 💼 **Manajemen Dompet (Pockets)**  
   Kelola berbagai sumber dana atau kategori pengeluaran Anda.
@@ -110,7 +112,9 @@ const API_BASE_URL = "http://localhost:5000"; // Ubah sesuai backend Anda
 
 FinTrack-Frontend telah mengimplementasikan fitur **Progressive Web App (PWA)**, yang memungkinkan aplikasi dapat diakses seperti aplikasi native pada perangkat seluler:
 
-  ![Tampilan Dashboard Mobile](./public/ss2.png)
+<p align="center">
+  <img src="public/ss2.png" alt="FinTrack Mobile"/>
+</p>
 
 - Dapat diinstal langsung ke home screen pengguna
 - Mendukung mode offline (jika didukung oleh backend/service worker)
