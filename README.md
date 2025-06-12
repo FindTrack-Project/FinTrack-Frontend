@@ -1,4 +1,4 @@
-![Logo](./public/pwa-192.png) FinTrack-Frontend
+![Logo](./public/pwa-192.png) FinTrack-Frontend <h2 align="center"><strong>FinTrack-Frontend</strong></h2>
 
 FinTrack-Frontend adalah aplikasi web yang dirancang untuk membantu Anda mengelola keuangan pribadi dengan efisien. Aplikasi ini dibangun menggunakan **React** dan **Vite**, menawarkan antarmuka yang responsif dan mudah digunakan.
 
