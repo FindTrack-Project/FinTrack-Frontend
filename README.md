@@ -7,7 +7,6 @@
 <p align="center">
   FinTrack-Frontend adalah aplikasi web yang dirancang untuk membantu Anda mengelola keuangan pribadi dengan efisien. Aplikasi ini dibangun menggunakan <strong>React</strong> dan <strong>Vite</strong>, menawarkan antarmuka yang responsif dan mudah digunakan.
 </p>
----
 
 ## 🚀 Fitur
 
