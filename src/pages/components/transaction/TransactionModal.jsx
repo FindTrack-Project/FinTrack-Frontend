@@ -7,20 +7,6 @@ import TransactionForm from "./TransactionForm";
 
 // ...
 
-<TransactionForm
-  activeTab={activeTab}
-  formData={formData}
-  displayAmount={displayAmount}
-  error={error}
-  isLoading={isLoading}
-  handleChange={handleChange}
-  handleSubmit={handleSubmit}
-  handleAmountBlur={handleAmountBlur}
-  handleAmountFocus={handleAmountFocus}
-  accounts={accounts}
-  categoriesList={categoriesList}
-  sourcesList={sourcesList}
-/>
 
 
 const TransactionModal = ({
@@ -385,6 +371,20 @@ const TransactionModal = ({
           </div>
         </form>
         <ToastContainer />
+        <TransactionForm
+          activeTab={activeTab}
+          formData={formData}
+          displayAmount={displayAmount}
+          error={error}
+          isLoading={isLoading}
+          handleChange={handleChange}
+          handleSubmit={handleSubmit}
+          handleAmountBlur={handleAmountBlur}
+          handleAmountFocus={handleAmountFocus}
+          accounts={accounts}
+          categoriesList={categoriesList}
+          sourcesList={sourcesList}
+        />        
       </div>
     </div>
   );
