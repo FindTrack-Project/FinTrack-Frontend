@@ -61,13 +61,13 @@ const CashFlowChart = ({ cashFlowData, cashFlowFilter, setCashFlowFilter }) => {
         {cashFlowFilter !== "Expenses" && (
            <span className="flex items-center">
              <span className="inline-block w-3 h-3 rounded-full bg-blue-500 mr-2"></span>
-             Income
+             Incomes
            </span>
         )}
         {cashFlowFilter !== "Incomes" && (
            <span className="flex items-center">
              <span className="inline-block w-3 h-3 rounded-full bg-red-500 mr-2"></span>
-             Expense
+             Expenses
            </span>
         )}
       </div>
