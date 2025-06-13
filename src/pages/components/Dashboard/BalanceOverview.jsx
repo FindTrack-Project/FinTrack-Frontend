@@ -11,6 +11,7 @@ import {
   Filler,
 } from "chart.js";
 import { useRef, useEffect } from "react"; // --- [PERBAIKAN] --- Import useRef dan useEffect
+import { lineChartOptions } from "./constants";
 
 // Registrasi semua modul Chart.js yang dibutuhkan
 ChartJS.register(
