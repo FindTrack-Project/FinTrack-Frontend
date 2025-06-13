@@ -8,9 +8,8 @@ import {
   Title,
   Tooltip,
   Legend,
-  Filler, // <-- PENTING: Pastikan 'Filler' di-import dari chart.js
+  Filler,
 } from "chart.js";
-// import { useRef, useEffect } from "react"; // <-- PERBAIKAN: useRef dan useEffect tidak lagi diperlukan
 import { lineChartOptions } from "./constants";
 
 // Registrasi semua modul Chart.js yang dibutuhkan
@@ -22,7 +21,7 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
-  Filler // <-- PENTING: Pastikan 'Filler' juga didaftarkan di sini
+  Filler
 );
 
 const BalanceOverview = ({
@@ -35,7 +34,6 @@ const BalanceOverview = ({
   onTimeRangeChange,
   selectedTimeRange,
 }) => {
-  // const chartRef = useRef(null); // <-- PERBAIKAN: Dihapus
 
   const lineChartData = {
     labels: months,
@@ -44,7 +42,7 @@ const BalanceOverview = ({
         label: "Balance",
         data: balanceOverTime,
         borderColor: "rgb(59, 130, 246)",
-        fill: true, // <-- Penting agar background muncul
+        fill: true,
         tension: 0.4,
         pointRadius: 0,
         pointHoverRadius: 6,
@@ -53,20 +51,15 @@ const BalanceOverview = ({
         pointHoverBackgroundColor: "#fff",
         pointHoverBorderColor: "rgb(59, 130, 246)",
         
-        // --- [PERBAIKAN UTAMA] ---
-        // Ganti string statis dengan fungsi untuk membuat gradasi dinamis
         backgroundColor: (context) => {
           const chart = context.chart;
           const { ctx, chartArea } = chart;
 
           if (!chartArea) {
-            // Kembali jika area chart belum ada (untuk render awal)
             return null;
           }
-          // Membuat gradasi vertikal dari atas ke bawah
           const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
           
-          // Menerjemahkan gaya gradasi yang Anda inginkan
           gradient.addColorStop(0.05, "rgba(59, 130, 246, 0.2)"); // 5% dari atas
           gradient.addColorStop(0.95, "rgba(59, 130, 246, 0)");   // 95% dari atas (transparan)
 
@@ -75,8 +68,6 @@ const BalanceOverview = ({
       },
     ],
   };
-
-  // const useEffect = ...; // <-- PERBAIKAN: Dihapus
 
   return (
     <div className="bg-white h-full border border-gray-200 p-6 rounded-xl shadow-sm">
@@ -127,7 +118,6 @@ const BalanceOverview = ({
 
       {/* Line Chart */}
       <div className="h-64 relative">
-        {/* PERBAIKAN: ref pada komponen Line dihapus */}
         <Line data={lineChartData} options={lineChartOptions(formatCurrency)} />
       </div>
     </div>
