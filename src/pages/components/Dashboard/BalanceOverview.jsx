@@ -8,8 +8,9 @@ import {
   Title,
   Tooltip,
   Legend,
-  Filler,
+  Filler, // <-- PENTING: Pastikan 'Filler' di-import dari chart.js
 } from "chart.js";
+// import { useRef, useEffect } from "react"; // <-- PERBAIKAN: useRef dan useEffect tidak lagi diperlukan
 import { lineChartOptions } from "./constants";
 
 // Registrasi semua modul Chart.js yang dibutuhkan
@@ -21,7 +22,7 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
-  Filler
+  Filler // <-- PENTING: Pastikan 'Filler' juga didaftarkan di sini
 );
 
 const BalanceOverview = ({
@@ -34,6 +35,8 @@ const BalanceOverview = ({
   onTimeRangeChange,
   selectedTimeRange,
 }) => {
+  // const chartRef = useRef(null); // <-- PERBAIKAN: Dihapus
+
   const lineChartData = {
     labels: months,
     datasets: [
@@ -41,7 +44,7 @@ const BalanceOverview = ({
         label: "Balance",
         data: balanceOverTime,
         borderColor: "rgb(59, 130, 246)",
-        fill: true,
+        fill: true, // <-- Penting agar background muncul
         tension: 0.4,
         pointRadius: 0,
         pointHoverRadius: 6,
@@ -49,34 +52,35 @@ const BalanceOverview = ({
         pointBorderColor: "#fff",
         pointHoverBackgroundColor: "#fff",
         pointHoverBorderColor: "rgb(59, 130, 246)",
-
+        
         // --- [PERBAIKAN UTAMA] ---
-        // Gunakan fungsi untuk membuat gradasi secara dinamis.
-        // Chart.js akan memanggil fungsi ini dengan "context" yang berisi info chart.
+        // Ganti string statis dengan fungsi untuk membuat gradasi dinamis
         backgroundColor: (context) => {
           const chart = context.chart;
           const { ctx, chartArea } = chart;
 
-          // Cek jika area chart belum ada, kembalikan warna fallback.
-          // Ini penting untuk render pertama kali.
           if (!chartArea) {
-            return "rgba(59, 130, 246, 0.1)";
+            // Kembali jika area chart belum ada (untuk render awal)
+            return null;
           }
+          // Membuat gradasi vertikal dari atas ke bawah
+          const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
           
-          const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
-          gradient.addColorStop(0, "rgba(59, 130, 246, 0.05)");
-          gradient.addColorStop(1, "rgba(59, 130, 246, 0.3)");
-          
+          // Menerjemahkan gaya gradasi yang Anda inginkan
+          gradient.addColorStop(0.05, "rgba(59, 130, 246, 0.2)"); // 5% dari atas
+          gradient.addColorStop(0.95, "rgba(59, 130, 246, 0)");   // 95% dari atas (transparan)
+
           return gradient;
         },
       },
     ],
   };
 
-  // Tidak perlu lagi useEffect atau useRef di sini
+  // const useEffect = ...; // <-- PERBAIKAN: Dihapus
+
   return (
     <div className="bg-white h-full border border-gray-200 p-6 rounded-xl shadow-sm">
-      {/* Header */}
+      {/* Header (TIDAK DIUBAH) */}
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-lg font-semibold text-gray-800">Balance</h2>
         <div className="relative">
@@ -97,7 +101,7 @@ const BalanceOverview = ({
         </div>
       </div>
 
-      {/* Total Balance */}
+      {/* Total Balance (TIDAK DIUBAH) */}
       <div className="mb-6">
         <h3 className="text-sm text-gray-500 mb-1">Total Balance</h3>
         <p className="text-3xl font-bold text-gray-900">
@@ -105,7 +109,7 @@ const BalanceOverview = ({
         </p>
       </div>
 
-      {/* Income & Expenses */}
+      {/* Income & Expenses (TIDAK DIUBAH) */}
       <div className="flex flex-col md:flex-row gap-y-4 md:gap-x-12 mb-6">
         <div>
           <h3 className="text-sm text-gray-500 mb-1">Incomes</h3>
@@ -123,7 +127,7 @@ const BalanceOverview = ({
 
       {/* Line Chart */}
       <div className="h-64 relative">
-        {/* Tidak perlu lagi 'ref' di sini */}
+        {/* PERBAIKAN: ref pada komponen Line dihapus */}
         <Line data={lineChartData} options={lineChartOptions(formatCurrency)} />
       </div>
     </div>
