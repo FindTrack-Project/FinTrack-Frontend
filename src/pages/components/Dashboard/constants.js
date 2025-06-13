@@ -15,65 +15,59 @@ export const PIE_COLORS = [
 
 /**
  * Konfigurasi untuk Line Chart (BalanceOverview).
- * Disesuaikan agar cocok dengan desain gambar.
  */
 export const lineChartOptions = (formatCurrency) => ({
   responsive: true,
   maintainAspectRatio: false,
   plugins: {
     legend: {
-      display: false, // Legenda tidak ditampilkan
+      display: false,
     },
     tooltip: {
       enabled: true,
-      // --- PERBAIKAN: Styling tooltip agar sesuai gambar (latar putih) ---
       backgroundColor: '#ffffff',
-      titleColor: '#374151',    // Warna judul (misal: "Apr")
-      bodyColor: '#111827',     // Warna isi (misal: "Rp15.700.000")
-      borderColor: '#e5e7eb',   // Warna border tooltip
+      titleColor: '#374151',
+      bodyColor: '#111827',
+      borderColor: '#e5e7eb',
       borderWidth: 1,
       padding: 12,
       cornerRadius: 8,
-      displayColors: false,    // Menghilangkan kotak warna di tooltip
+      displayColors: false,
       callbacks: {
-        // Format label tooltip agar hanya menampilkan nilai terformat
         label: function (context) {
           const value = context.parsed.y || 0;
           return formatCurrency(value);
         },
-        // Menghilangkan judul jika tidak diperlukan
         title: function(context) {
-            return context[0].label;
+            // Menggunakan optional chaining (?) untuk keamanan jika context kosong
+            return context[0]?.label;
         }
       },
     },
   },
   scales: {
     y: {
-      // --- PERBAIKAN: Sumbu Y wajib dimulai dari 0 untuk data finansial ---
       beginAtZero: true,
       grid: {
-        drawBorder: false, // Menghilangkan garis border sumbu
+        drawBorder: false,
       },
       ticks: {
-        maxTicksLimit: 5, // Batasi jumlah label di sumbu Y
-        // Format label di sumbu Y (misal: "Rp0", "Rp5.000.000")
+        maxTicksLimit: 5,
         callback: function (value) {
           return formatCurrency(value);
         },
-        color: "#6B7280", // Warna teks label sumbu
+        color: "#6B7280",
       },
     },
     x: {
       grid: {
-        display: false, // Menghilangkan garis grid vertikal untuk tampilan bersih
+        display: false,
       },
       ticks: {
         color: "#6B7280",
       },
     },
   },
-  // Mengatur interaksi hover
   interaction: {
     intersect: false,
     mode: 'index',
@@ -81,8 +75,7 @@ export const lineChartOptions = (formatCurrency) => ({
 });
 
 /**
- * Konfigurasi untuk Pie/Doughnut Chart (seperti di halaman Pockets).
- * Konfigurasi ini sudah baik.
+ * Konfigurasi untuk Pie/Doughnut Chart.
  */
 export const pieOptions = (formatCurrency) => ({
   responsive: true,
