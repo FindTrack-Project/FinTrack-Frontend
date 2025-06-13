@@ -10,7 +10,6 @@ import {
   Legend,
   Filler,
 } from "chart.js";
-import { useRef, useEffect } from "react"; // --- [PERBAIKAN] --- Import useRef dan useEffect
 import { lineChartOptions } from "./constants";
 
 // Registrasi semua modul Chart.js yang dibutuhkan
@@ -35,9 +34,6 @@ const BalanceOverview = ({
   onTimeRangeChange,
   selectedTimeRange,
 }) => {
-  // --- [PERBAIKAN] --- Buat ref untuk mengakses instance chart
-  const chartRef = useRef(null);
-
   const lineChartData = {
     labels: months,
     datasets: [
@@ -45,8 +41,6 @@ const BalanceOverview = ({
         label: "Balance",
         data: balanceOverTime,
         borderColor: "rgb(59, 130, 246)",
-        // --- [PERBAIKAN] --- Background color akan di-override oleh gradient di useEffect
-        backgroundColor: "rgba(59, 130, 246, 0.1)",
         fill: true,
         tension: 0.4,
         pointRadius: 0,
@@ -55,29 +49,31 @@ const BalanceOverview = ({
         pointBorderColor: "#fff",
         pointHoverBackgroundColor: "#fff",
         pointHoverBorderColor: "rgb(59, 130, 246)",
+
+        // --- [PERBAIKAN UTAMA] ---
+        // Gunakan fungsi untuk membuat gradasi secara dinamis.
+        // Chart.js akan memanggil fungsi ini dengan "context" yang berisi info chart.
+        backgroundColor: (context) => {
+          const chart = context.chart;
+          const { ctx, chartArea } = chart;
+
+          // Cek jika area chart belum ada, kembalikan warna fallback.
+          // Ini penting untuk render pertama kali.
+          if (!chartArea) {
+            return "rgba(59, 130, 246, 0.1)";
+          }
+          
+          const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+          gradient.addColorStop(0, "rgba(59, 130, 246, 0.05)");
+          gradient.addColorStop(1, "rgba(59, 130, 246, 0.3)");
+          
+          return gradient;
+        },
       },
     ],
   };
 
-  // --- [PERBAIKAN] --- Gunakan useEffect untuk membuat dan menerapkan gradient
-  useEffect(() => {
-    const chart = chartRef.current;
-    if (!chart) {
-      return;
-    }
-
-    const ctx = chart.ctx;
-    const gradient = ctx.createLinearGradient(0, chart.chartArea.bottom, 0, chart.chartArea.top);
-    
-    // Atur warna gradasi dari bawah ke atas
-    gradient.addColorStop(0, "rgba(59, 130, 246, 0.05)"); // Warna di bagian bawah (lebih transparan)
-    gradient.addColorStop(1, "rgba(59, 130, 246, 0.3)");  // Warna di bagian atas (sedikit lebih pekat)
-
-    // Terapkan gradient ke dataset
-    chart.data.datasets[0].backgroundColor = gradient;
-    chart.update();
-  }, [balanceOverTime]); // Jalankan effect ini setiap kali data chart berubah
-
+  // Tidak perlu lagi useEffect atau useRef di sini
   return (
     <div className="bg-white h-full border border-gray-200 p-6 rounded-xl shadow-sm">
       {/* Header */}
@@ -127,8 +123,8 @@ const BalanceOverview = ({
 
       {/* Line Chart */}
       <div className="h-64 relative">
-        {/* --- [PERBAIKAN] --- Tambahkan ref ke komponen Line Chart */}
-        <Line ref={chartRef} data={lineChartData} options={lineChartOptions(formatCurrency)} />
+        {/* Tidak perlu lagi 'ref' di sini */}
+        <Line data={lineChartData} options={lineChartOptions(formatCurrency)} />
       </div>
     </div>
   );
