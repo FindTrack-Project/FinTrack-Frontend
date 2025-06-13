@@ -72,7 +72,7 @@ const FAQItem = ({ question, answer }) => {
     <div className="border-b border-gray-200 last:border-b-0">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full py-4 flex justify-between items-center text-left"
+        className="w-full py-4 flex justify-between items-center text-left cursor-pointer"
       >
         <span className="font-medium text-gray-900">{question}</span>
         {isOpen ? (

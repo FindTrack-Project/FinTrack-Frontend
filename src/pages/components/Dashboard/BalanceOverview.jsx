@@ -10,7 +10,7 @@ import {
   Legend,
   Filler,
 } from "chart.js";
-import { lineChartOptions } from "./constants"; // Pastikan path ini benar
+import { useRef, useEffect } from "react"; // --- [PERBAIKAN] --- Import useRef dan useEffect
 
 // Registrasi semua modul Chart.js yang dibutuhkan
 ChartJS.register(
@@ -28,14 +28,15 @@ const BalanceOverview = ({
   totalBalance,
   totalIncomeCurrentMonth,
   totalExpenseCurrentMonth,
-  incomeGrowth,
-  expenseGrowth,
   months,
   balanceOverTime,
   formatCurrency,
   onTimeRangeChange,
   selectedTimeRange,
 }) => {
+  // --- [PERBAIKAN] --- Buat ref untuk mengakses instance chart
+  const chartRef = useRef(null);
+
   const lineChartData = {
     labels: months,
     datasets: [
@@ -43,6 +44,7 @@ const BalanceOverview = ({
         label: "Balance",
         data: balanceOverTime,
         borderColor: "rgb(59, 130, 246)",
+        // --- [PERBAIKAN] --- Background color akan di-override oleh gradient di useEffect
         backgroundColor: "rgba(59, 130, 246, 0.1)",
         fill: true,
         tension: 0.4,
@@ -55,6 +57,25 @@ const BalanceOverview = ({
       },
     ],
   };
+
+  // --- [PERBAIKAN] --- Gunakan useEffect untuk membuat dan menerapkan gradient
+  useEffect(() => {
+    const chart = chartRef.current;
+    if (!chart) {
+      return;
+    }
+
+    const ctx = chart.ctx;
+    const gradient = ctx.createLinearGradient(0, chart.chartArea.bottom, 0, chart.chartArea.top);
+    
+    // Atur warna gradasi dari bawah ke atas
+    gradient.addColorStop(0, "rgba(59, 130, 246, 0.05)"); // Warna di bagian bawah (lebih transparan)
+    gradient.addColorStop(1, "rgba(59, 130, 246, 0.3)");  // Warna di bagian atas (sedikit lebih pekat)
+
+    // Terapkan gradient ke dataset
+    chart.data.datasets[0].backgroundColor = gradient;
+    chart.update();
+  }, [balanceOverTime]); // Jalankan effect ini setiap kali data chart berubah
 
   return (
     <div className="bg-white h-full border border-gray-200 p-6 rounded-xl shadow-sm">
@@ -87,16 +108,14 @@ const BalanceOverview = ({
         </p>
       </div>
 
-      {/* --- INI BAGIAN UTAMA YANG DIPERBAIKI DENGAN FLEXBOX --- */}
+      {/* Income & Expenses */}
       <div className="flex flex-col md:flex-row gap-y-4 md:gap-x-12 mb-6">
-        {/* Kolom Income */}
         <div>
           <h3 className="text-sm text-gray-500 mb-1">Incomes</h3>
           <p className="text-xl font-bold text-green-600 flex items-center">
             {formatCurrency(totalIncomeCurrentMonth)}
           </p>
         </div>
-        {/* Kolom Expenses */}
         <div>
           <h3 className="text-sm text-gray-500 mb-1">Expenses</h3>
           <p className="text-xl font-bold text-red-600 flex items-center">
@@ -105,9 +124,10 @@ const BalanceOverview = ({
         </div>
       </div>
 
-      {/* Line Chart (posisi tetap di bawah) */}
+      {/* Line Chart */}
       <div className="h-64 relative">
-        <Line data={lineChartData} options={lineChartOptions(formatCurrency)} />
+        {/* --- [PERBAIKAN] --- Tambahkan ref ke komponen Line Chart */}
+        <Line ref={chartRef} data={lineChartData} options={lineChartOptions(formatCurrency)} />
       </div>
     </div>
   );
