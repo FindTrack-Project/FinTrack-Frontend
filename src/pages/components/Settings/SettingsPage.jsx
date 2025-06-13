@@ -178,7 +178,7 @@ const SettingsPage = () => {
         <div className="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8">
             <header className="flex items-center justify-between mb-8">
                 <div>
-                    <h1 className="text-2xl sm:text-3xl text-gray-900 font-bold">Settings</h1>
+                    <h1 className="text-2xl sm:text-3xl text-gray-900 font-semibold">Settings</h1>
                 </div>
                 <div className="flex items-center gap-3">
                   <button className="relative bg-white border border-gray-200 rounded-full p-2.5 shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer">
@@ -206,7 +206,7 @@ const SettingsPage = () => {
             </header>
 
             <div className="bg-white rounded-2xl shadow-sm p-4 sm:p-8">
-                <h2 className="text-xl font-bold text-gray-800 border-b border-gray-200 pb-4">Profil</h2>
+                <h2 className="text-xl font-semibold text-gray-800 border-b border-gray-200 pb-4">Profil</h2>
                 
                 <form onSubmit={handleSubmit} className="mt-6">
                     <div className="flex items-center mb-8">
@@ -216,7 +216,7 @@ const SettingsPage = () => {
                             className="w-16 h-16 rounded-full mr-4"
                         />
                         <div>
-                            <p className="font-bold text-lg text-gray-900">{formData.name}</p>
+                            <p className="font-semibold text-lg text-gray-900">{formData.name}</p>
                             <p className="text-sm text-gray-500">{formData.email}</p>
                         </div>
                     </div>

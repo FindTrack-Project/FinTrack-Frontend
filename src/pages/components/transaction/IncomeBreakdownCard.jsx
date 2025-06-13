@@ -64,7 +64,7 @@ const IncomeBreakdownCard = ({ incomePieData }) => {
         </select>
       </div>
 
-      <p className="text-start text-4xl font-bold text-gray-800 mb-6">
+      <p className="text-start text-4xl font-semibold text-gray-800 mb-6">
         {formatCurrency(totalIncomeAmount)}
       </p>
 

@@ -109,7 +109,7 @@ const ConfirmationModal = ({
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/30 backdrop-blur-sm p-4">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 text-center">
-        <h3 className="text-lg font-bold text-gray-900 mb-2">{title}</h3>
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">{title}</h3>
         <p className="text-gray-600 mb-6 text-sm">{message}</p>
         <div className="flex justify-center gap-4">
           <button
@@ -306,7 +306,7 @@ const SavingsPage = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
         <div className="bg-white rounded-2xl shadow-sm p-8 max-w-md w-full text-center">
-          <h2 className="text-xl font-bold text-red-600 mb-2">
+          <h2 className="text-xl font-semibold text-red-600 mb-2">
             Terjadi Kesalahan
           </h2>
           <p className="text-gray-700 mb-4">{error}</p>
@@ -325,7 +325,7 @@ const SavingsPage = () => {
     <div className="min-h-screen bg-gray-50 p-4 sm:p-6 text-gray-800">
       <header className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl sm:text-3xl text-gray-900 font-bold">
+          <h1 className="text-2xl sm:text-3xl text-gray-900 font-semibold">
             Saving Goals
           </h1>
         </div>
@@ -358,7 +358,7 @@ const SavingsPage = () => {
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-8 gap-4">
           <div>
             <h2 className="text-sm font-medium text-gray-500">Total Savings</h2>
-            <p className="text-2xl sm:text-4xl font-bold text-gray-900">
+            <p className="text-2xl sm:text-4xl font-semibold text-gray-900">
               {formatCurrency(totalSavings)}
             </p>
           </div>

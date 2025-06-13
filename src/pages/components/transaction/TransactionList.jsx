@@ -71,7 +71,7 @@ const TransactionList = ({
   return (
     <section className="bg-white rounded-2xl shadow-sm p-6 col-span-1 lg:col-span-3 h-130 flex flex-col">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-4">
-        <h2 className="text-xl font-bold text-gray-800">Recent Transactions</h2>
+        <h2 className="text-xl font-semibold text-gray-800">Recent Transactions</h2>
         <button
           onClick={() => setIsModalOpen(true)}
           className="px-4 py-2 bg-gray-800 text-white rounded-lg text-sm font-semibold hover:bg-gray-700 transition-colors flex items-center justify-center sm:w-auto w-full gap-2 cursor-pointer"

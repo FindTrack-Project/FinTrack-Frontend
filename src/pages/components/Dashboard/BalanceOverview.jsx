@@ -95,7 +95,7 @@ const BalanceOverview = ({
       {/* Total Balance (TIDAK DIUBAH) */}
       <div className="mb-6">
         <h3 className="text-sm text-gray-500 mb-1">Total Balance</h3>
-        <p className="text-3xl font-bold text-gray-900">
+        <p className="text-3xl font-semibold text-gray-900">
           {formatCurrency(totalBalance)}
         </p>
       </div>
@@ -104,13 +104,13 @@ const BalanceOverview = ({
       <div className="flex flex-col md:flex-row gap-y-4 md:gap-x-12 mb-6">
         <div>
           <h3 className="text-sm text-gray-500 mb-1">Incomes</h3>
-          <p className="text-xl font-bold text-green-600 flex items-center">
+          <p className="text-xl font-semibold text-green-600 flex items-center">
             {formatCurrency(totalIncomeCurrentMonth)}
           </p>
         </div>
         <div>
           <h3 className="text-sm text-gray-500 mb-1">Expenses</h3>
-          <p className="text-xl font-bold text-red-600 flex items-center">
+          <p className="text-xl font-semibold text-red-600 flex items-center">
             {formatCurrency(totalExpenseCurrentMonth)}
           </p>
         </div>

@@ -250,7 +250,7 @@ const RecommendationPage = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
         <div className="bg-white p-6 rounded-lg shadow text-center">
-          <h2 className="text-xl font-bold text-red-600 mb-2">
+          <h2 className="text-xl font-semibold text-red-600 mb-2">
             Terjadi Kesalahan
           </h2>
           <p className="text-gray-600">{error}</p>
@@ -264,7 +264,7 @@ const RecommendationPage = () => {
       <header className="flex items-center justify-between mb-8">
         <div>
           {/* PERBAIKAN: Ukuran judul dibuat responsif */}
-          <h1 className="text-2xl sm:text-3xl text-gray-900 font-bold">
+          <h1 className="text-2xl sm:text-3xl text-gray-900 font-semibold">
             Recomendation
           </h1>
         </div>
@@ -302,7 +302,7 @@ const RecommendationPage = () => {
           Total pengeluaran Anda dalam 30 hari terakhir
         </p>
         {/* PERBAIKAN: Ukuran teks nominal dibuat responsif */}
-        <p className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">
+        <p className="text-2xl sm:text-3xl font-semibold text-gray-900 mb-6">
           {formatCurrency(last30DaysExpenses)}
         </p>
 
@@ -355,7 +355,7 @@ const RecommendationPage = () => {
               <p className="text-sm text-blue-800 font-semibold mb-2">
                 Prediksi Pengeluaran Bulan Depan
               </p>
-              <p className="text-2xl sm:text-3xl font-bold text-blue-900">
+              <p className="text-2xl sm:text-3xl font-semibold text-blue-900">
                 {formatCurrency(predictionResult.predicted)}
               </p>
             </div>
@@ -364,7 +364,7 @@ const RecommendationPage = () => {
               <p className="text-sm text-green-800 font-semibold mb-2">
                 Rekomendasi Budget Bulan Depan
               </p>
-              <p className="text-2xl sm:text-3xl font-bold text-green-900">
+              <p className="text-2xl sm:text-3xl font-semibold text-green-900">
                 {formatCurrency(predictionResult.recommended)}
               </p>
             </div>

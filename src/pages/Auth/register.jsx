@@ -74,7 +74,7 @@ export const Register = () => {
         <div className="bg-white rounded-2xl shadow-lg p-8 sm:p-10 w-full max-w-md mx-auto">
           <div className="flex flex-col items-center mb-8">
             <img src={Logo} alt="Logo" className="h-12 mb-4" />
-            <h1 className="text-2xl font-bold text-gray-900 mb-1 text-center">
+            <h1 className="text-2xl font-semibold text-gray-900 mb-1 text-center">
                 Buat <span className="text-accent">akun</span> Anda 📝
             </h1>
             <p className="text-gray-500 text-center text-base">

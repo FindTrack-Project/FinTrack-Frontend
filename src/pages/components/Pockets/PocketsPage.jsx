@@ -77,7 +77,7 @@ const pieOptions = (formatter) => ({
 const PocketsPageHeader = ({ userName, userEmail }) => (
   <header className="flex items-center justify-between mb-8">
     <div>
-      <h1 className="text-2xl sm:text-3xl text-gray-900 font-bold">Pockets</h1>
+      <h1 className="text-2xl sm:text-3xl text-gray-900 font-semibold">Pockets</h1>
     </div>
     <div className="flex items-center gap-3">
       <button className="relative bg-white border border-gray-200 rounded-full p-2.5 shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer">
@@ -110,7 +110,7 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm, title, message }) => {
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/30 backdrop-blur-sm p-4">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 text-center">
-        <h3 className="text-lg font-bold text-gray-900 mb-2">{title}</h3>
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">{title}</h3>
         <p className="text-gray-600 mb-6 text-sm">{message}</p>
         <div className="flex justify-center gap-4">
           <button
@@ -380,7 +380,7 @@ const PocketsPage = () => {
                 <PlusCircle size={16} /> Tambah Pocket
               </button>
             </div>
-            <p className="text-3xl font-bold text-gray-900 mb-6">
+            <p className="text-3xl font-semibold text-gray-900 mb-6">
               {formatCurrency(totalBalance)}
             </p>
             <div className="flex-1 min-h-0">

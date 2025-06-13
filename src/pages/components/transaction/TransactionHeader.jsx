@@ -2,7 +2,7 @@ import { Bell } from 'lucide-react';
 const TransactionHeader = ({ userName, userEmail }) => (
   <div className="flex items-center justify-between mb-8">
     <div>
-      <h1 className="text-2xl sm:text-3xl text-gray-900 font-bold">Transaksi</h1>
+      <h1 className="text-2xl sm:text-3xl text-gray-900 font-semibold">Transaksi</h1>
     </div>
     <div className="flex items-center gap-3">
       {/* Notifikasi */}

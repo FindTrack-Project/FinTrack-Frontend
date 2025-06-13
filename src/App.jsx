@@ -31,7 +31,7 @@ const Header = ({ onMenuClick }) => (
     <button onClick={onMenuClick} className="text-gray-600 hover:text-primary">
       <Menu size={24} />
     </button>
-    <div className="flex-grow text-center font-bold text-primary">
+    <div className="flex-grow text-center font-semibold text-primary">
       Fin<span className="text-accent">track</span>
     </div>
     <div className="w-6" />
